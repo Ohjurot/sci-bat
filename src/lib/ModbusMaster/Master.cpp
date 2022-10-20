@@ -25,14 +25,14 @@ RETI::Modbus::Slave& RETI::Modbus::Master::SetupSlave(const std::string& name)
     return m_slaves.at(name);
 }
 
-bool RETI::Modbus::Master::IOUpdate()
+bool RETI::Modbus::Master::IOUpdate(float deltaT)
 {
     size_t errorCount = 0;
     GetLogger()->debug("Slave update started.");
     for (auto& slave : m_slaves)
     {
         GetLogger()->debug(R"(Updating slave "{}"...)", slave.first);
-        auto updateResult = slave.second.ExecuteIOUpdate(m_processImage);
+        auto updateResult = slave.second.ExecuteIOUpdate(m_processImage, deltaT);
         switch (updateResult)
         {
             case Slave::IOUpdateResult::InvalidSlave:
@@ -49,6 +49,17 @@ bool RETI::Modbus::Master::IOUpdate()
                 break;
             case Slave::IOUpdateResult::UpdateSuccess:
                 GetLogger()->debug(R"(Slave "{}" update finished successfully!)", slave.first);
+                break;
+            case Slave::IOUpdateResult::FailedConnectionDelay:
+                GetLogger()->debug(R"(Slave "{}" is in connection delay!)", slave.first);
+                // errorCount++; Ommit to not spam console
+                break;
+            case Slave::IOUpdateResult::ConnectionStilFailing:
+                GetLogger()->warn(R"(Slave "{}" still not reachable!)", slave.first);
+                errorCount++;
+                break;
+            case Slave::IOUpdateResult::ConnectionRestoredAndSuccess:
+                GetLogger()->info(R"(Slave "{}" connection restored!)", slave.first);
                 break;
         }
     }

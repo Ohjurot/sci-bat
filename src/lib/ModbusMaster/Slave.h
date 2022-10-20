@@ -48,8 +48,12 @@ namespace RETI::Modbus
             {
                 InvalidSlave,
                 ConnectionError,
-                UpdateSuccess,
                 UpdateFailed,
+                UpdateSuccess,
+                
+                FailedConnectionDelay,
+                ConnectionStilFailing,
+                ConnectionRestoredAndSuccess,
             };
 
         public:
@@ -71,10 +75,10 @@ namespace RETI::Modbus
             }
 
             // Writes outputs / reads inputs
-            RETI::Modbus::Slave::IOUpdateResult ExecuteIOUpdate(ProcessImage& processImage);
-            inline IOUpdateResult operator()(ProcessImage& processImage)
+            RETI::Modbus::Slave::IOUpdateResult ExecuteIOUpdate(ProcessImage& processImage, float deltaT);
+            inline IOUpdateResult operator()(ProcessImage& processImage, float deltaT)
             {
-                return ExecuteIOUpdate(processImage);
+                return ExecuteIOUpdate(processImage, deltaT);
             }
 
         private:
@@ -84,5 +88,10 @@ namespace RETI::Modbus
             bool m_valid = false;
             MSConnection m_connection;
             std::vector<Mapping> m_mappings;
+
+            const uint8_t m_subsequentConnectionTimeoutsThreshold = 5;
+            uint8_t m_subsequentConnectionTimeouts = 0;
+            const float m_connectionRetryTimerPreset = 5.f;
+            float m_connectionRetryTimer = .0f;
     };
 }

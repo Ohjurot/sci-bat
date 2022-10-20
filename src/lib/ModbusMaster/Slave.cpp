@@ -64,14 +64,43 @@ void RETI::Modbus::Slave::ValidateMapping(const Mapping& mapping) const
     }
 }
 
-RETI::Modbus::Slave::IOUpdateResult RETI::Modbus::Slave::ExecuteIOUpdate(ProcessImage& processImage)
+RETI::Modbus::Slave::IOUpdateResult RETI::Modbus::Slave::ExecuteIOUpdate(ProcessImage& processImage, float deltaT)
 {
+    bool connectionRestored = false;
+
+    // Invalid
     if (!m_valid)
+    {
         return IOUpdateResult::InvalidSlave;
+    }
+
+    // Active Timeout
+    if (m_connectionRetryTimer > .0f)
+    {
+        m_connectionRetryTimer = std::max(.0f, m_connectionRetryTimer - deltaT);
+        return IOUpdateResult::FailedConnectionDelay;
+    }
+    if (m_subsequentConnectionTimeouts >= m_subsequentConnectionTimeoutsThreshold)
+    {
+        // Retry 
+        if (m_connection.Connect())
+        {
+            m_subsequentConnectionTimeouts = 0;
+            connectionRestored = true;
+        }
+        else
+        {
+            m_subsequentConnectionTimeouts++;
+            m_connectionRetryTimer = m_connectionRetryTimerPreset;
+            return IOUpdateResult::ConnectionStilFailing;
+        }
+    }
 
     // Connect to slave
     if (m_connection.Connect())
     {
+        m_subsequentConnectionTimeouts = 0;
+
         // For safety we will create a copy of the process image
         ProcessImage piCopy = processImage;
 
@@ -133,14 +162,16 @@ RETI::Modbus::Slave::IOUpdateResult RETI::Modbus::Slave::ExecuteIOUpdate(Process
         if (errorCount == 0)
         {
             processImage = std::move(piCopy);
-            return IOUpdateResult::UpdateSuccess;
+            return connectionRestored ?  IOUpdateResult::ConnectionRestoredAndSuccess : IOUpdateResult::UpdateSuccess;
         }
         
         GetLogger()->error("Slave ({}) mapping update failed process {}/{} mappings.", m_connection.GetEndpoint().ToString(), m_mappings.size() - errorCount, m_mappings.size());
         return IOUpdateResult::UpdateFailed;
     }
-    
-    GetLogger()->error("Slave ({}) not reachable!", m_connection.GetEndpoint().ToString());
+
+    // Begin timeout 
+    if(++m_subsequentConnectionTimeouts == m_subsequentConnectionTimeoutsThreshold) m_connectionRetryTimer = m_connectionRetryTimerPreset;
+    GetLogger()->error("Slave ({}) not reachable! Try {}/{}", m_connection.GetEndpoint().ToString(), m_subsequentConnectionTimeouts, m_subsequentConnectionTimeoutsThreshold);
     return IOUpdateResult::ConnectionError;
 }
 

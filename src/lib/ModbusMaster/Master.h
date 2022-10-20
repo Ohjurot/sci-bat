@@ -46,7 +46,7 @@ namespace RETI::Modbus
                 return At(name);
             }
 
-            bool IOUpdate();
+            bool IOUpdate(float deltaT);
             inline ProcessImage& GetProcessImage()
             {
                 return m_processImage;

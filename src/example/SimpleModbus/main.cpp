@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     while (!kbInterrupt.InterupRecived())
     {
         // Update modbus
-        modbus.IOUpdate();
+        modbus.IOUpdate(0.1f);
 
         // IO
         if (modbus["I 0.0"]) xset = true;
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
     // Turn all off
     modbus.GetProcessImage().AllOutputsLow();
-    modbus.IOUpdate();
+    modbus.IOUpdate(0);
 
     return 0;
 }
