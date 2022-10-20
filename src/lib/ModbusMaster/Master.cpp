@@ -61,3 +61,99 @@ bool RETI::Modbus::Master::IOUpdate()
 
     return errorCount == 0;
 }
+
+RETI::Modbus::IOHandle RETI::Modbus::Master::At(const std::string_view& name)
+{
+    // TODO: Search alias list
+
+    // Parse normally
+    IOType type;
+    IOHandle::DataType dtype;
+    size_t byteAddress;
+    uint8_t bitAddress;
+    if (!ParseAddressString(name, type, dtype, byteAddress, bitAddress))
+    {
+        throw std::runtime_error("Invalid IO Address");
+    }
+
+    return At(type, dtype, byteAddress, bitAddress);
+}
+
+RETI::Modbus::IOHandle RETI::Modbus::Master::At(IOType type, IOHandle::DataType dtype, size_t byteAddress, uint8_t bitAddress)
+{
+    return IOHandle(m_processImage, dtype, type == IOType::Input, byteAddress, bitAddress);
+}
+
+bool RETI::Modbus::Master::ParseAddressString(const std::string_view& addressString, IOType& type, IOHandle::DataType& dtype, size_t& byteAddress, uint8_t& bitAddress)
+{
+    // Search by default naming IW 1
+    std::string ftype;
+    double faddr;
+    if (!scn::scan(addressString, "{:s} {:f}", ftype, faddr))
+        return false;
+
+    // Now extract all the data that we have 
+    byteAddress = (size_t)std::floor(faddr);
+    bitAddress = (uint8_t) ((faddr - byteAddress) * 10.);
+
+    // Now check all valid cases
+    if (ftype.length() != 1 && ftype.length() != 2)
+        return false;
+
+    // First char
+    switch (ftype[0])
+    {
+        case 'I':
+        case 'i':
+        case 'E':
+        case 'e':
+            type = IOType::Input;
+            break;
+        case 'O':
+        case 'o':
+        case 'A':
+        case 'a':
+        case 'Q':
+        case 'q':
+            type = IOType::Output;
+            break;
+        default:
+            return false;
+    }
+
+    // Second char
+    if (ftype.length() == 2)
+    {
+        switch (ftype[1])
+        {
+            case 'B':
+            case 'b':
+                dtype = IOHandle::DataType::Byte;
+                break;
+            case 'W':
+            case 'w':
+                dtype = IOHandle::DataType::Word;
+                break;
+            case 'D':
+            case 'd':
+                dtype = IOHandle::DataType::DWord;
+                break;
+            case 'Q':
+            case 'q':
+                dtype = IOHandle::DataType::QWord;
+                break;
+            default:
+                return false;
+        }
+    }
+    else
+    {
+        dtype = IOHandle::DataType::Bit;
+    }
+
+    // Validate
+    if (bitAddress != 0 && dtype != IOHandle::DataType::Bit)
+        return false;
+
+    return true;
+}

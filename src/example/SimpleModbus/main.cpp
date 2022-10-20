@@ -33,6 +33,8 @@ int main(int argc, char** argv)
         .Map(RETI::Modbus::Slave::RemoteMappingType::DigitalInput, 0, 8, 0)
         .Map(RETI::Modbus::Slave::RemoteMappingType::DigitalOutput, 0, 4, 0);
 
+    modbus.At("I 5.2");
+
     // Simple modbus loop
     int duration = 0;
     bool xset = false;
@@ -42,13 +44,12 @@ int main(int argc, char** argv)
         modbus.IOUpdate();
 
         // IO
-        auto& pi = modbus.GetProcessImage();
-        if (pi.InputBitAt(0, 0)) xset = true;
-        if (pi.InputBitAt(0, 1)) xset = false;
-        pi.OutputBitAt(0, 0) = xset;
-        pi.OutputBitAt(0, 1) = !xset;
-        pi.OutputBitAt(0, 2) = duration < 10;
-        pi.OutputBitAt(0, 3) = duration >= 10;
+        if (modbus["I 0.0"]) xset = true;
+        if (modbus["I 0.1"]) xset = false;
+        modbus["O 0.0"] = xset;
+        modbus["O 0.1"] = !xset;
+        modbus["O 0.2"] = duration < 10;
+        modbus["O 0.3"] = duration >= 10;
 
         // Time
         if (++duration == 20)
