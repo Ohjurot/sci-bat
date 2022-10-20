@@ -1,12 +1,14 @@
 #pragma once
 
+#include <RETIUtil/SPDLogable.h>
+
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
 
 namespace RETI::Util
 {
-    class KeyboardInterrupt
+    class KeyboardInterrupt : public SPDLogable
     {
         // Class
         public:

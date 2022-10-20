@@ -15,6 +15,8 @@ void RETI::Util::KeyboardInterrupt::Register()
         signal(SIGABRT, &SignalHandler);
         signal(SIGTERM, &SignalHandler);
         m_registered = true;
+
+        Get().GetLogger()->info("Registered event signals!");
     }
 }
 
@@ -30,6 +32,7 @@ void RETI::Util::KeyboardInterrupt::SignalHandler(int signal)
             __fallthrough;
         case SIGTERM:
             Get().m_interruptRecived = true;
+            Get().GetLogger()->info("Interrupt received! ({})", signal);
             break;
     }
 }
