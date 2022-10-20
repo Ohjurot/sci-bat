@@ -9,7 +9,10 @@ RETI::Modbus::Slave& RETI::Modbus::Master::SetupSlave(const std::string& name, N
         throw std::runtime_error("Slave name violation");
     }
 
-    m_slaves.emplace(name, std::move(Slave(endpoint)));
+    auto slave = Slave(endpoint);
+    slave.SetLogger(GetLogger());
+    m_slaves.emplace(name, std::move(slave));
+
     return m_slaves.at(name);
 }
 

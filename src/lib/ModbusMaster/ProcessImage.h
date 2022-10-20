@@ -13,7 +13,7 @@ namespace RETI::Modbus
     class ProcessImage;
 
     // Handle for editing boolean values inside the pa
-    class PIBoolHandle : public Util::SPDLogable
+    class PIBoolHandle
     {
         public:
             PIBoolHandle() = delete;
@@ -36,7 +36,7 @@ namespace RETI::Modbus
             bool m_isInput = false;
     };
 
-    class ProcessImage : public Util::SPDLogable
+    class ProcessImage
     {
         public:
             ProcessImage() = default;
@@ -75,16 +75,12 @@ namespace RETI::Modbus
             inline PIBoolHandle InputBitAt(size_t offset, int8_t bit)
             {
                 CheckRangeBit(m_piInputSize, sizeof(uint8_t), offset, bit);
-                auto handle = PIBoolHandle(*this, offset, bit, true);
-                handle.SetLogger(GetLogger());
-                return handle;
+                return PIBoolHandle(*this, offset, bit, true);
             }
             inline PIBoolHandle OutputBitAt(size_t offset, int8_t bit)
             {
                 CheckRangeBit(m_piInputSize, sizeof(uint8_t), offset, bit);
-                auto handle = PIBoolHandle(*this, offset, bit, false);
-                handle.SetLogger(GetLogger());
-                return handle;
+                return PIBoolHandle(*this, offset, bit, false);
             }
 
             // Access full bytes (Input)

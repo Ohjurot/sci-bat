@@ -16,9 +16,7 @@ RETI::Modbus::PIBoolHandle& RETI::Modbus::PIBoolHandle::operator=(bool value)
 {
     if (m_isInput)
     {
-        auto errorMessage = "Can't write to process image inputs!";
-        GetLogger()->error(errorMessage);
-        throw std::logic_error(errorMessage);
+        throw std::logic_error("Can't write to process image inputs!");
     }
     auto& byte = m_owner.OutputByteAt(m_byteAddress);
     byte ^= (-(uint8_t)value ^ byte) & (1UL << m_bitAddress);
@@ -142,8 +140,7 @@ void RETI::Modbus::ProcessImage::CheckRange(size_t allocSize, size_t size, size_
 {
     if (index >= allocSize || index + size >= allocSize)
     {
-        GetLogger()->error("Can't access {} Bytes at location {}! Only {} Bytes allocated!", size, index, allocSize);
-        throw std::range_error("Illegal process image range access!");
+        throw std::range_error("Illegal process image byte range access!");
     }
 }
 
@@ -152,8 +149,7 @@ void RETI::Modbus::ProcessImage::CheckRangeBit(size_t allocSize, size_t size, si
     CheckRange(allocSize, size, index);
     if (bit < 0 || bit > 7)
     {
-        GetLogger()->error("Invalid bit index {} (Must be in between 0 and 7)", bit);
-        throw std::range_error("Illegal process image range access!");
+        throw std::range_error("Illegal process image bit range access!");
     }
 }
 
