@@ -5,8 +5,7 @@ RETI::Modbus::Slave& RETI::Modbus::Master::SetupSlave(const std::string& name, N
     auto itFind = m_slaves.find(name);
     if (itFind != m_slaves.end())
     {
-        GetLogger()->error(R"(Can't insert slave "{}" because it already exists!)", name);
-        throw std::runtime_error("Slave name violation");
+        throw std::runtime_error("Modbus slave already exists!");
     }
 
     auto slave = Slave(endpoint);
@@ -21,8 +20,7 @@ RETI::Modbus::Slave& RETI::Modbus::Master::SetupSlave(const std::string& name)
     auto itFind = m_slaves.find(name);
     if (itFind == m_slaves.end())
     {
-        GetLogger()->error(R"(Can't retrieve slave "{}" because it does not exist!)", name);
-        throw std::runtime_error("Slave name violation");
+        throw std::runtime_error("Modbus slave doesn't exist!");
     }
     return m_slaves.at(name);
 }
@@ -30,6 +28,7 @@ RETI::Modbus::Slave& RETI::Modbus::Master::SetupSlave(const std::string& name)
 bool RETI::Modbus::Master::IOUpdate()
 {
     size_t errorCount = 0;
+    GetLogger()->debug("Slave update started.");
     for (auto& slave : m_slaves)
     {
         GetLogger()->debug(R"(Updating slave "{}"...)", slave.first);
@@ -58,6 +57,7 @@ bool RETI::Modbus::Master::IOUpdate()
     {
         GetLogger()->warn("Slave updates incomplete! Updated {}/{} slaves sucessfully.", m_slaves.size() - errorCount, m_slaves.size());
     }
+    GetLogger()->debug("Slave update finished.");
 
     return errorCount == 0;
 }
