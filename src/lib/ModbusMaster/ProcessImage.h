@@ -1,5 +1,7 @@
 #pragma once
 
+#include <RETIUtil/SPDLogable.h>
+
 #include <fmt/format.h>
 
 #include <cstdlib>
@@ -11,7 +13,7 @@ namespace RETI::Modbus
     class ProcessImage;
 
     // Handle for editing boolean values inside the pa
-    class PIBoolHandle
+    class PIBoolHandle : public Util::SPDLogable
     {
         public:
             PIBoolHandle() = delete;
@@ -19,10 +21,10 @@ namespace RETI::Modbus
                 m_owner(owner), m_byteAddress(byteAddress), m_bitAddress(bitAddress), m_isInput(isInput)
             {}
             PIBoolHandle(const PIBoolHandle&) = delete;
-            PIBoolHandle(PIBoolHandle&&) noexcept = delete;
+            PIBoolHandle(PIBoolHandle&&) noexcept = default;
 
             PIBoolHandle& operator=(const PIBoolHandle&) = delete;
-            PIBoolHandle& operator=(PIBoolHandle&&) noexcept = delete;
+            PIBoolHandle& operator=(PIBoolHandle&&) noexcept = default;
 
             operator bool() const;
             PIBoolHandle& operator=(bool value);
@@ -34,7 +36,7 @@ namespace RETI::Modbus
             bool m_isInput = false;
     };
 
-    class ProcessImage
+    class ProcessImage : public Util::SPDLogable
     {
         public:
             ProcessImage() = default;
@@ -47,6 +49,7 @@ namespace RETI::Modbus
             ProcessImage& operator=(ProcessImage&& other) noexcept;
 
             bool EnsurePISize(size_t inputSize, size_t outputSize);
+            void AllOutputsLow();
 
             // Sizes
             inline size_t GetInputSize() const noexcept
@@ -58,16 +61,30 @@ namespace RETI::Modbus
                 return m_piOutputSize;
             }
 
+            // Raw pointers
+            inline uint8_t* GetInputBuffer() noexcept
+            {
+                return m_piInput;
+            }
+            inline uint8_t* GetOutputBuffer() noexcept
+            {
+                return m_piOutput;
+            }
+
             // Access boolean (with handle)
             inline PIBoolHandle InputBitAt(size_t offset, int8_t bit)
             {
                 CheckRangeBit(m_piInputSize, sizeof(uint8_t), offset, bit);
-                return PIBoolHandle(*this, offset, bit, true);
+                auto handle = PIBoolHandle(*this, offset, bit, true);
+                handle.SetLogger(GetLogger());
+                return handle;
             }
             inline PIBoolHandle OutputBitAt(size_t offset, int8_t bit)
             {
                 CheckRangeBit(m_piInputSize, sizeof(uint8_t), offset, bit);
-                return PIBoolHandle(*this, offset, bit, false);
+                auto handle = PIBoolHandle(*this, offset, bit, false);
+                handle.SetLogger(GetLogger());
+                return handle;
             }
 
             // Access full bytes (Input)
@@ -116,8 +133,8 @@ namespace RETI::Modbus
 
         private:
             static bool ResizePIMemory(uint8_t** ppMemory, size_t* oldSize, size_t newSize);
-            static void CheckRange(size_t allocSize, size_t size, size_t index);
-            static void CheckRangeBit(size_t allocSize, size_t size, size_t index, int8_t bit);
+            void CheckRange(size_t allocSize, size_t size, size_t index) const;
+            void CheckRangeBit(size_t allocSize, size_t size, size_t index, int8_t bit) const;
 
         private:
             uint8_t* m_piInput = nullptr;

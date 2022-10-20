@@ -6,7 +6,7 @@
  * - The application will alternate Q0.2 and Q0.3 in one second intervals
  */
 
-#include <ModbusMaster/MSConnection.h>
+#include <ModbusMaster/Master.h>
 #include <RETIUtil/KeyboardInterrupt.h>
 
 #include <iostream>
@@ -28,43 +28,40 @@ int main(int argc, char** argv)
     kbInterrupt.Register();
 
     // Connection
-    auto connection = RETI::Modbus::MSConnection(endpoint);
+    auto modbus = RETI::Modbus::Master(32, 32);
+    modbus.SetupSlave("logo", endpoint)
+        .Map(RETI::Modbus::Slave::RemoteMappingType::DigitalInput, 0, 8, 0)
+        .Map(RETI::Modbus::Slave::RemoteMappingType::DigitalOutput, 0, 4, 0);
 
     // Simple modbus loop
     int duration = 0;
     bool xset = false;
     while (!kbInterrupt.InterupRecived())
     {
-        if (!connection.Execute([&duration, &xset](RETI::Modbus::MSConnection& c)
-            {
-                bool inputs[8];
-                c.ReadDigitalIn(0, 8, inputs);
-                if (inputs[0]) xset = true;
-                if (inputs[1]) xset = false;
+        // Update modbus
+        modbus.IOUpdate();
 
-                bool outputs[4] = { xset, !xset, duration < 10, duration >= 10 };
-                c.WriteDigitalOut(0, 4, outputs);
-            }
-        ))
-        {
-            std::cout << "Connection lost!" << std::endl;
-        }
-        
+        // IO
+        auto& pi = modbus.GetProcessImage();
+        if (pi.InputBitAt(0, 0)) xset = true;
+        if (pi.InputBitAt(0, 1)) xset = false;
+        pi.OutputBitAt(0, 0) = xset;
+        pi.OutputBitAt(0, 1) = !xset;
+        pi.OutputBitAt(0, 2) = duration < 10;
+        pi.OutputBitAt(0, 3) = duration >= 10;
+
+        // Time
         if (++duration == 20)
         {
             duration = 0;
         }
+
         Sleep(100);
     }
 
     // Turn all off
-    connection.Execute([](RETI::Modbus::MSConnection& c) 
-        {
-            bool outputs[4];
-            memset(outputs, 0, 4);
-            c.WriteDigitalOut(0, 4, outputs);
-        }
-    );
+    modbus.GetProcessImage().AllOutputsLow();
+    modbus.IOUpdate();
 
     return 0;
 }
