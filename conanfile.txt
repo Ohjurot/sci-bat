@@ -1,0 +1,49 @@
+[requires]
+    # Core libs for modbus <--> mqtt
+    libmodbus/3.1.8
+    mosquitto/2.0.15
+
+    # Util libs for web-server, configuration, ...
+    argparse/2.9
+    pugixml/1.12.1
+    fmt/9.1.0
+    scnlib/1.1.2
+
+    # Unit test libs
+    gtest/cci.20210126
+
+[options]
+    # Modbus
+    libmodbus:shared=False
+    
+    # MQTT
+    mosquitto:build_cpp=True
+    mosquitto:clients=True
+    mosquitto:shared=False
+    mosquitto:ssl=True
+    mosquitto:threading=True
+    
+    # OpenSSL
+    openssl:shared=False
+
+    # CJson
+    cjson:shared=False
+
+    # Pugixml
+    pugixml:header_only=False
+    pugixml:shared=False
+
+    # FMT 
+    fmt:header_only=False
+    fmt:shared=False
+
+    # SCN
+    scnlib:header_only=False
+    scnlib:shared=False
+
+    # Google test
+    gtest:no_main=True
+    gtest:shared=False
+
+[generators]
+    premake
