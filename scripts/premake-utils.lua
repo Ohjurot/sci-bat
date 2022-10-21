@@ -37,6 +37,9 @@ function reti_new_project(projectName, path)
         "%{prj.location}/**.md", "%{prj.location}/**.txt",
     }
 
+    -- Always on defines
+    defines { "CPPHTTPLIB_OPENSSL_SUPPORT" }
+
     -- Windows / Unix
     filter { "system:Windows" }
         defines {  string.upper(projectName) .. "_WINDOWNS", "NOMINMAX" }

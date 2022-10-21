@@ -1,9 +1,13 @@
 [requires]
-    # Core libs for modbus <--> mqtt
+    # Core communication libs
     libmodbus/3.1.8
     mosquitto/2.0.15
 
-    # Util libs for web-server, configuration, ...
+    # Web server
+    cpp-httplib/0.11.2
+    inja/3.3.0
+
+    # Util libs 
     argparse/2.9
     pugixml/1.12.1
     fmt/9.1.0
@@ -29,6 +33,10 @@
 
     # CJson
     cjson:shared=False
+
+    # SPD Log
+    spdlog:header_only=False
+    spdlog:shared=False
 
     # Pugixml
     pugixml:header_only=False
