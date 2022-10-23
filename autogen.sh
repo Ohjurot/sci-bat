@@ -1,2 +1,2 @@
 # RETI devtool autoload script
-py "./scripts/autogen.py" $@
+python3 "./scripts/autogen.py" $@

@@ -12,5 +12,8 @@
 **.vcxproj.user
 **.vcxproj.filters
 
+# Makefile
+**/Makefile
+
 # Build output
 /build

@@ -1,8 +1,29 @@
+-- OS Helper
+function reti_is_windows()
+    ds = package.config:sub(1,1)
+    return ds == "\\"
+end
+
 -- Add modules from a folder
 function reti_module_folder(folder, group)
+    if reti_is_windows() then
+        reti_module_folder_win(folder, group)
+    else
+        reti_module_folder_linux(folder, group)
+    end
+end
+function reti_module_folder_win(folder, group)
     for dir in io.popen("dir \"" .. folder .. "\" /b /ad"):lines() 
     do 
         reti_parse_module(group, folder .. "/" .. dir .. "/" .. "build.lua") 
+    end
+end
+function reti_module_folder_linux(folder, group)
+    for dir in io.popen("find \"./" .. folder .. "\" -maxdepth 1 -type d" ):lines() 
+    do 
+        if dir ~= "./" .. folder then
+            reti_parse_module(group, dir .. "/" .. "build.lua") 
+        end
     end
 end
 

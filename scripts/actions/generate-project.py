@@ -2,11 +2,21 @@
 
 import subprocess
 import sys
+import platform
 
 if __name__ == "__main__":
+    # Os name
+    osname = platform.system()
+
     # Config vars
     conanBuildType = "Debug"
-    premakeAction = "vs2022"
+    premakeAction = None
+
+    # Check system
+    if osname ==  "Linux":
+        premakeAction = "gmake2"
+    else:
+        premakeAction = "vs2022"
 
     # Conan install dependencys
     print(f"Installing 3rd party dependency's...")
