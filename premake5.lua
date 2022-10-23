@@ -6,6 +6,7 @@ include "scripts/premake-utils.lua"
 
 -- Begin basic configuration
 workspace "RETI-Energiespeicher" 
+linkgroups "On"
 reti_conan_basic_setup()
 
 -- Add source packages
