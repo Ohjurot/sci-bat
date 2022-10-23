@@ -2,6 +2,8 @@
 #include <inja/inja.hpp>
 
 #include <iostream>
+#include <chrono>
+#include <sstream>
 
 int main()
 {
@@ -18,9 +20,19 @@ int main()
 
     // Some static web page
     svr.Get("/", [](const httplib::Request& req, httplib::Response& res) {
+        // Get current time
+        std::stringstream ss;
+        auto time = std::chrono::system_clock().now();
+        auto ttime = std::chrono::system_clock::to_time_t(time);
+        ss << std::put_time(std::localtime(&ttime), "%d.%m.%Y %H:%M:%S");
+
+        // Render HTML
         inja::Environment env;
         inja::json data;
+        data["time"] = ss.str();
         auto html = env.render_file("./templates/index.jinja", data);
+        
+        // Set HTML
         res.set_content(html, "text/html");
     });
 
