@@ -25,11 +25,10 @@ void RETI::Util::KeyboardInterrupt::SignalHandler(int signal)
     switch (signal)
     {
         case SIGINT:
-            __fallthrough;
+        #ifdef SIGBREAK // Win32
         case SIGBREAK:
-            __fallthrough;
+        #endif
         case SIGABRT:
-            __fallthrough;
         case SIGTERM:
             Get().m_interruptRecived = true;
             Get().GetLogger()->info("Interrupt received! ({})", signal);

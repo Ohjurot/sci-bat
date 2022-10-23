@@ -11,10 +11,12 @@
 
 #include <iostream>
 #include <string>
-
+#include <thread>
 
 int main(int argc, char** argv)
 {
+    using namespace std::chrono_literals;
+
     // Prompt for IP and port
     RETI::NetTools::IPV4Endpoint endpoint;
     if (!scn::prompt("Please enter the LOGOs IP Address (Example 192.168.0.20:502): ", "{}", endpoint))
@@ -57,7 +59,7 @@ int main(int argc, char** argv)
             duration = 0;
         }
 
-        Sleep(100);
+        std::this_thread::sleep_for(100ms);
     }
 
     // Turn all off
