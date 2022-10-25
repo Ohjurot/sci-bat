@@ -28,6 +28,9 @@ namespace RETI::Util
 
         // Singleton
         public:
+            KeyboardInterrupt(const KeyboardInterrupt&) = delete;
+            KeyboardInterrupt& operator=(const KeyboardInterrupt&) = delete;
+
             static inline KeyboardInterrupt& Get()
             {
                 return s_instance;
