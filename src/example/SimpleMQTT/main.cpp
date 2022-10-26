@@ -24,23 +24,26 @@ public:
 
     void on_subscribe(int mid, int rqos, const int* gqos) override
     {
-        spdlog::info("Message {} subscribed with a final qos of {} (Requested {})!", mid, *gqos, rqos);
+        spdlog::info("Sucessfull subscribed to a topic!");
     }
 
 
     void on_unsubscribe(int mid) override
     {
-        spdlog::info("Unsubscribed to message {}!", mid);
+        spdlog::info("Unsubscribed to message!");
     }
 
     void on_error() override
     {
-        spdlog::error("An mosquitto error occured!");
+        spdlog::error("An mosquitto error occurred!");
     }
 
     void on_connect(int rc) override
     {
-        spdlog::info("Connected to MQTT broker with rc = {}", rc);
+        if (!rc)
+        {
+            spdlog::info("Connected to MQTT broker");
+        }
     }
 
     void on_message(const mosquitto_message* msg) override
@@ -77,24 +80,29 @@ int main()
     }
 
     // Get all attributes
-    auto qos_att = mqtt_node.attribute("qos");
-    auto retain_att = mqtt_node.attribute("retain");
+    auto host_att = mqtt_node.attribute("host");
+    auto port_att = mqtt_node.attribute("port");
     auto topic_prefix_att = mqtt_node.attribute("topic_prefix");
 
     // Extract settings
-    uint32_t setting_qos = qos_att.as_uint(0);
-    bool setting_retain = retain_att.as_bool(true);
+    std::string setting_host = host_att.as_string("");
+    uint32_t setting_port = port_att.as_uint(0);
     std::string setting_topic_prefix = topic_prefix_att.as_string("");
 
     // Validate settings
-    if (setting_qos > 2)
-    {
-        spdlog::error(R"(A qos value of {} is not valid! Valid qos values are 0, 1 and 2!)", setting_qos);
-        return -1;
-    }
     if (setting_topic_prefix.empty())
     {
         spdlog::error(R"(An empty topic prefix is not allowed. We need to separate this from all the junk coming into the "test.mosquitto.org" server.)");
+        return -1;
+    }
+    if (setting_host.empty())
+    {
+        spdlog::error(R"(An empty MQTT host is not allowed!)");
+        return -1;
+    }
+    if (setting_port == 0)
+    {
+        spdlog::error(R"(Please provide a MQTT broker port)");
         return -1;
     }
 
@@ -108,9 +116,10 @@ int main()
     // Test
     MyMQTTClient mq;
     int res;
-    if ((res = mq.connect("test.mosquitto.org", 1883)) != MOSQ_ERR_SUCCESS) // Unauthenticated and unencrypted
+    spdlog::info(R"(Connecting to "{}:{}")", setting_host, setting_port);
+    if ((res = mq.connect(setting_host.c_str(), setting_port)) != MOSQ_ERR_SUCCESS) // Unauthenticated and unencrypted
     {
-        spdlog::error(R"(Unable to connect to "test.mosquitto.org:1883")");
+        spdlog::error(R"(Unable to connect to MQTT broker!)");
         return -1;
     }
 
@@ -119,6 +128,7 @@ int main()
     ss << setting_topic_prefix << "/" << "example";
     auto stopic = ss.str();
     int sub_mid = 0;
+    spdlog::info(R"(Subscribing to "{}")", stopic);
     mq.subscribe(&sub_mid, stopic.c_str(), 0);
 
     // KB Interrupt
@@ -150,6 +160,7 @@ int main()
 
     // Unsub
     int usub_mid = 0;
+    spdlog::info("Unsubscribing and shutting down");
     mq.unsubscribe(&usub_mid, stopic.c_str());
     mq.disconnect();
 

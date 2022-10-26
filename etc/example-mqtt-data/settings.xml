@@ -2,11 +2,9 @@
     <!-- 
         host            : Name or address of the MQTT broker
         port            : Port of the MQTT broker (1883 by default)
-        qos             : Quality of Service (0 - 2)
-        retain          : Will retain the messages even if nobody is subscribing to them
         topic_prefix    : Prefix that will be appended to each topic used by this example 
                           Mainly used to distinguish our messages from other messages on the 
                           test server.
     -->
-    <MQTT host="test.mosquitto.org" port="1883"  qos="0" retain="false" topic_prefix="F7F02171-FEBF-4A84-9B81-A665261C0742" />
+    <MQTT host="test.mosquitto.org" port="1883" topic_prefix="F7F02171-FEBF-4A84-9B81-A665261C0742" />
 </Settings>
