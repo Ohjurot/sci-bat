@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <chrono>
 #include <thread>
 
