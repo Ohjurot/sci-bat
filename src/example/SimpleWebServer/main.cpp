@@ -33,7 +33,7 @@ int main()
         auto html = env.render_file("./templates/index.jinja", data);
         
         // Set HTML
-        res.set_content(html, "text/html");
+        res.set_content(html, "text/html; charset=utf-8");
     });
 
     // Here we go
