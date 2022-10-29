@@ -3,7 +3,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/logger.h>
 
-namespace RETI::Util
+namespace SCI::Util
 {
     // Is doing logging with spdlog
     class SPDLogable

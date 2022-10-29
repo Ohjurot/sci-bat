@@ -13,7 +13,7 @@
 #include <functional>
 #include <type_traits>
 
-namespace RETI::Modbus
+namespace SCI::Modbus
 {
     // Class that implements a point to point master ---> slave communication
     class MSConnection
@@ -42,7 +42,7 @@ namespace RETI::Modbus
             {
                 return m_ctx != nullptr;
             }
-            inline const RETI::NetTools::IPV4Endpoint& GetEndpoint() const noexcept
+            inline const SCI::NetTools::IPV4Endpoint& GetEndpoint() const noexcept
             {
                 return m_ctxEndpoint;
             }

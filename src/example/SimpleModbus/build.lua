@@ -2,4 +2,4 @@
 reti_new_project("SimpleModbus", "src/example/SimpleModbus")
 reti_executable()
 reti_cpp()
-links { "RETIUtil", "NetTools", "ModbusMaster" }
+links { "SCIUtil", "NetTools", "ModbusMaster" }

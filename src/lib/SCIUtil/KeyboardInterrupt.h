@@ -1,12 +1,12 @@
 #pragma once
 
-#include <RETIUtil/SPDLogable.h>
+#include <SCIUtil/SPDLogable.h>
 
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
 
-namespace RETI::Util
+namespace SCI::Util
 {
     class KeyboardInterrupt : public SPDLogable
     {

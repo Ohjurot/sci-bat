@@ -1,7 +1,7 @@
 #include "Slave.h"
 
 
-RETI::Modbus::Slave::Slave(Slave&& other) noexcept
+SCI::Modbus::Slave::Slave(Slave&& other) noexcept
 {
     m_connection = std::move(other.m_connection);
     m_mappings = std::move(other.m_mappings);
@@ -10,7 +10,7 @@ RETI::Modbus::Slave::Slave(Slave&& other) noexcept
     other.m_valid = false;
 }
 
-RETI::Modbus::Slave& RETI::Modbus::Slave::operator=(Slave&& other) noexcept
+SCI::Modbus::Slave& SCI::Modbus::Slave::operator=(Slave&& other) noexcept
 {
     if (this != &other)
     {
@@ -21,7 +21,7 @@ RETI::Modbus::Slave& RETI::Modbus::Slave::operator=(Slave&& other) noexcept
     return *this;
 }
 
-RETI::Modbus::Slave& RETI::Modbus::Slave::Map(const Mapping& mapping)
+SCI::Modbus::Slave& SCI::Modbus::Slave::Map(const Mapping& mapping)
 {
     ValidateMapping(mapping);
     m_mappings.push_back(mapping);
@@ -29,7 +29,7 @@ RETI::Modbus::Slave& RETI::Modbus::Slave::Map(const Mapping& mapping)
     return *this;
 }
 
-RETI::Modbus::Slave& RETI::Modbus::Slave::Map(Mapping&& mapping)
+SCI::Modbus::Slave& SCI::Modbus::Slave::Map(Mapping&& mapping)
 {
     ValidateMapping(mapping);
     m_mappings.push_back(std::move(mapping));
@@ -37,7 +37,7 @@ RETI::Modbus::Slave& RETI::Modbus::Slave::Map(Mapping&& mapping)
     return *this;
 }
 
-void RETI::Modbus::Slave::ValidateMapping(const Mapping& mapping) const
+void SCI::Modbus::Slave::ValidateMapping(const Mapping& mapping) const
 {
     // Check remote size
     if (mapping.Remote.startAddess + mapping.Remote.count < mapping.Remote.startAddess)
@@ -64,7 +64,7 @@ void RETI::Modbus::Slave::ValidateMapping(const Mapping& mapping) const
     }
 }
 
-RETI::Modbus::Slave::IOUpdateResult RETI::Modbus::Slave::ExecuteIOUpdate(ProcessImage& processImage, float deltaT)
+SCI::Modbus::Slave::IOUpdateResult SCI::Modbus::Slave::ExecuteIOUpdate(ProcessImage& processImage, float deltaT)
 {
     bool connectionRestored = false;
 
@@ -106,7 +106,7 @@ RETI::Modbus::Slave::IOUpdateResult RETI::Modbus::Slave::ExecuteIOUpdate(Process
 
         // Update all mappings
         size_t errorCount = 0;
-        m_connection.Execute([&](RETI::Modbus::MSConnection& c) {
+        m_connection.Execute([&](SCI::Modbus::MSConnection& c) {
             for (const auto& mapping : m_mappings)
             {
                 size_t bitCount = mapping.Remote.count * 8;

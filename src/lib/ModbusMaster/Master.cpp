@@ -1,6 +1,6 @@
 #include "Master.h"
 
-RETI::Modbus::Slave& RETI::Modbus::Master::SetupSlave(const std::string& name, NetTools::IPV4Endpoint& endpoint)
+SCI::Modbus::Slave& SCI::Modbus::Master::SetupSlave(const std::string& name, NetTools::IPV4Endpoint& endpoint)
 {
     auto itFind = m_slaves.find(name);
     if (itFind != m_slaves.end())
@@ -15,7 +15,7 @@ RETI::Modbus::Slave& RETI::Modbus::Master::SetupSlave(const std::string& name, N
     return m_slaves.at(name);
 }
 
-RETI::Modbus::Slave& RETI::Modbus::Master::SetupSlave(const std::string& name)
+SCI::Modbus::Slave& SCI::Modbus::Master::SetupSlave(const std::string& name)
 {
     auto itFind = m_slaves.find(name);
     if (itFind == m_slaves.end())
@@ -25,7 +25,7 @@ RETI::Modbus::Slave& RETI::Modbus::Master::SetupSlave(const std::string& name)
     return m_slaves.at(name);
 }
 
-bool RETI::Modbus::Master::IOUpdate(float deltaT)
+bool SCI::Modbus::Master::IOUpdate(float deltaT)
 {
     size_t errorCount = 0;
     GetLogger()->debug("Slave update started.");
@@ -73,7 +73,7 @@ bool RETI::Modbus::Master::IOUpdate(float deltaT)
     return errorCount == 0;
 }
 
-RETI::Modbus::IOHandle RETI::Modbus::Master::At(const std::string_view& name)
+SCI::Modbus::IOHandle SCI::Modbus::Master::At(const std::string_view& name)
 {
     // TODO: Search alias list
 
@@ -90,12 +90,12 @@ RETI::Modbus::IOHandle RETI::Modbus::Master::At(const std::string_view& name)
     return At(type, dtype, byteAddress, bitAddress);
 }
 
-RETI::Modbus::IOHandle RETI::Modbus::Master::At(IOType type, IOHandle::DataType dtype, size_t byteAddress, uint8_t bitAddress)
+SCI::Modbus::IOHandle SCI::Modbus::Master::At(IOType type, IOHandle::DataType dtype, size_t byteAddress, uint8_t bitAddress)
 {
     return IOHandle(m_processImage, dtype, type == IOType::Input, byteAddress, bitAddress);
 }
 
-bool RETI::Modbus::Master::ParseAddressString(const std::string_view& addressString, IOType& type, IOHandle::DataType& dtype, size_t& byteAddress, uint8_t& bitAddress)
+bool SCI::Modbus::Master::ParseAddressString(const std::string_view& addressString, IOType& type, IOHandle::DataType& dtype, size_t& byteAddress, uint8_t& bitAddress)
 {
     // Search by default naming IW 1
     std::string ftype;

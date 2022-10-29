@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-RETI::Util::KeyboardInterrupt RETI::Util::KeyboardInterrupt::s_instance;
+SCI::Util::KeyboardInterrupt SCI::Util::KeyboardInterrupt::s_instance;
 
-void RETI::Util::KeyboardInterrupt::Register()
+void SCI::Util::KeyboardInterrupt::Register()
 {
     if (!m_registered)
     {
@@ -20,7 +20,7 @@ void RETI::Util::KeyboardInterrupt::Register()
     }
 }
 
-void RETI::Util::KeyboardInterrupt::SignalHandler(int signal)
+void SCI::Util::KeyboardInterrupt::SignalHandler(int signal)
 {
     switch (signal)
     {

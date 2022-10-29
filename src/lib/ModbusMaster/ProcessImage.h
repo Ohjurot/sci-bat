@@ -1,6 +1,6 @@
 #pragma once
 
-#include <RETIUtil/SPDLogable.h>
+#include <SCIUtil/SPDLogable.h>
 
 #include <fmt/format.h>
 
@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <stdexcept>
 
-namespace RETI::Modbus
+namespace SCI::Modbus
 {
     class ProcessImage;
 

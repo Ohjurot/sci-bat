@@ -1,11 +1,11 @@
--- Project RETI root premake5 configuration
+-- Project SCI-Energiespeicher root premake5 configuration
 -- This will generate the projected to be compiled by the compiler
 
 include "conanbuildinfo.premake.lua"
 include "scripts/premake-utils.lua"
 
 -- Begin basic configuration
-workspace "RETI-Energiespeicher" 
+workspace "SCI-Energiespeicher" 
 linkgroups "On"
 reti_conan_basic_setup()
 

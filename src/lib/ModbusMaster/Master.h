@@ -5,7 +5,7 @@
 #include <ModbusMaster/ProcessImage.h>
 
 #include <NetTools/IPV4.h>
-#include <RETIUtil/SPDLogable.h>
+#include <SCIUtil/SPDLogable.h>
 
 #include <fmt/format.h>
 #include <scn/scn.h>
@@ -14,7 +14,7 @@
 #include <string>
 #include <string_view>
 
-namespace RETI::Modbus
+namespace SCI::Modbus
 {
     class Master : public Util::SPDLogable
     {
@@ -36,12 +36,12 @@ namespace RETI::Modbus
             Master& operator=(const Master&) = delete;
             Master& operator=(Master&& other) noexcept = default;
 
-            RETI::Modbus::Slave& SetupSlave(const std::string& name, NetTools::IPV4Endpoint& endpoint);
-            RETI::Modbus::Slave& SetupSlave(const std::string& name);
+            SCI::Modbus::Slave& SetupSlave(const std::string& name, NetTools::IPV4Endpoint& endpoint);
+            SCI::Modbus::Slave& SetupSlave(const std::string& name);
 
-            RETI::Modbus::IOHandle At(const std::string_view& name);
-            RETI::Modbus::IOHandle At(IOType type, IOHandle::DataType dtype, size_t byteAddress, uint8_t bitAddress);
-            inline RETI::Modbus::IOHandle operator[](const std::string_view& name)
+            SCI::Modbus::IOHandle At(const std::string_view& name);
+            SCI::Modbus::IOHandle At(IOType type, IOHandle::DataType dtype, size_t byteAddress, uint8_t bitAddress);
+            inline SCI::Modbus::IOHandle operator[](const std::string_view& name)
             {
                 return At(name);
             }

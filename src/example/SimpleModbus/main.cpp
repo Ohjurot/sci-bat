@@ -7,7 +7,7 @@
  */
 
 #include <ModbusMaster/Master.h>
-#include <RETIUtil/KeyboardInterrupt.h>
+#include <SCIUtil/KeyboardInterrupt.h>
 
 #include <iostream>
 #include <string>
@@ -18,7 +18,7 @@ int main(int argc, char** argv)
     using namespace std::chrono_literals;
 
     // Prompt for IP and port
-    RETI::NetTools::IPV4Endpoint endpoint;
+    SCI::NetTools::IPV4Endpoint endpoint;
     if (!scn::prompt("Please enter the LOGOs IP Address (Example 192.168.0.20:502): ", "{}", endpoint))
     {
         fmt::print("Invalid IP/Port format!");
@@ -26,14 +26,14 @@ int main(int argc, char** argv)
     }
 
     // Register interrupts
-    auto& kbInterrupt = RETI::Util::KeyboardInterrupt::Get();
+    auto& kbInterrupt = SCI::Util::KeyboardInterrupt::Get();
     kbInterrupt.Register();
 
     // Connection
-    auto modbus = RETI::Modbus::Master(32, 32);
+    auto modbus = SCI::Modbus::Master(32, 32);
     modbus.SetupSlave("logo", endpoint)
-        .Map(RETI::Modbus::Slave::RemoteMappingType::DigitalInput, 0, 8, 0)
-        .Map(RETI::Modbus::Slave::RemoteMappingType::DigitalOutput, 0, 4, 0);
+        .Map(SCI::Modbus::Slave::RemoteMappingType::DigitalInput, 0, 8, 0)
+        .Map(SCI::Modbus::Slave::RemoteMappingType::DigitalOutput, 0, 4, 0);
 
     modbus.At("I 5.2");
 

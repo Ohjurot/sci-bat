@@ -1,6 +1,6 @@
 #include "ProcessImage.h"
 
-RETI::Modbus::PIBoolHandle::operator bool() const
+SCI::Modbus::PIBoolHandle::operator bool() const
 {
     if (m_isInput)
     {
@@ -12,7 +12,7 @@ RETI::Modbus::PIBoolHandle::operator bool() const
     }
 }
 
-RETI::Modbus::PIBoolHandle& RETI::Modbus::PIBoolHandle::operator=(bool value)
+SCI::Modbus::PIBoolHandle& SCI::Modbus::PIBoolHandle::operator=(bool value)
 {
     if (m_isInput)
     {
@@ -23,7 +23,7 @@ RETI::Modbus::PIBoolHandle& RETI::Modbus::PIBoolHandle::operator=(bool value)
     return *this;
 }
 
-RETI::Modbus::ProcessImage::ProcessImage(size_t inputSize, size_t outputSize)
+SCI::Modbus::ProcessImage::ProcessImage(size_t inputSize, size_t outputSize)
 {
     ResizePIMemory(&m_piInput, &m_piInputSize, inputSize);
     ResizePIMemory(&m_piOutput, &m_piOutputSize, outputSize);
@@ -33,7 +33,7 @@ RETI::Modbus::ProcessImage::ProcessImage(size_t inputSize, size_t outputSize)
     }
 }
 
-RETI::Modbus::ProcessImage::ProcessImage(ProcessImage&& other) noexcept
+SCI::Modbus::ProcessImage::ProcessImage(ProcessImage&& other) noexcept
 {
     // Copy
     m_piInput = other.m_piInput;
@@ -46,7 +46,7 @@ RETI::Modbus::ProcessImage::ProcessImage(ProcessImage&& other) noexcept
     other.m_piOutput = nullptr;
 }
 
-RETI::Modbus::ProcessImage::ProcessImage(const ProcessImage& other)
+SCI::Modbus::ProcessImage::ProcessImage(const ProcessImage& other)
 {
     // Allocate 
     ResizePIMemory(&m_piInput, &m_piInputSize, other.m_piInputSize);
@@ -61,7 +61,7 @@ RETI::Modbus::ProcessImage::ProcessImage(const ProcessImage& other)
     memcpy(m_piOutput, other.m_piOutput, m_piOutputSize);
 }
 
-RETI::Modbus::ProcessImage& RETI::Modbus::ProcessImage::operator=(const ProcessImage& other)
+SCI::Modbus::ProcessImage& SCI::Modbus::ProcessImage::operator=(const ProcessImage& other)
 {
     if (this != &other)
     {
@@ -71,7 +71,7 @@ RETI::Modbus::ProcessImage& RETI::Modbus::ProcessImage::operator=(const ProcessI
     return *this;
 }
 
-RETI::Modbus::ProcessImage& RETI::Modbus::ProcessImage::operator=(ProcessImage&& other) noexcept
+SCI::Modbus::ProcessImage& SCI::Modbus::ProcessImage::operator=(ProcessImage&& other) noexcept
 {
     if (this != &other)
     {
@@ -81,7 +81,7 @@ RETI::Modbus::ProcessImage& RETI::Modbus::ProcessImage::operator=(ProcessImage&&
     return *this;
 }
 
-bool RETI::Modbus::ProcessImage::ResizePIMemory(uint8_t** ppMemory, size_t* oldSize, size_t newSize)
+bool SCI::Modbus::ProcessImage::ResizePIMemory(uint8_t** ppMemory, size_t* oldSize, size_t newSize)
 {
     // Allocate new
     uint8_t* newMemory = nullptr;
@@ -107,13 +107,13 @@ bool RETI::Modbus::ProcessImage::ResizePIMemory(uint8_t** ppMemory, size_t* oldS
     return newMemory != nullptr;
 }
 
-RETI::Modbus::ProcessImage::~ProcessImage()
+SCI::Modbus::ProcessImage::~ProcessImage()
 {
     if (m_piInput) free(m_piInput);
     if (m_piOutput) free(m_piOutput);
 }
 
-bool RETI::Modbus::ProcessImage::EnsurePISize(size_t inputSize, size_t outputSize)
+bool SCI::Modbus::ProcessImage::EnsurePISize(size_t inputSize, size_t outputSize)
 {
     // Input
     if (inputSize > m_piInputSize)
@@ -136,7 +136,7 @@ bool RETI::Modbus::ProcessImage::EnsurePISize(size_t inputSize, size_t outputSiz
     return true;
 }
 
-void RETI::Modbus::ProcessImage::CheckRange(size_t allocSize, size_t size, size_t index) const
+void SCI::Modbus::ProcessImage::CheckRange(size_t allocSize, size_t size, size_t index) const
 {
     if (index >= allocSize || index + size >= allocSize)
     {
@@ -144,7 +144,7 @@ void RETI::Modbus::ProcessImage::CheckRange(size_t allocSize, size_t size, size_
     }
 }
 
-void RETI::Modbus::ProcessImage::CheckRangeBit(size_t allocSize, size_t size, size_t index, int8_t bit) const
+void SCI::Modbus::ProcessImage::CheckRangeBit(size_t allocSize, size_t size, size_t index, int8_t bit) const
 {
     CheckRange(allocSize, size, index);
     if (bit < 0 || bit > 7)
@@ -153,7 +153,7 @@ void RETI::Modbus::ProcessImage::CheckRangeBit(size_t allocSize, size_t size, si
     }
 }
 
-void RETI::Modbus::ProcessImage::AllOutputsLow()
+void SCI::Modbus::ProcessImage::AllOutputsLow()
 {
     if (m_piOutput)
     {

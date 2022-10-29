@@ -3,7 +3,7 @@
 #include <ModbusMaster/MSConnection.h>
 #include <ModbusMaster/ProcessImage.h>
 
-#include <RETIUtil/SPDLogable.h>
+#include <SCIUtil/SPDLogable.h>
 
 #include <fmt/format.h>
 
@@ -11,7 +11,7 @@
 #include <string>
 #include <sstream>
 
-namespace RETI::Modbus
+namespace SCI::Modbus
 {
     // Defines a single slave
     class Slave : public Util::SPDLogable
@@ -58,7 +58,7 @@ namespace RETI::Modbus
 
         public:
             Slave() = default;
-            Slave(const RETI::NetTools::IPV4Endpoint& endpoint) : 
+            Slave(const SCI::NetTools::IPV4Endpoint& endpoint) : 
                 m_valid(true), m_connection(endpoint)
             {};
             Slave(const Slave&) = delete;
@@ -75,7 +75,7 @@ namespace RETI::Modbus
             }
 
             // Writes outputs / reads inputs
-            RETI::Modbus::Slave::IOUpdateResult ExecuteIOUpdate(ProcessImage& processImage, float deltaT);
+            SCI::Modbus::Slave::IOUpdateResult ExecuteIOUpdate(ProcessImage& processImage, float deltaT);
             inline IOUpdateResult operator()(ProcessImage& processImage, float deltaT)
             {
                 return ExecuteIOUpdate(processImage, deltaT);

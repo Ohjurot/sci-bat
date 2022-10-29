@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-namespace RETI::Modbus
+namespace SCI::Modbus
 {
     class IOHandle
     {

@@ -1,12 +1,12 @@
 #include "MSConnection.h"
 
-RETI::Modbus::MSConnection::MSConnection(const NetTools::IPV4Endpoint& endpoint) :
+SCI::Modbus::MSConnection::MSConnection(const NetTools::IPV4Endpoint& endpoint) :
     m_ctxEndpoint(endpoint)
 {
     m_ctx = modbus_new_tcp(m_ctxEndpoint.address.ToString().c_str(), m_ctxEndpoint.port);
 }
 
-RETI::Modbus::MSConnection::MSConnection(MSConnection&& other) noexcept
+SCI::Modbus::MSConnection::MSConnection(MSConnection&& other) noexcept
 {
     // Copy
     m_ctx = other.m_ctx;
@@ -18,7 +18,7 @@ RETI::Modbus::MSConnection::MSConnection(MSConnection&& other) noexcept
     other.m_connected = false;
 }
 
-RETI::Modbus::MSConnection::~MSConnection()
+SCI::Modbus::MSConnection::~MSConnection()
 {
     Disconnect();
     if (m_ctx)
@@ -27,14 +27,14 @@ RETI::Modbus::MSConnection::~MSConnection()
     }
 }
 
-RETI::Modbus::MSConnection& RETI::Modbus::MSConnection::operator=(MSConnection&& other) noexcept
+SCI::Modbus::MSConnection& SCI::Modbus::MSConnection::operator=(MSConnection&& other) noexcept
 {
     this->~MSConnection();
     new(this)MSConnection(std::move(other));
     return *this;
 }
 
-bool RETI::Modbus::MSConnection::Connect()
+bool SCI::Modbus::MSConnection::Connect()
 {
     // Disconnect old
     if (IsConnected())
@@ -50,7 +50,7 @@ bool RETI::Modbus::MSConnection::Connect()
     return IsConnected();
 }
 
-void RETI::Modbus::MSConnection::Disconnect()
+void SCI::Modbus::MSConnection::Disconnect()
 {
     if (IsConnected())
     {
@@ -59,7 +59,7 @@ void RETI::Modbus::MSConnection::Disconnect()
     }
 }
 
-bool RETI::Modbus::MSConnection::Execute(const std::function<void(MSConnection&)>& f)
+bool SCI::Modbus::MSConnection::Execute(const std::function<void(MSConnection&)>& f)
 {
     bool isKeepAlive = IsConnected();
     if (isKeepAlive || Connect())

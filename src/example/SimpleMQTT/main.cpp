@@ -1,4 +1,4 @@
-#include <RETIUtil/KeyboardInterrupt.h>
+#include <SCIUtil/KeyboardInterrupt.h>
 
 #include <pugixml.hpp>
 #include <spdlog/spdlog.h>
@@ -24,7 +24,7 @@ public:
 
     void on_subscribe(int mid, int rqos, const int* gqos) override
     {
-        spdlog::info("Sucessfull subscribed to a topic!");
+        spdlog::info("Successfully subscribed to a topic!");
     }
 
 
@@ -132,7 +132,7 @@ int main()
     mq.subscribe(&sub_mid, stopic.c_str(), 0);
 
     // KB Interrupt
-    auto& kbInterupt = RETI::Util::KeyboardInterrupt::Get();
+    auto& kbInterupt = SCI::Util::KeyboardInterrupt::Get();
     kbInterupt.Register();
 
     // Big loop

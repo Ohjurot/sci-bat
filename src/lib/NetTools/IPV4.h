@@ -8,7 +8,7 @@
 #include <string>
 #include <string_view>
 
-namespace RETI::NetTools
+namespace SCI::NetTools
 {
     // Port Type
     using Port = uint16_t;
@@ -42,24 +42,24 @@ namespace RETI::NetTools
 }
 
 // Stream
-std::ostream& operator<<(std::ostream& out, const RETI::NetTools::IPV4Address& addr);
-std::ostream& operator<<(std::ostream& out, const RETI::NetTools::IPV4Endpoint& ep);
+std::ostream& operator<<(std::ostream& out, const SCI::NetTools::IPV4Address& addr);
+std::ostream& operator<<(std::ostream& out, const SCI::NetTools::IPV4Endpoint& ep);
 
 // Scanning
 template <>
-struct scn::scanner<RETI::NetTools::IPV4Address> : scn::empty_parser
+struct scn::scanner<SCI::NetTools::IPV4Address> : scn::empty_parser
 {
     template <typename Context>
-    error scan(RETI::NetTools::IPV4Address& addr, Context& ctx)
+    error scan(SCI::NetTools::IPV4Address& addr, Context& ctx)
     {
         return scn::scan_usertype(ctx, "{}.{}.{}.{}", addr.ip0, addr.ip1, addr.ip2, addr.ip3);
     }
 };
 template <>
-struct scn::scanner<RETI::NetTools::IPV4Endpoint> : scn::empty_parser
+struct scn::scanner<SCI::NetTools::IPV4Endpoint> : scn::empty_parser
 {
     template <typename Context>
-    error scan(RETI::NetTools::IPV4Endpoint& ep, Context& ctx)
+    error scan(SCI::NetTools::IPV4Endpoint& ep, Context& ctx)
     {
         return scn::scan_usertype(ctx, "{}.{}.{}.{}:{}", ep.address.ip0, ep.address.ip1, ep.address.ip2, ep.address.ip3, ep.port);
     }
