@@ -30,8 +30,8 @@
 #define SWEB_APP_ROOT "./"
 #define SWEB_CONF "./config-win.xml"
 #else
-#define SWEB_APP_ROOT "/usr/bin/sci-bat-webserver"
-#define SWEB_CONF "/etc/sci-bat-example/config.xml"
+#define SWEB_APP_ROOT "/usr/bin/sci-bat-example-webserver.d"
+#define SWEB_CONF "/etc/sci-bat-example-webserver/config.xml"
 #endif
 
 int main()

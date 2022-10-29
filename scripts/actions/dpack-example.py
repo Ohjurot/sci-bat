@@ -57,13 +57,14 @@ if __name__ == "__main__":
         shutil.copyfile("./build/x86_64-release/bin/SimpleModbus", f"{packageDir}/usr/bin/sci-bat-example-modbus")
 
         # Copy webserver data
-        os.mkdir(f"{packageDir}/usr/bin/sci-bat-example-webserver/")
-        shutil.copytree("./etc/example-webserver-data/www-data", f"{packageDir}/usr/bin/sci-bat-example-webserver/")
-        shutil.copytree("./etc/example-webserver-data/templates", f"{packageDir}/usr/bin/sci-bat-example-webserver/")
+        os.mkdir(f"{packageDir}/usr/bin/sci-bat-example-webserver.d/")
+        shutil.copytree("./etc/example-webserver-data/www-data", f"{packageDir}/usr/bin/sci-bat-example-webserver.d/www-data")
+        shutil.copytree("./etc/example-webserver-data/templates", f"{packageDir}/usr/bin/sci-bat-example-webserver.d/templates")
 
         # Create config dirs
         os.mkdir(f"{packageDir}/etc")
-        os.mkdir(f"{packageDir}/etc/sci-example")
+        os.mkdir(f"{packageDir}/etc/sci-bat-example-webserver")
+        os.mkdir(f"{packageDir}/etc/sci-bat-example-mqtt")
         shutil.copyfile("./etc/example-webserver-data/config-linux.xml", f"{packageDir}/etc/sci-bat-example-webserver/config.xml")
         shutil.copyfile("./etc/example-mqtt-data/settings.xml", f"{packageDir}/etc/sci-bat-example-mqtt/settings.xml")
 
