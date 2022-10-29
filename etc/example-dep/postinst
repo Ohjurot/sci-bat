@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # make files executable
-chmod +x /usr/bin/sci-example-webserver
-chmod +x /usr/bin/sci-example-modbus
-chmod +x /usr/bin/sci-example-mqtt
+chmod +x /usr/bin/sci-bat-example-webserver
+chmod +x /usr/bin/sci-bat-example-modbus
+chmod +x /usr/bin/sci-bat-example-mqtt
 
 # generate a temporary ssl certificate
-openssl req -x509 -newkey rsa:2048 -keyout /etc/sci-example/key.pem -out /etc/sci-example/cert.pem -sha256 -days 365 -nodes -subj /CN=localhost
+openssl req -x509 -newkey rsa:2048 -keyout /etc/sci-bat-example-webserver/key.pem -out /etc/sci-bat-example-webserver/cert.pem -sha256 -days 365 -nodes -subj /CN=localhost

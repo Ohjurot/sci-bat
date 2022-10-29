@@ -52,15 +52,20 @@ if __name__ == "__main__":
         # Copy all binary files
         os.mkdir(f"{packageDir}/usr")
         os.mkdir(f"{packageDir}/usr/bin")
-        shutil.copyfile("./build/x86_64-release/bin/SimpleWebServer", f"{packageDir}/usr/bin/sci-example-webserver")
-        shutil.copyfile("./build/x86_64-release/bin/SimpleMQTT", f"{packageDir}/usr/bin/sci-example-mqtt")
-        shutil.copyfile("./build/x86_64-release/bin/SimpleModbus", f"{packageDir}/usr/bin/sci-example-modbus")
+        shutil.copyfile("./build/x86_64-release/bin/SimpleWebServer", f"{packageDir}/usr/bin/sci-bat-example-webserver")
+        shutil.copyfile("./build/x86_64-release/bin/SimpleMQTT", f"{packageDir}/usr/bin/sci-bat-example-mqtt")
+        shutil.copyfile("./build/x86_64-release/bin/SimpleModbus", f"{packageDir}/usr/bin/sci-bat-example-modbus")
+
+        # Copy webserver data
+        os.mkdir(f"{packageDir}/usr/bin/sci-bat-example-webserver/")
+        shutil.copytree("./etc/example-webserver-data/www-data", f"{packageDir}/usr/bin/sci-bat-example-webserver/")
+        shutil.copytree("./etc/example-webserver-data/templates", f"{packageDir}/usr/bin/sci-bat-example-webserver/")
 
         # Create config dirs
         os.mkdir(f"{packageDir}/etc")
         os.mkdir(f"{packageDir}/etc/sci-example")
-        shutil.copyfile("./etc/example-webserver-data/config-linux.xml", f"{packageDir}/etc/sci-example/webserver-config.xml")
-        shutil.copyfile("./etc/example-mqtt-data/settings.xml", f"{packageDir}/etc/sci-example/mqtt-config.xml")
+        shutil.copyfile("./etc/example-webserver-data/config-linux.xml", f"{packageDir}/etc/sci-bat-example-webserver/config.xml")
+        shutil.copyfile("./etc/example-mqtt-data/settings.xml", f"{packageDir}/etc/sci-bat-example-mqtt/settings.xml")
 
         # Build package
         subprocess.run(["dpkg-deb", "--build", "--root-owner-group", packageDir])

@@ -75,7 +75,7 @@ int main()
     #ifdef SIMPLEMQTT_WINDOWS
     auto settings_load_result = settings.load_file("./settings.xml");
     #else
-    auto settings_load_result = settings.load_file("/etc/sci-example/mqtt-config.xml");
+    auto settings_load_result = settings.load_file("/etc/sci-bat-example-mqtt/settings.xml");
     #endif
     if (!settings_load_result)
     {

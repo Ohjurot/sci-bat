@@ -63,7 +63,7 @@ function reti_new_project(projectName, path)
 
     -- Windows / Unix
     filter { "system:Windows" }
-        defines {  string.upper(projectName) .. "_WINDOWNS", "NOMINMAX" }
+        defines {  string.upper(projectName) .. "_WINDOWS", "NOMINMAX" }
     filter {}
     filter { "system:Unix" }
         defines {  string.upper(projectName) .. "_UNIX" }
