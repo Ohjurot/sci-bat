@@ -1,3 +1,8 @@
+/*
+ *      Handle that allows checked modifications to the process image
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <ModbusMaster/ProcessImage.h>

@@ -1,3 +1,21 @@
+/*
+ *      Minimal web server example
+ *
+ *      IMPORTANT: This application depends on multiple files located in "{REPOSITORY}/etc/example-webserver-data/"
+ *                 Make sure the application is executed in that directory.
+ *
+ *      The application will start a HTTPS web server on port 443 (Requires to be executed with proper permission or
+ *      sudo on Linux!) 
+ *      The following features are provided:
+ *      - HTTP GET "/": Root (index) page of the web application will provide a responsive demo page. The demo page 
+ *        will dynamicaly display the time when the request was processed by the server.
+ *      - HTTP GET "/hi": Will display a plain text "Hello World!" on the screen
+ *      - HTTP GET "/res/*": Will dnyamically server the content of the "{REPOSITORY}/etc/example-webserver-data/www-data"
+ *        Directory.
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
+
 #include <httplib.h>
 #include <inja/inja.hpp>
 

@@ -1,3 +1,8 @@
+/*
+ *      Modbus TCP master to slave connection
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <NetTools/IPV4.h>

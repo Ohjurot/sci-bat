@@ -1,3 +1,8 @@
+/*
+ *      Modbus master that manages the process image and all slaves
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <ModbusMaster/Slave.h>

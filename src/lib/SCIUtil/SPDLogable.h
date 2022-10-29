@@ -1,3 +1,8 @@
+/*
+ *      Base class for all classes that should support logging with SPDLog
+ * 
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <spdlog/spdlog.h>

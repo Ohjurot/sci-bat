@@ -1,3 +1,8 @@
+/*
+ *      In memory process image (IO) of all modbus slaves
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <SCIUtil/SPDLogable.h>

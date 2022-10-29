@@ -1,3 +1,8 @@
+/*
+ *      Class that connects to and maps IO from a modbus slave
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <ModbusMaster/MSConnection.h>

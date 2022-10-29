@@ -1,9 +1,13 @@
 /*
- * Short and simple demo application that tests modbus
- * 
- * This application requires a SIEMENS log with modbus enabled
- * - The application will read I0.0 and I0.1 and output Q0.0 = I0.0 and Q0.1 = !I0.1 
- * - The application will alternate Q0.2 and Q0.3 in one second intervals
+ *      Short and simple demo application that tests modbus
+ *
+ *      This application requires a SIEMENS log with modbus enabled
+ *      - The application will set "xset" if I0.0 is true
+ *      - The application will unset "xset" if I0.1 is true
+ *      - The application will set Q0.0 to be equal to xset and Q0.1 to be equal to not xset
+ *      - The application will alternate Q0.2 and Q0.3 in one second intervals
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
  */
 
 #include <ModbusMaster/Master.h>

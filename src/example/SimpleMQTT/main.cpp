@@ -1,3 +1,18 @@
+/*
+ *      MQTT Subscribe and Publish Example 
+ *
+ *      IMPORTANT: This application requires a "settings.xml" file in its working directory. 
+ *                 An example configuration can be found here: "{REPOSITORY}/etc/example-mqtt-data/settings.xml"
+ * 
+ *      The application will connect to the MQTT broker specified in settings.xml it will periodically publish
+ *      MQTT data on the topic "example" with a prefix specified in settings.xml. The application subscribes 
+ *      to all topics matching the prefix defined in the settings.xml file. 
+ *      When the MQTT connection works properly it should echo out all the data that it has sent as string
+ *      ("Hello MQTT!")
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
+
 #include <SCIUtil/KeyboardInterrupt.h>
 
 #include <pugixml.hpp>
@@ -12,44 +27,43 @@
 
 class MyMQTTClient : public mosqpp::mosquittopp
 {
-public:
-    MyMQTTClient() : mosqpp::mosquittopp("RETI-TestClient") {}
+    public:
+        MyMQTTClient() : mosqpp::mosquittopp("RETI-TestClient") {}
 
-
-    void on_publish(int mid) override
-    {
-        spdlog::info("Message {} Published", mid);
-    }
-
-
-    void on_subscribe(int mid, int rqos, const int* gqos) override
-    {
-        spdlog::info("Successfully subscribed to a topic!");
-    }
-
-
-    void on_unsubscribe(int mid) override
-    {
-        spdlog::info("Unsubscribed to message!");
-    }
-
-    void on_error() override
-    {
-        spdlog::error("An mosquitto error occurred!");
-    }
-
-    void on_connect(int rc) override
-    {
-        if (!rc)
+        void on_publish(int mid) override
         {
-            spdlog::info("Connected to MQTT broker");
+            spdlog::info("Message {} Published", mid);
         }
-    }
 
-    void on_message(const mosquitto_message* msg) override
-    {
-        spdlog::info(R"(Retrive message on topic "{}" with the value "{}")", msg->topic, (const char*)msg->payload, msg->mid);
-    }
+
+        void on_subscribe(int mid, int rqos, const int* gqos) override
+        {
+            spdlog::info("Successfully subscribed to a topic!");
+        }
+
+
+        void on_unsubscribe(int mid) override
+        {
+            spdlog::info("Unsubscribed to message!");
+        }
+
+        void on_error() override
+        {
+            spdlog::error("An mosquitto error occurred!");
+        }
+
+        void on_connect(int rc) override
+        {
+            if (!rc)
+            {
+                spdlog::info("Connected to MQTT broker");
+            }
+        }
+
+        void on_message(const mosquitto_message* msg) override
+        {
+            spdlog::info(R"(Retrive message on topic "{}" with the value "{}")", msg->topic, (const char*)msg->payload, msg->mid);
+        }
 };
 
 int main()
@@ -125,7 +139,7 @@ int main()
 
     // Subscribe
     std::stringstream ss;
-    ss << setting_topic_prefix << "/" << "example";
+    ss << setting_topic_prefix << "/" << "#";
     auto stopic = ss.str();
     int sub_mid = 0;
     spdlog::info(R"(Subscribing to "{}")", stopic);

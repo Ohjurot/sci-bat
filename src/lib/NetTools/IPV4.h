@@ -1,3 +1,8 @@
+/*
+ *      Utility class for IPV4 Addresses and Endpoints (Address + Port)
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <fmt/format.h>

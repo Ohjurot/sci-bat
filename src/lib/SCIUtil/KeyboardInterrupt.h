@@ -1,3 +1,8 @@
+/*
+ *      Singleton for registering and receiving (keyboard) interrupts 
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <SCIUtil/SPDLogable.h>
