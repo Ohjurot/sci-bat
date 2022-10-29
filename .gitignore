@@ -15,5 +15,6 @@
 # Makefile
 **/Makefile
 
-# Build output
+# Build output & package
 /build
+/package

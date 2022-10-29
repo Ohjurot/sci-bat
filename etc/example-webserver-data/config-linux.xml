@@ -1,0 +1,1 @@
+<WebServer Host="localhost" Port="443" SSLCert="/etc/sci-example/cert.pem" SSLKey="/etc/sci-example/key.pem" />

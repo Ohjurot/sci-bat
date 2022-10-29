@@ -72,10 +72,14 @@ int main()
 
     // Load settings
     pugi::xml_document settings;
+    #ifdef SIMPLEMQTT_WINDOWS
     auto settings_load_result = settings.load_file("./settings.xml");
+    #else
+    auto settings_load_result = settings.load_file("/etc/sci-example/mqtt-config.xml");
+    #endif
     if (!settings_load_result)
     {
-        spdlog::error(R"(Failed to open "./settings.xml")");
+        spdlog::error(R"(Failed to open "settings.xml")");
         return -1;
     }
 

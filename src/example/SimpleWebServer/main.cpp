@@ -26,7 +26,7 @@
 int main()
 {
     // SSL Certificate generate by postbuild event
-    httplib::SSLServer svr("./cert.pem-sha256", "./key.pem");
+    httplib::SSLServer svr("./cert.pem", "./key.pem");
 
     // Hook www-data directory
     svr.set_mount_point("/res", "./www-data");

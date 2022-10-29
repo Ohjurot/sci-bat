@@ -12,6 +12,10 @@ if __name__ == "__main__":
     conanBuildType = "Debug"
     premakeAction = None
 
+    # Swtich to release
+    if len(sys.argv) >= 2 and sys.argv[1].lower() == "release":
+        conanBuildType = "Release" 
+
     # Check system
     if osname ==  "Linux":
         premakeAction = "gmake2"
