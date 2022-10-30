@@ -99,7 +99,7 @@ int main()
     });
 
     // Here we go
-    svr.listen(host.c_str(), port);
+    svr.listen(host, port);
 
     spdlog::info("Reached end");
 }
