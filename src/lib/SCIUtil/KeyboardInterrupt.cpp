@@ -32,6 +32,10 @@ void SCI::Util::KeyboardInterrupt::SignalHandler(int signal)
         case SIGTERM:
             Get().m_interruptRecived = true;
             Get().GetLogger()->info("Interrupt received! ({})", signal);
+            if(Get().m_callback)
+            {
+                Get().m_callback(signal, Get().m_callbackData);
+            } 
             break;
     }
 }

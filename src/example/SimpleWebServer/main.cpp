@@ -16,6 +16,8 @@
  *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
  */
 
+#include <SCIUtil/KeyboardInterrupt.h>
+
 #include <httplib.h>
 #include <inja/inja.hpp>
 #include <argparse/argparse.hpp>
@@ -34,6 +36,12 @@
 #define SWEB_APP_ROOT "/usr/bin/sci-bat-example-webserver.d"
 #define SWEB_CONF "/etc/sci-bat-example-webserver/config.xml"
 #endif
+
+void OnKeyboardInterrupt(int signal, httplib::SSLServer* server)
+{
+    spdlog::info("Stopping server...");
+    server->stop();
+}
 
 int main()
 {
@@ -67,7 +75,6 @@ int main()
 
     // Info out
     spdlog::info("Using SSL Certifcate: {} and {}", cert, key);
-    spdlog::info("Stating webserver {}:{}", host, port);
 
     // SSL Certificate generate by postbuild event
     httplib::SSLServer svr(cert.c_str(), key.c_str());
@@ -98,7 +105,14 @@ int main()
         res.set_content(html, "text/html; charset=utf-8");
     });
 
+    // Register interrupt routine
+    spdlog::info("Registering keyboard interrupts");
+    auto& kbInterrupt = SCI::Util::KeyboardInterrupt::Get();
+    kbInterrupt.SetCallback(OnKeyboardInterrupt, &svr);
+    kbInterrupt.Register();
+
     // Here we go
+    spdlog::info("Stating webserver {}:{}", host, port);
     svr.listen(host.c_str(), port);
 
     spdlog::info("Reached end");
