@@ -113,7 +113,7 @@ int main()
 
     // Here we go
     spdlog::info("Stating webserver {}:{}", host, port);
-    svr.listen(host.c_str(), port);
+    svr.listen(host, port);
 
     spdlog::info("Reached end");
 }

@@ -1,4 +1,4 @@
-# This action will generate the project and invoke a build
+# This action will generate a linux .deb package (After invoking a full Release build)
 
 import subprocess
 import platform
