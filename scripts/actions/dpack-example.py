@@ -43,11 +43,16 @@ if __name__ == "__main__":
         controlFile.write(f"Depends: openssl\n")
         controlFile.write(f"Maintainer: Ludwig Fuechsl\n")
         controlFile.write(f"Description: Test package for reti with a webserver as service\n")
+        controlFile.write(f"Installed-Size: 10240\n")
         controlFile.close()
 
         # Copy scripts
         shutil.copyfile("./etc/example-dep/postinst", f"{packageDir}/DEBIAN/postinst")
         os.chmod(f"{packageDir}/DEBIAN/postinst", 0o0775)
+        shutil.copyfile("./etc/example-dep/prerm", f"{packageDir}/DEBIAN/prerm")
+        os.chmod(f"{packageDir}/DEBIAN/prerm", 0o0775)
+        shutil.copyfile("./etc/example-dep/postrm", f"{packageDir}/DEBIAN/postrm")
+        os.chmod(f"{packageDir}/DEBIAN/postrm", 0o0775)
 
         # Copy all binary files
         os.mkdir(f"{packageDir}/usr")
@@ -67,6 +72,11 @@ if __name__ == "__main__":
         os.mkdir(f"{packageDir}/etc/sci-bat-example-mqtt")
         shutil.copyfile("./etc/example-webserver-data/config-linux.xml", f"{packageDir}/etc/sci-bat-example-webserver/config.xml")
         shutil.copyfile("./etc/example-mqtt-data/settings.xml", f"{packageDir}/etc/sci-bat-example-mqtt/settings.xml")
+
+        #  Service 
+        os.mkdir(f"{packageDir}/etc/systemd")
+        os.mkdir(f"{packageDir}/etc/systemd/system")
+        shutil.copyfile("./etc/example-dep/sci-bat-example-webserver.service", f"{packageDir}/etc/systemd/system/sci-bat-example-webserver.service")
 
         # Build package
         subprocess.run(["dpkg-deb", "--build", "--root-owner-group", packageDir])

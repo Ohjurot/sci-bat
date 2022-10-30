@@ -1,0 +1,14 @@
+[Unit]
+Description=sci-bat example webserver service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=www-data
+ExecStart=/usr/bin/sci-bat-example-webserver
+
+[Install]
+WantedBy=multi-user.target

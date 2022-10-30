@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# stop and remove service
+systemctl stop sci-bat-example-webserver.service
+systemctl disable sci-bat-example-webserver.service

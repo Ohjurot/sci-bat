@@ -20,6 +20,7 @@
 #include <inja/inja.hpp>
 #include <argparse/argparse.hpp>
 #include <pugixml.hpp>
+#include <spdlog/spdlog.h>
 
 #include <iostream>
 #include <chrono>
@@ -64,6 +65,10 @@ int main()
         }
     }
 
+    // Info out
+    spdlog::info("Using SSL Certifcate: {} and {}", cert, key);
+    spdlog::info("Stating webserver {}:{}", host, port);
+
     // SSL Certificate generate by postbuild event
     httplib::SSLServer svr(cert.c_str(), key.c_str());
 
@@ -95,4 +100,6 @@ int main()
 
     // Here we go
     svr.listen(host.c_str(), port);
+
+    spdlog::info("Reached end");
 }
