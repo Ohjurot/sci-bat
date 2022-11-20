@@ -1,3 +1,8 @@
+/*
+ *      Simple and fast spin lock (Atomic)
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <SCIUtil/Concurrent/ILock.h>

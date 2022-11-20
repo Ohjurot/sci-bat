@@ -1,3 +1,8 @@
+/*
+ *      Simple thread class
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <thread>
@@ -50,6 +55,12 @@ namespace SCI::BAT
 
         protected:
             virtual int ThreadMain() = 0;
+            virtual void OnStop() {};
+
+            inline bool StopRequested()
+            {
+                return m_stopToken ? m_stopToken->stop_requested() : true;
+            }
 
         private:
             void RootThreadMain(std::stop_token stop);
@@ -63,5 +74,6 @@ namespace SCI::BAT
             std::string m_exceptionText;
             int m_threadReturnCode = -1;
 
+            std::stop_token* m_stopToken = nullptr;
     };
 }

@@ -6,7 +6,9 @@
  */
 
 #include <Threading/Thread.h>
+#include <Threading/ThreadManager.h>
 
+#include <SCIUtil/KeyboardInterrupt.h>
 #include <SCIUtil/Concurrent/SpinLock.h>
 #include <SCIUtil/Concurrent/LockGuard.h>
 
@@ -31,7 +33,11 @@ class MyThread : public SCI::BAT::Thread
     protected:
         int ThreadMain() override
         {
-            print(m_text);
+            while (!StopRequested())
+            {
+                print(m_text);
+            }
+
             return 1;
         }
 
@@ -41,12 +47,25 @@ class MyThread : public SCI::BAT::Thread
 
 int main()
 {
-    MyThread tx("x"), ty("y");
-    ty.Start();
-    tx.Start();
+    auto& kbInterrupt = SCI::Util::KeyboardInterrupt::Get();
+    kbInterrupt.Register();
 
-    tx.Wait();
-    ty.Wait();
+    MyThread tx("Work X"), ty("Work Y");
+    
+    SCI::BAT::ThreadManager tmgr;
+    tmgr << tx << ty;
+    tmgr.Start();
+
+    while (tmgr())
+    {
+        if (kbInterrupt.InterupRecived())
+        {
+            tmgr.Stop();
+        }
+        std::this_thread::yield();
+    }
+
+    tmgr.Wait();
 
     if (tx.GetExecutionResult() == SCI::BAT::Thread::ExecutionResult::StoppedException) std::cout << tx.GetExceptionText() << std::endl;
     if (ty.GetExecutionResult() == SCI::BAT::Thread::ExecutionResult::StoppedException) std::cout << ty.GetExceptionText() << std::endl;

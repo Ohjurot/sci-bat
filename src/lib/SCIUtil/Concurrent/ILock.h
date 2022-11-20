@@ -1,3 +1,8 @@
+/*
+ *      Interface for concurrent locks
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <type_traits>

@@ -1,3 +1,8 @@
+/*
+ *      Will automatically acquire and release a lock
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <SCIUtil/Concurrent/ILock.h>

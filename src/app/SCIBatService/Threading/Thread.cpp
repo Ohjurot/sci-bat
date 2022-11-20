@@ -3,6 +3,7 @@
 SCI::BAT::Thread::~Thread()
 {
     Stop();
+    Wait();
     if (m_threadHandle.joinable())
     {
         m_threadHandle.join();
@@ -22,6 +23,7 @@ void SCI::BAT::Thread::Stop()
 {
     if (m_started && m_threadHandle.joinable())
     {
+        OnStop();
         m_threadHandle.request_stop();
     }
 }
@@ -45,6 +47,7 @@ void SCI::BAT::Thread::RootThreadMain(std::stop_token stop)
 {   
     try
     {
+        m_stopToken = &stop;
         m_threadReturnCode = ThreadMain();
         m_result = ExecutionResult::StoppedNormaly;
     }
