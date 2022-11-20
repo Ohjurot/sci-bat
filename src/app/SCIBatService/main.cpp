@@ -8,6 +8,7 @@
 #include <Threading/Thread.h>
 
 #include <SCIUtil/Concurrent/SpinLock.h>
+#include <SCIUtil/Concurrent/LockGuard.h>
 
 #include <iostream>
 #include <string>
@@ -16,9 +17,8 @@
 void print(const std::string_view& text)
 {
     static SCI::Util::SpinLock lock;
-    lock.Aquire();
+    SCI::Util::LockGuard janitor(lock);
     std::cout << text << std::endl;
-    lock.Release();
 }
 
 class MyThread : public SCI::BAT::Thread
