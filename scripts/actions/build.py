@@ -13,5 +13,5 @@ if __name__ == "__main__":
         subprocess.run(["python3", "./scripts/autogen.py", "generate-project", *sys.argv[1::]])
         subprocess.run(["make"])
     else:
-        subprocess.run(["autogen", "generate-project", *sys.argv[1::]])
+        subprocess.run(["autogen.cmd", "generate-project", *sys.argv[1::]])
         # TODO: MS build

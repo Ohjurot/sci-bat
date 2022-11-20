@@ -28,3 +28,9 @@ if __name__ == "__main__":
     # Invoke premake
     print(f"Generating project...")
     subprocess.run(["vendor/premake/premake5", f"{premakeAction}"])
+
+    # Generate certificates
+    if osname ==  "Linux":
+        subprocess.run(["python3", "./scripts/autogen.py", "generate-certs"])
+    else:
+        subprocess.run(["autogen.cmd", "generate-certs"])
