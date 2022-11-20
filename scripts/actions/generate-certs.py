@@ -10,7 +10,7 @@ def generateCerts(openssl):
     print(colorama.Fore.YELLOW + "Generating self signed ssl certificates for example webserver" + colorama.Fore.RESET)
     osslGenerateNow(openssl, "./etc/example-webserver-data/key.pem", "./etc/example-webserver-data/cert.pem")
     print(colorama.Fore.YELLOW + "Generating self signed ssl certificates for sci-bat-service" + colorama.Fore.RESET)
-    osslGenerateNow(openssl, "./etc/sci-bat-app-dir/key.pem", "./etc/sci-bat-app-dir/cert.pem")
+    osslGenerateNow(openssl, "./etc/sci-bat-app-dir/conf/key.pem", "./etc/sci-bat-app-dir/conf/cert.pem")
 
 if __name__ == "__main__":
     # Process conanbuildinfo
