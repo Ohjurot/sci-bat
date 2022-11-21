@@ -1,0 +1,8 @@
+<!-- 
+    Webserver configuration
+    Host: Your servers IP (Required for external access)
+    Port: 443 (Default port is the HTTPS port)
+    SSLCert: Name of the SSL certificate file (located next to this file)
+    SSLKey: Name of the SSL certificate key file (located next to this file)
+ -->
+<Webserver Host="localhost" Port="443" SSLCert="cert.pem" SSLKey="key.pem" />
