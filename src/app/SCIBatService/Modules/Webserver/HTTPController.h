@@ -1,3 +1,8 @@
+/*
+ *      Base class and helpers for an HTTPController (One route)
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <SCIUtil/Exception.h>

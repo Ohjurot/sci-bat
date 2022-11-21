@@ -1,3 +1,8 @@
+/*
+ *      Webserver worker thread and webserver core logic
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <Threading/Thread.h>

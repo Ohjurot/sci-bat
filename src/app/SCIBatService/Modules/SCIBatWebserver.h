@@ -1,9 +1,14 @@
+/*
+ *      Core header compositing the sci-bat webserver
+ *
+ *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <Modules/Webserver/WebserverThread.h>
 
 class MyController : public SCI::BAT::Webserver::HTTPController
-{
+{ 
     public:
         MyController() = delete;
 
