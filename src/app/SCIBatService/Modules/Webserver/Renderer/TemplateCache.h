@@ -5,13 +5,13 @@
  */
 #pragma once
 
-#include <SCIUtil/Concurrent/SpinLock.h>
 #include <SCIUtil/Exception.h>
-#include <SCIUtil/Concurrent/LockGuard.h>
+#include <SCIUtil/Concurrent/SREWLock.h>
 
 #include <inja/inja.hpp>
 
 #include <string>
+#include <chrono>
 #include <filesystem>
 #include <unordered_map>
 
@@ -23,6 +23,7 @@ namespace SCI::BAT::Webserver
             struct CacheEntry
             {
                 inja::Template* data = nullptr;
+                std::chrono::system_clock::time_point validUntil;
             };
 
         public:
@@ -35,12 +36,12 @@ namespace SCI::BAT::Webserver
             TemplateCache& operator=(const TemplateCache&) = delete;
             TemplateCache& operator=(TemplateCache&&) noexcept = default;
 
-            bool Has(const std::filesystem::path& rootFile) const;
-            const inja::Template& Get(const std::filesystem::path& rootFile) const;
-            void Put(const std::filesystem::path& rootFile, const inja::Template& data);
+            bool Has(const std::filesystem::path& rootFile);
+            const inja::Template& Get(const std::filesystem::path& rootFile);
+            void Put(const std::filesystem::path& rootFile, const inja::Template& data, size_t maxCacheAge);
 
         private:
-            Util::SpinLock m_lock;
+            Util::SREWLock m_lock;
             std::unordered_map<std::string, CacheEntry> m_cache;
     };
 }

@@ -7,12 +7,14 @@
 
 #include <Threading/Thread.h>
 #include <Modules/Webserver/HTTPController.h>
+#include <Modules/Webserver/Renderer/HTMLRenderer.h>
 
 #include <SCIUtil/SPDLogable.h>
 
 #include <httplib/httplib.h>
 
 #include <string>
+#include <sstream>
 #include <vector>
 #include <string_view>
 #include <filesystem>
@@ -23,7 +25,7 @@ namespace SCI::BAT::Webserver
     {
         public:
             WebserverThread() = delete;
-            WebserverThread(const std::filesystem::path& serverRootDir, const std::string_view& host, int port, const std::filesystem::path& certPath, const std::filesystem::path& keyPath, const std::shared_ptr<spdlog::logger>& logger = spdlog::default_logger());
+            WebserverThread(const std::filesystem::path& serverRootDir, const std::string_view& host, int port, const std::filesystem::path& certPath, const std::filesystem::path& keyPath, size_t maxCacheAge = 60 * 60 * 24, const std::shared_ptr<spdlog::logger>& logger = spdlog::default_logger());
             WebserverThread(const WebserverThread&) = delete;
             WebserverThread(WebserverThread&&) noexcept = delete;
 
@@ -33,6 +35,7 @@ namespace SCI::BAT::Webserver
             WebserverThread& operator=(WebserverThread&&) = delete;
 
             void RegisterRoutes();
+            inline std::string& ErrorFooter() { return m_finalErrorFooter; }
 
         protected:
             int ThreadMain() override;
@@ -63,6 +66,9 @@ namespace SCI::BAT::Webserver
             void OnRequestError(const httplib::Request& request, httplib::Response& response);
             void OnRequestException(const httplib::Request& request, httplib::Response& response, std::exception_ptr pex);
 
+            void RenderTemplatedError(int code, const std::string_view& description, const httplib::Request& request, httplib::Response& response);
+            void RenderFinalError(int code, const std::string_view& description, const httplib::Request& request, httplib::Response& response);
+
         private:
             httplib::SSLServer m_server;
             std::string m_serverHost;
@@ -70,5 +76,9 @@ namespace SCI::BAT::Webserver
             std::filesystem::path m_rootDirectory;
 
             std::vector<HTTPController*> m_controllers;
+
+            HTMLRenderer m_renderer;
+            const char* m_finalErrorMessage = R"(<!DOCTYPE html><html><body style="padding: 0; margin: 0; background: LightGray;"><div style="min-height: 4em; padding: 1em; background: rgb(220, 10, 10); "><h2>Error Occured (Code {{code}})</h2></div> <div style="padding: 1em;"><p>A fatal error occured! Please contacte the server admin if you think this is an issue!<br/>Message: {{description}}<br/><br/><b>{{footer}}</b></p></div></body></html>)";
+            std::string m_finalErrorFooter = "";
     };
 }

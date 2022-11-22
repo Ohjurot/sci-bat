@@ -101,8 +101,9 @@ namespace SCI::BAT
         SCI_ASSERT(!wscSSLCert.empty(), "No path to SSL Certificate provided!");
         SCI_ASSERT(!wscSSLCert.empty(), "No path to SSL Certificate Key provided!");
         spdlog::info(R"(SSL-Server configuration: "{}:{}" (Cert: "{}", Key: "{}"))", wscServerHost, wscServerPort, (confDirectory / wscSSLCert).generic_string(), (confDirectory / wscSSLKey).generic_string());
-        SCI::BAT::SCIBatWebserver webserver(appDirectory / "webserver", wscServerHost, wscServerPort, confDirectory / wscSSLCert, confDirectory / wscSSLKey, CreateLogger(args, "webserver"));
+        SCI::BAT::SCIBatWebserver webserver(appDirectory / "webserver", wscServerHost, wscServerPort, confDirectory / wscSSLCert, confDirectory / wscSSLKey, 60, CreateLogger(args, "webserver"));
         webserver.RegisterRoutes();
+        webserver.ErrorFooter() = "&copy; Copyright 2022 Smart Chaos Integrations";
 
         // Manage the threads
         spdlog::info("Loading ThreadManager");

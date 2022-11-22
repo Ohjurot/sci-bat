@@ -1,12 +1,14 @@
 #include "WebserverThread.h"
 
-SCI::BAT::Webserver::WebserverThread::WebserverThread(const std::filesystem::path& serverRootDir, const std::string_view& host, int port, const std::filesystem::path& certPath, const std::filesystem::path& keyPath, const std::shared_ptr<spdlog::logger>& logger) :
+SCI::BAT::Webserver::WebserverThread::WebserverThread(const std::filesystem::path& serverRootDir, const std::string_view& host, int port, const std::filesystem::path& certPath, const std::filesystem::path& keyPath, size_t maxCacheAge, const std::shared_ptr<spdlog::logger>& logger) :
     m_rootDirectory(serverRootDir),
     m_serverHost(host),
     m_serverPort(port),
-    m_server(certPath.generic_string().c_str(), keyPath.generic_string().c_str())
+    m_server(certPath.generic_string().c_str(), keyPath.generic_string().c_str()),
+    m_renderer(serverRootDir / "templates", maxCacheAge)
 {
     SetLogger(logger);
+    m_renderer.SetLogger(GetLogger());
 
     // Bind to port
     GetLogger()->info("Binding server to {}:{}", host, port);
@@ -57,8 +59,8 @@ void SCI::BAT::Webserver::WebserverThread::OnRequestError(const httplib::Request
     {
         GetLogger()->warn("Request from {} resulted in a {} error. [Request: {} {}]", request.remote_addr, response.status, request.method, request.path);
 
-        // TODO: Craft error page
-        throw std::logic_error("Not implemented!");
+        // Error page
+        RenderTemplatedError(response.status, "", request, response);
     }
     catch (std::exception& ex)
     {
@@ -74,8 +76,8 @@ void SCI::BAT::Webserver::WebserverThread::OnRequestError(const httplib::Request
     // Final error page
     if (!handledSuccessfully)
     {
-        GetLogger()->trace("Error handler faulty. Providing bare minimum response.");
-        response.set_content(fmt::format("<h1>Error {}</h1>", response.status), "text/html");
+        response.status = 500;
+        RenderFinalError(response.status, "Error occurred while reporting exception thrown during web request.", request, response);
     }
 
     GetLogger()->trace("HTTP error handler finished");
@@ -102,8 +104,8 @@ void SCI::BAT::Webserver::WebserverThread::OnRequestException(const httplib::Req
             GetLogger()->trace("Exception picked up");
             GetLogger()->error("Exception occured during handling of a HTTP request: {} [Request: {} {}]", rex.what(), request.method, request.path);
 
-            // TODO: Render exception
-            throw std::logic_error("Not implemented!");
+            // Render exception
+            RenderTemplatedError(response.status, rex.what(), request, response);
         }
         catch (std::exception& ex)
         {
@@ -122,7 +124,7 @@ void SCI::BAT::Webserver::WebserverThread::OnRequestException(const httplib::Req
     {
         GetLogger()->trace("Exception handler faulty. Providing bare minimum response.");
         response.status = 500;
-        response.set_content("<h1>Error 500</h1><br/>Error occurred while trying to report a previous error. Please considerer the server log files!", "text/html");
+        RenderFinalError(response.status, "Error occurred while reporting exception thrown during web request.", request, response);
     }
 
     GetLogger()->trace("HTTP exception handler finished");
@@ -161,4 +163,32 @@ void SCI::BAT::Webserver::WebserverThread::OnStop()
 void SCI::BAT::Webserver::WebserverThread::OnControllerAdd(HTTPController* controller)
 {
     m_controllers.push_back(controller);
+}
+
+void SCI::BAT::Webserver::WebserverThread::RenderTemplatedError(int code, const std::string_view& description, const httplib::Request& request, httplib::Response& response)
+{
+    inja::json data;
+    data["code"] = response.status;
+    data["description"] = description;
+    data["footer"] = m_finalErrorFooter;
+
+    response.set_content(m_renderer.RenderTemplate("error.jinja", data), "text/html;charset=utf-8");
+}
+
+void SCI::BAT::Webserver::WebserverThread::RenderFinalError(int code, const std::string_view& description, const httplib::Request& request, httplib::Response& response)
+{
+    GetLogger()->trace("Error handler faulty. Providing bare minimum response.");
+    inja::json data;
+    data["code"] = response.status;
+    #ifdef _DEBUG
+    std::stringstream ss;
+    ss << description << "<br/><br/>Requested: " << request.method << " " << request.path << "<br/>";
+    for (auto& p : request.params) ss << "Request-Parameter \"" << p.first << "\": \"" << p.second << "\"<br/>";
+    for (auto& h : request.headers) ss << "Request-Header \"" << h.first << "\": \"" << h.second << "\"<br/>";
+    data["description"] = ss.str();
+    #else
+    data["description"] = description;
+    #endif
+    data["footer"] = m_finalErrorFooter;
+    response.set_content(m_renderer.RenderHTML(m_finalErrorMessage, data), "text/html;charset=utf-8");
 }
