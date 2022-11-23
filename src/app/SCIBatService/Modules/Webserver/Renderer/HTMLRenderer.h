@@ -13,13 +13,11 @@
 
 namespace SCI::BAT::Webserver
 {
-    class HTMLRenderer : private inja::Environment, public Util::SPDLogable
+    class HTMLRenderer : public Util::SPDLogable
     {
         public:
             HTMLRenderer() = delete;
-            HTMLRenderer(const std::filesystem::path& rootDir, size_t maxCacheAge = 60 * 60 * 24) :
-                m_rootDirectory(rootDir), m_maxCacheAge(maxCacheAge)
-            {}
+            HTMLRenderer(const std::filesystem::path& rootDir, size_t maxCacheAge = 60 * 60 * 24);
             HTMLRenderer(const HTMLRenderer&) = delete; 
             HTMLRenderer(HTMLRenderer&&) noexcept = default; 
 
