@@ -34,6 +34,10 @@ void SCI::BAT::Webserver::WebserverThread::RegisterRoutes()
     {
         GetLogger()->error("No controller registered!");
     }
+    for (auto* controller : m_controllers)
+    {
+        controller->SetRenderer(m_renderer);
+    }
 
     // Handlers
     GetLogger()->info("Binding static configuration");
@@ -172,7 +176,7 @@ void SCI::BAT::Webserver::WebserverThread::RenderTemplatedError(int code, const 
     data["description"] = description;
     data["footer"] = m_finalErrorFooter;
 
-    response.set_content(m_renderer.RenderTemplate("error.jinja", data), "text/html;charset=utf-8");
+    response.set_content(m_renderer.RenderTemplate("httperror.jinja", data), "text/html;charset=utf-8");
 }
 
 void SCI::BAT::Webserver::WebserverThread::RenderFinalError(int code, const std::string_view& description, const httplib::Request& request, httplib::Response& response)

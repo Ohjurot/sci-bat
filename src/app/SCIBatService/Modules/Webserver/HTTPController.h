@@ -5,6 +5,8 @@
  */
 #pragma once
 
+#include <Modules/Webserver/Renderer/HTMLRenderer.h>
+
 #include <SCIUtil/Exception.h>
 
 #include <httplib/httplib.h>
@@ -13,7 +15,14 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <typeinfo>
 #include <functional>
+
+#ifdef SCIBATSERVICE_WINDOWS
+#define SCI_CASTFP(fp) (fp)
+#else
+#define SCI_CASTFP(fp) ((void*)(fp))
+#endif
 
 namespace SCI::BAT::Webserver
 {
@@ -36,6 +45,29 @@ namespace SCI::BAT::Webserver
             virtual void OnPatch(const httplib::Request& request, httplib::Response& response) {};
             virtual void OnDelete(const httplib::Request& request, httplib::Response& response) {};
             virtual void OnOptions(const httplib::Request& request, httplib::Response& response) {};
+
+            void RenderMIME(httplib::Response& response, const std::string& data, const std::string& mimeType);
+            void RenderMIME(httplib::Response& response, const char* data, size_t size, const std::string& mimeType);
+            void RenderView(const httplib::Request& request, httplib::Response& response, const std::filesystem::path& view, const inja::json& data = inja::json(), const std::string& mimeType = "text/html;charset=utf-8");
+
+            inline void RenderJSON(httplib::Response& response, const inja::json& data)
+            {
+                RenderMIME(response, data.dump(), "text/json");
+            }
+            inline void RenderHTML(httplib::Response& response, const std::string& html)
+            {
+                RenderMIME(response, html, "text/html;charset=utf-8");
+            }
+
+            inline void SetRenderer(HTMLRenderer& renderer)
+            {
+                m_renderer = &renderer;
+            }
+
+            inline std::filesystem::path Path() { return ""; }
+
+        private:
+            HTMLRenderer* m_renderer = nullptr;
 
         public:
             // void
@@ -81,6 +113,11 @@ namespace SCI::BAT::Webserver
                 // Functions
                 size_t registrations = 0;
                 if (HTTPControllerOverloadChecker<T>::Get()) { server.Get(route, std::bind(&HTTPController::OnGet, controller, std::placeholders::_1, std::placeholders::_2)); registrations++; }
+                if (HTTPControllerOverloadChecker<T>::Post()) { server.Post(route, httplib::Server::Handler(std::bind(&HTTPController::OnPost, controller, std::placeholders::_1, std::placeholders::_2))); registrations++; }
+                if (HTTPControllerOverloadChecker<T>::Put()) { server.Put(route, httplib::Server::Handler(std::bind(&HTTPController::OnPut, controller, std::placeholders::_1, std::placeholders::_2))); registrations++; }
+                if (HTTPControllerOverloadChecker<T>::Patch()) { server.Patch(route, httplib::Server::Handler(std::bind(&HTTPController::OnPatch, controller, std::placeholders::_1, std::placeholders::_2))); registrations++; }
+                if (HTTPControllerOverloadChecker<T>::Delete()) { server.Delete(route, httplib::Server::Handler(std::bind(&HTTPController::OnDelete, controller, std::placeholders::_1, std::placeholders::_2))); registrations++; }
+                if (HTTPControllerOverloadChecker<T>::Options()) { server.Options(route, std::bind(&HTTPController::OnOptions, controller, std::placeholders::_1, std::placeholders::_2)); registrations++; }
 
                 // Check
                 if (registrations == 0)
@@ -97,12 +134,13 @@ namespace SCI::BAT::Webserver
     template<typename T>
     struct HTTPControllerOverloadChecker
     {
-        typedef void(*FP)(const httplib::Request&, httplib::Response&);
-        static bool Get() { return (FP)&T::OnGet != (FP)&HTTPController::OnGet; }
-        static bool Post() { return (FP)&T::OnPost != (FP)&HTTPController::OnPost; }
-        static bool Put() { return (FP)&T::OnPut != (FP)&HTTPController::OnPut; }
-        static bool Patch() { return (FP)&T::OnPatch != (FP)&HTTPController::OnPatch; }
-        static bool Delete() { return (FP)&T::OnDelete != (FP)&HTTPController::OnDelete; }
-        static bool Options() { return (FP)&T::OnOptions != (FP)&HTTPController::OnOptions; }
+        typedef void(*FP)(void);
+
+        static bool Get()       { return SCI_CASTFP(&T::OnGet)      != SCI_CASTFP(&HTTPController::OnGet);      }
+        static bool Post()      { return SCI_CASTFP(&T::OnPost)     != SCI_CASTFP(&HTTPController::OnPost);     }
+        static bool Put()       { return SCI_CASTFP(&T::OnPut)      != SCI_CASTFP(&HTTPController::OnPut);      }
+        static bool Patch()     { return SCI_CASTFP(&T::OnPatch)    != SCI_CASTFP(&HTTPController::OnPatch);    }
+        static bool Delete()    { return SCI_CASTFP(&T::OnDelete)   != SCI_CASTFP(&HTTPController::OnDelete);   }
+        static bool Options()   { return SCI_CASTFP(&T::OnOptions)  != SCI_CASTFP(&HTTPController::OnOptions);  }
     };
 }

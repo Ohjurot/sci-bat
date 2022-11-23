@@ -7,4 +7,4 @@ links { "SCIUtil", "NetTools", "ModbusMaster" }
 webserver_root = "%{wks.location}/etc/sci-bat-app-dir"
 targetname("sci-bat-service")
 debugdir(webserver_root)
-debugargs { "-a", "./app", "-c", "./conf", "--trace" }
+debugargs { "-a", "./app", "-c", "./conf", "--trace", "-mc", "0" }
