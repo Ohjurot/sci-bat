@@ -17,6 +17,9 @@
 
 namespace SCI::BAT::Webserver
 {
+    template<typename T>
+    struct HTTPControllerOverloadChecker;
+
     class HTTPController
     {
         public:

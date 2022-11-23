@@ -40,7 +40,7 @@ bool SCI::Util::SREWLock::TryAquireRead()
         m_readCounter++;
 
         // 3: Fix race condition
-        if (m_writeLock.test(std::memory_order::memory_order_seq_cst))
+        if (m_writeLock.test(std::memory_order::seq_cst))
         {
             // Race occurred release reference and fail
             m_readCounter--;

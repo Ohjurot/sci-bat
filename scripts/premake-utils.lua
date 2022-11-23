@@ -67,7 +67,7 @@ function reti_new_project(projectName, path)
     filter {}
     filter { "system:Linux" }
         defines {  string.upper(projectName) .. "_LINUX" }
-        buildoptions { "-stdlib=libc++" }
+        links { "stdc++" }
     filter {}
 
     -- Debug / Release

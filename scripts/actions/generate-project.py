@@ -28,7 +28,7 @@ if __name__ == "__main__":
     # Invoke premake
     print(f"Generating project...")
     if osname == "Linux":
-        subprocess.run(["vendor/premake/premake5", "--cc=clang", f"{premakeAction}"])
+        subprocess.run(["vendor/premake/premake5", f"{premakeAction}"])
     else:
         subprocess.run(["vendor/premake/premake5", f"{premakeAction}"])
 

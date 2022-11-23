@@ -37,7 +37,7 @@ namespace SCI::Util
             Exception& operator=(const Exception&) = default;
             Exception& operator=(Exception&&) noexcept = default;
 
-            char const* what() const override
+            char const* what() const noexcept override
             {
                 return m_text.c_str();
             }

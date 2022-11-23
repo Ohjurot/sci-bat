@@ -4,8 +4,7 @@
 - python3
 - conan (pip install conan)
 - CMake
-- Visual Studio 2022 (Windows only) 
-- clang-13 and libc++-12-dev (Linux only)
+- Visual Studio 2022 (Windows only)           
 
 ## Windows
 1) **Generating the visual studio solution**: run `autogen generate-project` in this directory.
