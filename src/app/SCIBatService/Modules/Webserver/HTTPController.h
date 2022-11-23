@@ -97,11 +97,12 @@ namespace SCI::BAT::Webserver
     template<typename T>
     struct HTTPControllerOverloadChecker
     {
-        static constexpr bool Get() { return &T::OnGet != &HTTPController::OnGet; }
-        static constexpr bool Post() { return &T::OnPost != &HTTPController::OnPost; }
-        static constexpr bool Put() { return &T::OnPut != &HTTPController::OnPut; }
-        static constexpr bool Patch() { return &T::OnPatch != &HTTPController::OnPatch; }
-        static constexpr bool Delete() { return &T::OnDelete != &HTTPController::OnDelete; }
-        static constexpr bool Options() { return &T::OnOptions != &HTTPController::OnOptions; }
+        typedef void(*FP)(const httplib::Request&, httplib::Response&);
+        static bool Get() { return (FP)&T::OnGet != (FP)&HTTPController::OnGet; }
+        static bool Post() { return (FP)&T::OnPost != (FP)&HTTPController::OnPost; }
+        static bool Put() { return (FP)&T::OnPut != (FP)&HTTPController::OnPut; }
+        static bool Patch() { return (FP)&T::OnPatch != (FP)&HTTPController::OnPatch; }
+        static bool Delete() { return (FP)&T::OnDelete != (FP)&HTTPController::OnDelete; }
+        static bool Options() { return (FP)&T::OnOptions != (FP)&HTTPController::OnOptions; }
     };
 }
