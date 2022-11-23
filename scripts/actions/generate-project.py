@@ -27,7 +27,10 @@ if __name__ == "__main__":
     subprocess.run(["conan", "install", ".", "--build", "missing", "-s", f"build_type={conanBuildType}"])
     # Invoke premake
     print(f"Generating project...")
-    subprocess.run(["vendor/premake/premake5", f"{premakeAction}"])
+    if osname == "Linux":
+        subprocess.run(["vendor/premake/premake5", "--cc=clang", f"{premakeAction}"])
+    else:
+        subprocess.run(["vendor/premake/premake5", f"{premakeAction}"])
 
     # Generate certificates
     if osname ==  "Linux":

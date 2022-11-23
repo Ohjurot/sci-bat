@@ -61,12 +61,13 @@ function reti_new_project(projectName, path)
     -- Always on defines
     defines { "CPPHTTPLIB_OPENSSL_SUPPORT" }
 
-    -- Windows / Unix
+    -- Windows / Linux
     filter { "system:Windows" }
         defines {  string.upper(projectName) .. "_WINDOWS", "NOMINMAX" }
     filter {}
-    filter { "system:Unix" }
-        defines {  string.upper(projectName) .. "_UNIX" }
+    filter { "system:Linux" }
+        defines {  string.upper(projectName) .. "_LINUX" }
+        buildoptions { "-stdlib=libc++" }
     filter {}
 
     -- Debug / Release

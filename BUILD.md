@@ -5,6 +5,7 @@
 - conan (pip install conan)
 - CMake
 - Visual Studio 2022 (Windows only) 
+- clang-13 and libc++-12-dev (Linux only)
 
 ## Windows
 1) **Generating the visual studio solution**: run `autogen generate-project` in this directory.
@@ -12,5 +13,4 @@
 
 ## Linux
 **IMPORTANT**: Please edit your default conan profile (`/home/<USER>/.conan/profiles/default`) and make sure you are using the new abi (`compiler.libcxx=libstdc++11`)
-1) **Generating the visual studio solution**: run `autogen generate-project` in this directory.
-
+1) **Building the software**: run `./autogen.sh build` in this directory.

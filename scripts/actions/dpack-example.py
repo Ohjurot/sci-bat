@@ -37,7 +37,7 @@ if __name__ == "__main__":
         controlFile = open(f"{packageDir}/DEBIAN/control","w+")
         controlFile.write(f"Package: sci-bat-example\n")
         controlFile.write(f"Version: {version}\n")
-        controlFile.write(f"Architecture: all\n")
+        controlFile.write(f"Architecture: amd64\n")
         controlFile.write(f"Essentials: no\n")
         controlFile.write(f"Priority: optional\n")
         controlFile.write(f"Depends: openssl\n")
