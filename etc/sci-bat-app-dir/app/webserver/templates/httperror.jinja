@@ -1,2 +1,7 @@
-Error Code: {{code}}<br/>
-Message: {{description}}<br/>
+{% extends "skeleton/base.jinja" %}
+
+{% block content %}
+<h1>Error {{ code }}</h1>
+<p></p>
+<p>{{description}}</p>
+{% endblock %}

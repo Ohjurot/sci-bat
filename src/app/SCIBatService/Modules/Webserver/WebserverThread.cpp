@@ -176,6 +176,12 @@ void SCI::BAT::Webserver::WebserverThread::RenderTemplatedError(int code, const 
     data["description"] = description;
     data["footer"] = m_finalErrorFooter;
 
+    // Required for basic template
+    data["HOST"] = "https://" + request.get_header_value("Host");
+    data["USERNAME"] = "";
+    data["TITLE"] = "Error";
+    data["_S_LEVEL"] = 0;
+
     response.set_content(m_renderer.RenderTemplate("httperror.jinja", data), "text/html;charset=utf-8");
 }
 

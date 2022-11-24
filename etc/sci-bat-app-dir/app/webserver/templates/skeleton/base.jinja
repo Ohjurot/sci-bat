@@ -1,15 +1,82 @@
 <!doctype html>
 <html lang="en">
+  {# HTML HEAD #}
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="{{ HOST }}/res/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <title>{{ TITLE }} | SCI-BAT</title>
     {% block head %}
     {% endblock %}
+
+    {# CSS #}
+    <link href="{{ HOST }}/res/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
   </head>
-  <body>
-    {% block body %}
-    {% endblock %}
+
+  {# HTML BODY #}
+  <body style="background: lightgray;">
+    {# NAVBAR #}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        {# toggler #}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        {# content #}
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+          {# BRAND #}
+          <a class="navbar-brand" href="#!">SCI-BAT</a>
+          <span class="text-muted">HEMS enabled smart battery controler</span>
+          {# ITEMS #}
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link {% if _S_LEVEL == 0 %}active{% endif %}" aria-current="page" href="{{ HOST }}/">Home</a>
+            </li>
+            {% if _S_LEVEL >= 1 %}
+            <li class="nav-item">
+              <a class="nav-link {% if _S_LEVEL == 1 %}active{% endif %}" href="{{ HOST }}/{{ _SECTION }}">{{ _SECTION }}</a>
+            </li>
+            {% endif %}
+            {% if _S_LEVEL >= 2 %}
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ HOST }}/{{ _SECTION }}/{{ _SUB_SECTION }}">{{ _SUB_SECTION}}</a>
+            </li>
+            {% endif %}
+          </ul>
+          {# Form #}
+          <form class="d-flex" role="search">
+            {% if USERNAME == "" %}
+            <a class="btn btn-outline-success" href="{{ HOST}}/auth?login">Login</a>
+            {% else %}
+            <span class="navbar-text">Welcome {{ USERNAME }} &nbsp;</span>
+            <a class="btn btn-outline-danger" href="{{ HOST}}/auth?logout">Logout</a>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    {# CONTENT #}
+    <div class="container-md mt-3">
+      <div class="card">
+        <div class="card-body">
+          {% block content %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+
+    {# FOOTER #}
+    <div class="alert alert-primary m-3" role="alert">
+      &copy; Copyright 2022 Munich university of applied sciences <br/>
+      &copy; Copyright 2022 Smart Chaos Integration
+    </div>
+
+    {# 3RD PARTY #}
+    <div class="ms-3">
+      <a class="text-decoration-none link-secondary" href="{{ HOST }}/FOSS">FOSS</a>
+    </div>
+
+    {# SCRIPTS #}
     <script src="{{ HOST }}/res/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
   </body>
 </html>

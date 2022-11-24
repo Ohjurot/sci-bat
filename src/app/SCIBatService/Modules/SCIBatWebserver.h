@@ -14,7 +14,13 @@ class MyController : public SCI::BAT::Webserver::HTTPController
 
         void OnGet(const httplib::Request& request, httplib::Response& response) override
         {
-            RenderView(request, response, "test");
+            inja::json data;
+            data["TITLE"] = "Example page";
+            data["USERNAME"] = "Test User";
+            data["_S_LEVEL"] = 2;
+            data["_SECTION"] = "SectionA";
+            data["_SUB_SECTION"] = "SubS";
+            RenderView(request, response, "test", data);
         }
 };
 
