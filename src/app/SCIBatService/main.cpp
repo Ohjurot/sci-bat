@@ -6,6 +6,7 @@
  */
 
 
+#include <Config/UqlJson.h>
 #include <Threading/ThreadManager.h>
 #include <Modules/SCIBatWebserver.h>
 
@@ -98,6 +99,10 @@ namespace SCI::BAT
         // Init sodium
         auto sodiumrc = sodium_init();
         SCI_ASSERT_FMT(sodiumrc == 0, "sodium_init failed with code {}", sodiumrc);
+
+        // Init settings db (data.db)
+        auto settingDbPath = confDirectory / "data.db";
+        Config::UqlJson::Get().Init(settingDbPath);
 
         // Create Webserver module
         spdlog::info("Loading Webserver");

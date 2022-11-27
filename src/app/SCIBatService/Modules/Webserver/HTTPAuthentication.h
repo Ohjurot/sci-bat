@@ -30,6 +30,7 @@ namespace SCI::BAT::Webserver
             Operator = 1,
             Admin = 2,
             SuperAdmin = 10,
+            System = 100, // NOT INTEDED TO BE USE AS A USER AUTHENTICATION LEVEL (ONLY THE SYSTEM SHALL ACCESS THIS LEVEL)
         };
 
         std::string sid = "";

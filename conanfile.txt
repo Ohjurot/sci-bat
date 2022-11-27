@@ -9,6 +9,9 @@
     stduuid/1.2.2
     libsodium/cci.20220430
 
+    # Config database
+    unqlite/1.1.9
+
     # Util libs 
     argparse/2.9
     pugixml/1.12.1
