@@ -161,7 +161,7 @@ void SCI::BAT::Webserver::HTTPAuthentication::DoCleanup()
 
 std::string SCI::BAT::Webserver::HTTPAuthentication::HashPassword(const std::string& password)
 {
-    CHAR hashOut[crypto_pwhash_STRBYTES];
+    char hashOut[crypto_pwhash_STRBYTES];
     SCI_ASSERT(crypto_pwhash_str(hashOut, password.c_str(), password.length(), crypto_pwhash_OPSLIMIT_MIN, crypto_pwhash_MEMLIMIT_MIN) == 0, "Failed to hash input password!");
     return hashOut;
 }
@@ -169,7 +169,7 @@ std::string SCI::BAT::Webserver::HTTPAuthentication::HashPassword(const std::str
 bool SCI::BAT::Webserver::HTTPAuthentication::CheckPassword(const std::string& storedHash, const std::string& password)
 {
     SCI_ASSERT(storedHash.length() <= crypto_pwhash_STRBYTES, "Invalid hash input size");
-    CHAR hashIn[crypto_pwhash_STRBYTES] = { 0x0 };
+    char hashIn[crypto_pwhash_STRBYTES] = { 0x0 };
     memcpy(hashIn, storedHash.c_str(), storedHash.length());
     
     return crypto_pwhash_str_verify(hashIn, password.c_str(), password.length()) == 0;

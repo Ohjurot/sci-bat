@@ -4,7 +4,8 @@
 - python3
 - conan (pip install conan)
 - CMake
-- Visual Studio 2022 (Windows only)           
+- Visual Studio 2022 (Windows only) 
+- `uuid-dev` (Linux only)           
 
 ## Windows
 1) **Generating the visual studio solution**: run `autogen generate-project` in this directory.
