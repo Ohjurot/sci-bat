@@ -14,9 +14,6 @@
     scnlib/1.1.2
     spdlog/1.10.0
 
-    # Unit test libs
-    gtest/cci.20210126
-
 [options]
     # Modbus
     libmodbus:shared=False

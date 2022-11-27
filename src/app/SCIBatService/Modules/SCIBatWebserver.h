@@ -7,6 +7,8 @@
 
 #include <Modules/Webserver/WebserverThread.h>
 
+#include <Modules/Webserver/Controllers/Static/FossController.h>
+
 class MyController : public SCI::BAT::Webserver::HTTPController
 { 
     public:
@@ -32,10 +34,6 @@ namespace SCI::BAT
             using SCI::BAT::Webserver::WebserverThread::WebserverThread;
 
         private:
-            inline void RegisterControllers() override
-            {
-                RegisterController<MyController>("/");
-            }
-
+            void RegisterControllers() override;
     };
 }

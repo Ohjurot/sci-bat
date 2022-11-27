@@ -64,6 +64,25 @@ namespace SCI::BAT::Webserver
                 m_renderer = &renderer;
             }
 
+            inline void Section(inja::json& data)
+            {
+                data["_S_LEVEL"] = 0;
+                data["_SECTION"] = "";
+                data["_SUB_SECTION"] = "";
+            }
+            inline void Section(const std::string& section, inja::json& data)
+            {
+                data["_S_LEVEL"] = 1;
+                data["_SECTION"] = section;
+                data["_SUB_SECTION"] = "";
+            }
+            inline void Section(const std::string& section, const std::string& subSection, inja::json& data)
+            {
+                data["_S_LEVEL"] = 2;
+                data["_SECTION"] = section;
+                data["_SUB_SECTION"] = subSection;
+            }
+
             inline std::filesystem::path Path() { return ""; }
 
         private:
