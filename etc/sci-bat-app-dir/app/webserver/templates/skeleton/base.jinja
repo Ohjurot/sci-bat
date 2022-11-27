@@ -10,6 +10,9 @@
 
     {# CSS #}
     <link href="{{ HOST }}/res/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link href="{{ HOST }}/res/fontawesome/css/fontawesome.css" rel="stylesheet">
+    <link href="{{ HOST }}/res/fontawesome/css/brands.css" rel="stylesheet">
+    <link href="{{ HOST }}/res/fontawesome/css/solid.css" rel="stylesheet">
   </head>
 
   {# HTML BODY #}
@@ -43,12 +46,12 @@
             {% endif %}
           </ul>
           {# Form #}
-          <form class="d-flex" role="search">
+          <form class="d-flex" role="search" action="{{ HOST }}/auth?destroy" method="POST">
             {% if USERNAME == "" %}
-            <a class="btn btn-outline-success" href="{{ HOST}}/auth?login">Login</a>
+            <a class="btn btn-outline-success" href="{{ HOST }}/auth">Login</a>
             {% else %}
             <span class="navbar-text">Welcome {{ USERNAME }} &nbsp;</span>
-            <a class="btn btn-outline-danger" href="{{ HOST}}/auth?logout">Logout</a>
+            <button class="btn btn-outline-danger" action="submit">Logout</a>
             {% endif %}
           </form>
         </div>

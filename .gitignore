@@ -11,6 +11,7 @@
 **.vcxproj
 **.vcxproj.user
 **.vcxproj.filters
+/enc_temp_folder
 
 # Makefile
 **/Makefile

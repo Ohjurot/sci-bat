@@ -6,8 +6,7 @@
 #pragma once
 
 #include <Modules/Webserver/WebserverThread.h>
-
-#include <Modules/Webserver/Controllers/Static/FossController.h>
+#include <Modules/Webserver/HTTPAuthentication.h>
 
 class MyController : public SCI::BAT::Webserver::HTTPController
 { 
@@ -18,10 +17,10 @@ class MyController : public SCI::BAT::Webserver::HTTPController
         {
             inja::json data;
             data["TITLE"] = "Example page";
-            data["USERNAME"] = "Test User";
-            data["_S_LEVEL"] = 2;
-            data["_SECTION"] = "SectionA";
-            data["_SUB_SECTION"] = "SubS";
+            
+            auto user = SCI::BAT::Webserver::HTTPAuthentication::Session(request, response, data);
+
+            Section(data);
             RenderView(request, response, "test", data);
         }
 };

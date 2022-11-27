@@ -8,6 +8,7 @@
 #include <Modules/Webserver/Renderer/HTMLRenderer.h>
 
 #include <SCIUtil/Exception.h>
+#include <SCIUtil/SPDLogable.h>
 
 #include <httplib/httplib.h>
 #include <spdlog/spdlog.h>
@@ -29,7 +30,7 @@ namespace SCI::BAT::Webserver
     template<typename T>
     struct HTTPControllerOverloadChecker;
 
-    class HTTPController
+    class HTTPController : public Util::SPDLogable
     {
         public:
             virtual ~HTTPController() = default;
@@ -57,6 +58,12 @@ namespace SCI::BAT::Webserver
             inline void RenderHTML(httplib::Response& response, const std::string& html)
             {
                 RenderMIME(response, html, "text/html;charset=utf-8");
+            }
+
+            inline void Redirect(const httplib::Request& request, httplib::Response& response, const std::string_view& path)
+            {
+                std::string url = "https://" + request.get_header_value("Host") + std::string(path);
+                response.set_redirect(url);
             }
 
             inline void SetRenderer(HTMLRenderer& renderer)

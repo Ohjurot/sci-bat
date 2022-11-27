@@ -15,6 +15,7 @@
 #include <pugixml.hpp>
 #include <argparse/argparse.hpp>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <sodium.h>
 
 #include <iostream>
 #include <string>
@@ -94,6 +95,10 @@ namespace SCI::BAT
         const std::filesystem::path appDirectory = args.get<std::string>("-a");
         const std::filesystem::path confDirectory = args.get<std::string>("-c");
 
+        // Init sodium
+        auto sodiumrc = sodium_init();
+        SCI_ASSERT_FMT(sodiumrc == 0, "sodium_init failed with code {}", sodiumrc);
+
         // Create Webserver module
         spdlog::info("Loading Webserver");
         pugi::xml_document webserverConf;
@@ -111,7 +116,8 @@ namespace SCI::BAT
         SCI_ASSERT(!wscSSLCert.empty(), "No path to SSL Certificate Key provided!");
         int maxCacheAge = std::max(0, args.get<int>("-mc"));
         spdlog::info(R"(SSL-Server configuration: "{}:{}" (Cert: "{}", Key: "{}"). Maximum cache age {}s)", wscServerHost, wscServerPort, (confDirectory / wscSSLCert).generic_string(), (confDirectory / wscSSLKey).generic_string(), maxCacheAge);
-        SCI::BAT::SCIBatWebserver webserver(appDirectory / "webserver", wscServerHost, wscServerPort, confDirectory / wscSSLCert, confDirectory / wscSSLKey, maxCacheAge, CreateLogger(args, "webserver"));
+        SCI::BAT::SCIBatWebserver webserver(appDirectory / "webserver", wscServerHost, wscServerPort, confDirectory / wscSSLCert, confDirectory / wscSSLKey, maxCacheAge, 
+            CreateLogger(args, "webserver"), CreateLogger(args, "webapp"));
         webserver.RegisterRoutes();
         webserver.ErrorFooter() = "&copy; Copyright 2022 Smart Chaos Integrations";
 

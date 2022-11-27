@@ -7,6 +7,7 @@
 
 #include <Threading/Thread.h>
 #include <Modules/Webserver/HTTPController.h>
+#include <Modules/Webserver/HTTPAuthentication.h>
 #include <Modules/Webserver/Renderer/HTMLRenderer.h>
 
 #include <SCIUtil/SPDLogable.h>
@@ -25,7 +26,7 @@ namespace SCI::BAT::Webserver
     {
         public:
             WebserverThread() = delete;
-            WebserverThread(const std::filesystem::path& serverRootDir, const std::string_view& host, int port, const std::filesystem::path& certPath, const std::filesystem::path& keyPath, size_t maxCacheAge = 60 * 60 * 24, const std::shared_ptr<spdlog::logger>& logger = spdlog::default_logger());
+            WebserverThread(const std::filesystem::path& serverRootDir, const std::string_view& host, int port, const std::filesystem::path& certPath, const std::filesystem::path& keyPath, size_t maxCacheAge = 60 * 60 * 24, const std::shared_ptr<spdlog::logger>& logger = spdlog::default_logger(), const std::shared_ptr<spdlog::logger>& webappLogger = spdlog::default_logger());
             WebserverThread(const WebserverThread&) = delete;
             WebserverThread(WebserverThread&&) noexcept = delete;
 
@@ -76,6 +77,7 @@ namespace SCI::BAT::Webserver
             std::filesystem::path m_rootDirectory;
 
             std::vector<HTTPController*> m_controllers;
+            std::shared_ptr<spdlog::logger> m_webappLogger;
 
             HTMLRenderer m_renderer;
             const char* m_finalErrorMessage = R"(<!DOCTYPE html><html><body style="padding: 0; margin: 0; background: LightGray;"><div style="min-height: 4em; padding: 1em; background: rgb(220, 10, 10); "><h2>Error Occured (Code {{code}})</h2></div> <div style="padding: 1em;"><p>A fatal error occured! Please contacte the server admin if you think this is an issue!<br/>Message: {{description}}<br/><br/><b>{{footer}}</b></p></div></body></html>)";

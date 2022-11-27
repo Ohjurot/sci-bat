@@ -6,6 +6,8 @@
     # Web server
     cpp-httplib/0.11.2
     inja/3.3.0
+    stduuid/1.2.2
+    libsodium/cci.20220430
 
     # Util libs 
     argparse/2.9

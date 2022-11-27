@@ -5,8 +5,8 @@ void SCI::BAT::Webserver::Controllers::FossController::OnGet(const httplib::Requ
     inja::json data;
     data["TITLE"] = "FOSS";
 
-    auto user = HTTPAuthentication::Session(request, data);
+    auto user = HTTPAuthentication::Session(request, response, data);
 
-    Section("Foss", data);
+    Section("FOSS", data);
     RenderView(request, response, "static/foss", data);
 }
