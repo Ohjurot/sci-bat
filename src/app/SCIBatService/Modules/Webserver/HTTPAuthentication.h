@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Config/AuthenticatedConfig.h>
+
 #include <SCIUtil/SPDLogable.h>
 #include <SCIUtil/Exception.h>
 #include <SCIUtil/Concurrent/SpinLock.h>
@@ -62,6 +64,8 @@ namespace SCI::BAT::Webserver
             static HTTPUser Session(const httplib::Request& request, httplib::Response& response, inja::json& data);
             static HTTPUser Create(const httplib::Request& request, httplib::Response& response, inja::json& data, std::string username, HTTPUser::PermissionLevel permissionLevel);
             static void Destroy(HTTPUser& user);
+
+            static HTTPUser::PermissionLevel GetUserPermission(const HTTPUser& user);
 
             static std::string HashPassword(const std::string& password);
             static bool CheckPassword(const std::string& storedHash, const std::string& password);

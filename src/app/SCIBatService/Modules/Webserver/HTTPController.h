@@ -5,6 +5,8 @@
  */
 #pragma once
 
+#include <Config/AuthenticatedConfig.h>
+#include <Modules/Webserver/HTTPAuthentication.h>
 #include <Modules/Webserver/Renderer/HTMLRenderer.h>
 
 #include <SCIUtil/Exception.h>
@@ -88,6 +90,15 @@ namespace SCI::BAT::Webserver
                 data["_S_LEVEL"] = 2;
                 data["_SECTION"] = section;
                 data["_SUB_SECTION"] = subSection;
+            }
+
+            inline bool ReadConfig(const std::string& key, const HTTPUser& user, nlohmann::json& data)
+            {
+                return Config::AuthenticateConfig::ReadData(key, (int)user.permissionLevel, data);
+            }
+            inline bool WriteConfig(const std::string& key, const HTTPUser& user, const nlohmann::json& data)
+            {
+                return Config::AuthenticateConfig::WriteData(key, (int)user.permissionLevel, data);
             }
 
             inline std::filesystem::path Path() { return ""; }

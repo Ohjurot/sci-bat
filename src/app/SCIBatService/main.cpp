@@ -7,8 +7,10 @@
 
 
 #include <Config/UqlJson.h>
+#include <Config/AuthenticatedConfig.h>
 #include <Threading/ThreadManager.h>
 #include <Modules/SCIBatWebserver.h>
+#include <Modules/Webserver/HTTPAuthentication.h>
 
 #include <SCIUtil/Exception.h>
 #include <SCIUtil/KeyboardInterrupt.h>
@@ -90,6 +92,18 @@ namespace SCI::BAT
         return logger;
     }
 
+    void CreateUser(const std::string& usernamen, int authlevel, bool enabled = true)
+    {
+        Config::AuthenticateConfig::InsertData("user." + usernamen, (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::Unauthenticated, (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::SuperAdmin, (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::System,
+            {
+                { "username", usernamen },
+                { "password", SCI::BAT::Webserver::HTTPAuthentication::HashPassword(usernamen) },
+                { "authlevel", authlevel },
+                { "enabled", enabled },
+            }
+        );
+    }
+
     int GuardedMain(const argparse::ArgumentParser& args)
     {
         // Extract arguments
@@ -102,7 +116,15 @@ namespace SCI::BAT
 
         // Init settings db (data.db)
         auto settingDbPath = confDirectory / "data.db";
+        spdlog::info("Inisialising systems configuration database {}", settingDbPath.generic_string());
         Config::UqlJson::Get().Init(settingDbPath);
+
+        // Add default configuration (insert will fail when already in there)
+        spdlog::info("Configuring default settings");
+        CreateUser("superadmin", (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::SuperAdmin);
+        CreateUser("admin", (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::Admin, false);
+        CreateUser("operator", (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::Operator, false);
+        CreateUser("viewer", (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::Viewer, false);
 
         // Create Webserver module
         spdlog::info("Loading Webserver");

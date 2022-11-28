@@ -174,3 +174,14 @@ bool SCI::BAT::Webserver::HTTPAuthentication::CheckPassword(const std::string& s
     
     return crypto_pwhash_str_verify(hashIn, password.c_str(), password.length()) == 0;
 }
+
+SCI::BAT::Webserver::HTTPUser::PermissionLevel SCI::BAT::Webserver::HTTPAuthentication::GetUserPermission(const HTTPUser& user)
+{
+    nlohmann::json data;
+    if (Config::AuthenticateConfig::ReadData("user." + user.name, (int)HTTPUser::PermissionLevel::System, data))
+    {
+        return (HTTPUser::PermissionLevel)data["authlevel"];
+    }
+
+    return HTTPUser::PermissionLevel::Unauthenticated;
+}

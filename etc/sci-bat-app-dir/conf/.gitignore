@@ -1,5 +1,6 @@
 # This will be populated at runtime
 /*.db
+/*.db_unqlite_journal
 
 # Certificates will be generated during build
 /*.pem

@@ -20,6 +20,10 @@ class MyController : public SCI::BAT::Webserver::HTTPController
             
             auto user = SCI::BAT::Webserver::HTTPAuthentication::Session(request, response, data);
 
+            nlohmann::json uc;
+            ReadConfig("user." + user.name, user, uc);
+            data["raw_json"] = nlohmann::to_string(uc);
+
             Section(data);
             RenderView(request, response, "test", data);
         }

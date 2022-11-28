@@ -34,12 +34,16 @@ void SCI::BAT::Webserver::Controllers::AuthController::OnPost(const httplib::Req
         // Get username, password and compute hash
         auto username = request.get_param_value("username");
         auto password = request.get_param_value("password");
-        auto passwordHash = HTTPAuthentication::HashPassword("admin");
 
-        if (username == "admin" && HTTPAuthentication::CheckPassword(passwordHash, password))
+        // Get config for username
+        nlohmann::json userConfig;
+        Config::AuthenticateConfig::ReadData("user." + username, (int)HTTPUser::PermissionLevel::System, userConfig);
+
+        // Validate password
+        if (userConfig["enabled"].get<bool>() && HTTPAuthentication::CheckPassword(userConfig["password"], password))
         {
             inja::json data;
-            HTTPAuthentication::Create(request, response, data, username, SCI::BAT::Webserver::HTTPUser::PermissionLevel::Admin);
+            HTTPAuthentication::Create(request, response, data, username, (HTTPUser::PermissionLevel)userConfig["authlevel"].get<int>());
             Redirect(request, response, "/");
         }
         else

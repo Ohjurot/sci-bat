@@ -41,3 +41,55 @@ bool SCI::BAT::Config::AuthenticateConfig::WriteData(const std::string& key, int
 
     return false;
 }
+
+bool SCI::BAT::Config::AuthenticateConfig::ReadData(const std::string& key, int currentPermissionLevel, nlohmann::json& data)
+{
+    nlohmann::json jsonData;
+    if (UqlJson::Get().ReadConfig(key, jsonData))
+    {
+        Data ddata = JsonToData(jsonData);
+
+        if (ddata.minReadPermissionLevel <= currentPermissionLevel)
+        {
+            data = ddata.configData;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool SCI::BAT::Config::AuthenticateConfig::DeleteData(const std::string& key, int currentPermissionLevel)
+{
+    nlohmann::json jsonData;
+    if (UqlJson::Get().ReadConfig(key, jsonData))
+    {
+        Data data = JsonToData(jsonData);
+        if (data.minDeletePermissionLevel <= currentPermissionLevel)
+        {
+            UqlJson::Get().DeleteConfig(key);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool SCI::BAT::Config::AuthenticateConfig::InsertData(const std::string& key, int permissionRead, int permissionWrite, int permissionDelete, const nlohmann::json& data)
+{
+    nlohmann::json jsonData;
+    if (!UqlJson::Get().ReadConfig(key, jsonData))
+    {
+        // Describe data
+        Data ddata;
+        ddata.minReadPermissionLevel = permissionRead;
+        ddata.minWritePermissionLevel = permissionWrite;
+        ddata.minDeletePermissionLevel = permissionDelete;
+        ddata.configData = data;
+
+        jsonData = DataToJson(ddata);
+        return UqlJson::Get().WriteConfig(key, jsonData);
+    }
+
+    return false;
+}

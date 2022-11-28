@@ -29,8 +29,8 @@ namespace SCI::BAT::Config
             static Data JsonToData(const nlohmann::json& json);
 
             static bool WriteData(const std::string& key, int currentPermissionLevel, const nlohmann::json& data);
-            static bool ReadData(const std::string& key, int currentPermissionLevel, const nlohmann::json& data);
-            static bool DeleteData(const std::string& key, int currentPermissionLevel, const nlohmann::json& data);
+            static bool ReadData(const std::string& key, int currentPermissionLevel, nlohmann::json& data);
+            static bool DeleteData(const std::string& key, int currentPermissionLevel);
             static bool InsertData(const std::string& key, int permissionRead, int permissionWrite, int permissionDelete, const nlohmann::json& data);
     };
 }
