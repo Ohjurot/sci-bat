@@ -22,7 +22,7 @@ bool SCI::BAT::Config::UqlJson::ReadConfig(const std::string& key, nlohmann::jso
 
 
     Util::LockGuard janitor(m_lock); // Begin critical section
-    int64_t dataLen = 0;
+    unqlite_int64 dataLen = 0;
     if (unqlite_kv_fetch(m_db, key.c_str(), key.length(), nullptr, &dataLen) == UNQLITE_OK)
     {
         std::string jsonData;
