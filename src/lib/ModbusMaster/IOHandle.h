@@ -125,7 +125,7 @@ namespace SCI::Modbus
             template<typename T>
             T GetHelper() const
             {
-                if (sizeof(T) != (uint8_t)m_type)
+                if (sizeof(T) != (size_t)m_type / 8)
                 {
                     throw std::runtime_error("Type mismatch!");
                 }
@@ -136,7 +136,7 @@ namespace SCI::Modbus
             template<typename T>
             void SetHelper(const T& value)
             {
-                if (sizeof(T) != (uint8_t)m_type)
+                if (sizeof(T) != (size_t)m_type / 8)
                 {
                     throw std::runtime_error("Type mismatch!");
                 }

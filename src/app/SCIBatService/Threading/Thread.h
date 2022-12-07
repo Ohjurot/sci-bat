@@ -5,6 +5,8 @@
  */
 #pragma once
 
+#include <spdlog/spdlog.h>
+
 #include <thread>
 #include <atomic>
 #include <string>

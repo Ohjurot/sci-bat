@@ -53,11 +53,13 @@ void SCI::BAT::Thread::RootThreadMain(std::stop_token stop)
     }
     catch (std::exception& ex)
     {
+        spdlog::critical("Exception in thread occurred (thread is terminating!): {}", ex.what());
         m_exceptionText = ex.what();
         m_result = ExecutionResult::StoppedException;
     }
     catch (...)
     {
+        spdlog::critical("Unknown exception in thread occurred! Thread is terminating!");
         m_exceptionText = "Unknown exception";
         m_result = ExecutionResult::StoppedException;
     }

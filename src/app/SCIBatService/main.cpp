@@ -9,7 +9,9 @@
 #include <Config/UqlJson.h>
 #include <Config/AuthenticatedConfig.h>
 #include <Threading/ThreadManager.h>
+
 #include <Modules/SCIBatWebserver.h>
+#include <Modules/Gateway/GatewayThread.h>
 #include <Modules/Webserver/HTTPAuthentication.h>
 
 #include <SCIUtil/Exception.h>
@@ -148,10 +150,14 @@ namespace SCI::BAT
         webserver.RegisterRoutes();
         webserver.ErrorFooter() = "&copy; Copyright 2022 Smart Chaos Integrations";
 
+        // Create gateway module
+        spdlog::info("Loading Modbus <---> MQTT Gateway");
+        SCI::BAT::Gateway::GatewayThread gateway(CreateLogger(args, "gateway"));
+
         // Manage the threads
         spdlog::info("Loading ThreadManager");
         SCI::BAT::ThreadManager tmgr;
-        tmgr << webserver;
+        tmgr << webserver << gateway;
 
         // Start the thread
         spdlog::info("Target start reached!");

@@ -12,6 +12,7 @@
 **.vcxproj.user
 **.vcxproj.filters
 /enc_temp_folder
+/JSON
 
 # Makefile
 **/Makefile

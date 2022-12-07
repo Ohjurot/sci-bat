@@ -47,6 +47,7 @@ namespace SCI::Modbus
             inline Master& Alias(const std::string& addr, const std::string& alias)
             {
                 m_aliasMapping[alias] = addr;
+                return *this;
             }
 
             SCI::Modbus::IOHandle At(const std::string_view& name);
