@@ -9,10 +9,12 @@ int SCI::BAT::Gateway::GatewayThread::ThreadMain()
 {
     using namespace std::chrono_literals;
 
+    // TODO: Read configuration
+
     // Setup SMA Mappings
     NetTools::IPV4Endpoint smaEndpoint;
     SCI_ASSERT_FMT(smaEndpoint.Parse(""), "Failed to parse {} as IPv4 endpoint!", "");
-    m_modbus.SetupSlave("sma", smaEndpoint, 3) // TODO: Endpoint & SlaveID
+    m_modbus.SetupSlave("sma", smaEndpoint, 3)
         // Map inputs
         .Map(Modbus::Slave::RemoteMappingType::AnalogInput, 30201, 4, 0) // U32: ENUM - Status of the device
         .Map(Modbus::Slave::RemoteMappingType::AnalogInput, 30775, 4, 4) // U32: FIX0 - Power
@@ -71,10 +73,10 @@ int SCI::BAT::Gateway::GatewayThread::ThreadMain()
         // Update modbus IO
         m_modbus["SetPowerControlEnable"].SetDWordValue(803);
         m_modbus["SetPower"].SetDWordValue(0);
-        m_modbus.IOUpdate(0.5f);
+        m_modbus.IOUpdate(1.0f);
 
         // Wait one second
-        std::this_thread::sleep_for(500ms);
+        std::this_thread::sleep_for(1s);
     }
 }
 
