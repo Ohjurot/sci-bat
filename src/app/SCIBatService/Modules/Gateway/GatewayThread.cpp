@@ -72,7 +72,7 @@ int SCI::BAT::Gateway::GatewayThread::ThreadMain()
             if (m_modbus.SlaveConnected("sma"))
             {
 
-                GetLogger()->info("SMA Status: {}, Power: {}W, Voltage: {}V, Freqency: {}Hz, BatteryCurrent: {}A, BatteryCharge: {}%, BatteryCapacity: {}%, BatteryTemperature: {}°C, BatteryVoltage: {}V, RemainingChargeTime: {}s, RemainingDischargeTime: {}s, BatteryStatus: {}, OperationStatus: {}, BatteryType: {}, SerialNumber: {:#08x}",
+                GetLogger()->info("SMA Status: {}, Power: {}W, Voltage: {}V, Freqency: {}Hz, BatteryCurrent: {}A, BatteryCharge: {}%, BatteryCapacity: {}%, BatteryTemperature: {}gC, BatteryVoltage: {}V, RemainingChargeTime: {}s, RemainingDischargeTime: {}s, BatteryStatus: {}, OperationStatus: {}, BatteryType: {}, SerialNumber: {:#08x}",
                     m_smaInputData.status, m_smaInputData.power, m_smaInputData.voltage, m_smaInputData.freqenency, m_smaInputData.batteryCurrent, m_smaInputData.batteryCharge, m_smaInputData.batteryCapacity, m_smaInputData.batteryTemperature, m_smaInputData.batteryVoltage, 
                     m_smaInputData.timeUntilFullCharge, m_smaInputData.timeUntilFullDischarge, m_smaInputData.batteryStatus, m_smaInputData.operationStaus, m_smaInputData.batteryType, static_cast<unsigned>(m_smaInputData.serialNumber));
             }
