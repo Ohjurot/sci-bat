@@ -3,6 +3,8 @@
 #include <Threading/Thread.h>
 
 #include <SCIUtil/SPDLogable.h>
+#include <SCIUtil/Exception.h>
+#include <ModbusMaster/Master.h>
 
 namespace SCI::BAT::Gateway
 {
@@ -16,6 +18,7 @@ namespace SCI::BAT::Gateway
             void OnStop() override;
 
         private:
+            Modbus::Master m_modbus;
 
     };
 }

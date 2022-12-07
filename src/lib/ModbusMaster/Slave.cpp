@@ -67,6 +67,7 @@ void SCI::Modbus::Slave::ValidateMapping(const Mapping& mapping) const
 SCI::Modbus::Slave::IOUpdateResult SCI::Modbus::Slave::ExecuteIOUpdate(ProcessImage& processImage, float deltaT)
 {
     bool connectionRestored = false;
+    m_lastUpdateOk = false;
 
     // Invalid
     if (!m_valid)
@@ -162,6 +163,7 @@ SCI::Modbus::Slave::IOUpdateResult SCI::Modbus::Slave::ExecuteIOUpdate(ProcessIm
         if (errorCount == 0)
         {
             processImage = std::move(piCopy);
+            m_lastUpdateOk = true;
             return connectionRestored ?  IOUpdateResult::ConnectionRestoredAndSuccess : IOUpdateResult::UpdateSuccess;
         }
         

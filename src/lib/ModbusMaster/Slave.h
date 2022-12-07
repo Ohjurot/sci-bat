@@ -38,7 +38,7 @@ namespace SCI::Modbus
                 struct
                 {
                     RemoteMappingType type;
-                    uint16_t startAddess;
+                    int startAddess;
                     uint16_t count;
                 } Remote;
                 struct
@@ -63,8 +63,8 @@ namespace SCI::Modbus
 
         public:
             Slave() = default;
-            Slave(const SCI::NetTools::IPV4Endpoint& endpoint) : 
-                m_valid(true), m_connection(endpoint)
+            Slave(const SCI::NetTools::IPV4Endpoint& endpoint, int deviceId = -1) : 
+                m_valid(true), m_connection(endpoint, deviceId)
             {};
             Slave(const Slave&) = delete;
             Slave(Slave&& other) noexcept;
@@ -74,7 +74,7 @@ namespace SCI::Modbus
 
             Slave& Map(const Mapping& mapping);
             Slave& Map(Mapping&& mapping);
-            inline Slave& Map(RemoteMappingType remoteType, uint16_t remoteAddress, uint16_t count, size_t localByteAddress, uint8_t localBitAddress = 0)
+            inline Slave& Map(RemoteMappingType remoteType, int remoteAddress, uint16_t count, size_t localByteAddress, uint8_t localBitAddress = 0)
             {
                 return Map({remoteType, remoteAddress, count, localByteAddress, localBitAddress });
             }
@@ -86,6 +86,11 @@ namespace SCI::Modbus
                 return ExecuteIOUpdate(processImage, deltaT);
             }
 
+            inline bool GetLastUpdateOk() const
+            {
+                return m_lastUpdateOk;
+            }
+
         private:
             void ValidateMapping(const Mapping& mapping) const;
 
@@ -93,6 +98,8 @@ namespace SCI::Modbus
             bool m_valid = false;
             MSConnection m_connection;
             std::vector<Mapping> m_mappings;
+
+            bool m_lastUpdateOk = false;
 
             const uint8_t m_subsequentConnectionTimeoutsThreshold = 5;
             uint8_t m_subsequentConnectionTimeouts = 0;

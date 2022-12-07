@@ -1,6 +1,6 @@
 #include "Master.h"
 
-SCI::Modbus::Slave& SCI::Modbus::Master::SetupSlave(const std::string& name, NetTools::IPV4Endpoint& endpoint)
+SCI::Modbus::Slave& SCI::Modbus::Master::SetupSlave(const std::string& name, NetTools::IPV4Endpoint& endpoint, int slaveId)
 {
     auto itFind = m_slaves.find(name);
     if (itFind != m_slaves.end())
@@ -8,7 +8,7 @@ SCI::Modbus::Slave& SCI::Modbus::Master::SetupSlave(const std::string& name, Net
         throw std::runtime_error("Modbus slave already exists!");
     }
 
-    auto slave = Slave(endpoint);
+    auto slave = Slave(endpoint, slaveId);
     slave.SetLogger(GetLogger());
     m_slaves.emplace(name, std::move(slave));
 
@@ -84,6 +84,12 @@ SCI::Modbus::IOHandle SCI::Modbus::Master::At(const std::string_view& name)
     uint8_t bitAddress;
     if (!ParseAddressString(name, type, dtype, byteAddress, bitAddress))
     {
+        // Try alias
+        auto itFind = m_aliasMapping.find(std::string(name));
+        if (itFind != m_aliasMapping.end())
+        {
+            return At(itFind->second);
+        }
         throw std::runtime_error("Invalid IO Address");
     }
 
