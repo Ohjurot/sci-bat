@@ -160,9 +160,12 @@ SCI::Modbus::Slave::IOUpdateResult SCI::Modbus::Slave::ExecuteIOUpdate(ProcessIm
         m_connection.Disconnect();
 
         // Evaluate result
+        if (errorCount < m_mappings.size())
+        {
+			processImage = std::move(piCopy);
+        }
         if (errorCount == 0)
         {
-            processImage = std::move(piCopy);
             m_lastUpdateOk = true;
             return connectionRestored ?  IOUpdateResult::ConnectionRestoredAndSuccess : IOUpdateResult::UpdateSuccess;
         }

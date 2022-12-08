@@ -2,5 +2,5 @@
 
 float SCI::BAT::Gateway::SMAConvertFromFix(int32_t value, int fixBits)
 {
-    return (float)value / fixBits * 10;
+    return (float)value / std::pow(10., fixBits);
 }

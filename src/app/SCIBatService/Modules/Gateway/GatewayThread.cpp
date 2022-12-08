@@ -5,6 +5,8 @@ SCI::BAT::Gateway::GatewayThread::GatewayThread(const std::shared_ptr<spdlog::lo
 {
     SetLogger(gatewayLogger);
     m_modbus.SetLogger(gatewayLogger);
+
+    m_smaOutputData.enablePowerControle = true;
 }
 
 int SCI::BAT::Gateway::GatewayThread::ThreadMain()
@@ -15,7 +17,8 @@ int SCI::BAT::Gateway::GatewayThread::ThreadMain()
 
     // Setup SMA Mappings
     NetTools::IPV4Endpoint smaEndpoint;
-    SCI_ASSERT_FMT(smaEndpoint.Parse("127.0.0.1:502"), "Failed to parse \"{}\" as IPv4 endpoint!", "");
+    const char* smaEndpointStr = "10.27.210.78:502";
+    SCI_ASSERT_FMT(smaEndpoint.Parse(smaEndpointStr), "Failed to parse \"{}\" as IPv4 endpoint!", smaEndpointStr);
 
     GetLogger()->info("Creating IO-Map for SMA Inverter at {}", smaEndpoint.ToString());
     m_modbus.SetupSlave("sma", smaEndpoint, 3)
@@ -65,15 +68,17 @@ int SCI::BAT::Gateway::GatewayThread::ThreadMain()
     GetLogger()->info("Starting gateway main loop");
     while (!StopRequested())
     {
+        auto f = 4;
+
         // DEBUG: Print
         static int rpCnt = 0;
-        if (rpCnt++ == 10)
+        if (rpCnt++ == 10 / f)
         {
-            if (m_modbus.SlaveConnected("sma"))
+            if (true || m_modbus.SlaveConnected("sma"))
             {
 
-                GetLogger()->info("SMA Status: {}, Power: {}W, Voltage: {}V, Freqency: {}Hz, BatteryCurrent: {}A, BatteryCharge: {}%, BatteryCapacity: {}%, BatteryTemperature: {}gC, BatteryVoltage: {}V, RemainingChargeTime: {}s, RemainingDischargeTime: {}s, BatteryStatus: {}, OperationStatus: {}, BatteryType: {}, SerialNumber: {:#08x}",
-                    m_smaInputData.status, m_smaInputData.power, m_smaInputData.voltage, m_smaInputData.freqenency, m_smaInputData.batteryCurrent, m_smaInputData.batteryCharge, m_smaInputData.batteryCapacity, m_smaInputData.batteryTemperature, m_smaInputData.batteryVoltage, 
+                GetLogger()->info("SMA Status: {}, Power: {}W, PowerSetpoint: {}W, Voltage: {}V, Freqency: {}Hz, BatteryCurrent: {}A, BatteryCharge: {}%, BatteryCapacity: {}%, BatteryTemperature: {}gC, BatteryVoltage: {}V, RemainingChargeTime: {}s, RemainingDischargeTime: {}s, BatteryStatus: {}, OperationStatus: {}, BatteryType: {}, SerialNumber: {:#08x}",
+                    m_smaInputData.status, m_smaInputData.power, m_smaOutputData.power, m_smaInputData.voltage, m_smaInputData.freqenency, m_smaInputData.batteryCurrent, m_smaInputData.batteryCharge, m_smaInputData.batteryCapacity, m_smaInputData.batteryTemperature, m_smaInputData.batteryVoltage, 
                     m_smaInputData.timeUntilFullCharge, m_smaInputData.timeUntilFullDischarge, m_smaInputData.batteryStatus, m_smaInputData.operationStaus, m_smaInputData.batteryType, static_cast<unsigned>(m_smaInputData.serialNumber));
             }
             rpCnt = 0;
@@ -92,25 +97,25 @@ int SCI::BAT::Gateway::GatewayThread::ThreadMain()
         // TODO: Process data (Modbus <--> MQTT)
         static int mdx = 0;
         mdx++;
-        if (mdx == 100)
+        if (mdx == 100 / (f * 4))
         {
             spdlog::info("Power to 100W");
             m_smaOutputData.enablePowerControle = true;
             m_smaOutputData.power = 100;
         }
-        else if (mdx == 200)
+        else if (mdx == 200 / (f * 4))
         {
             spdlog::info("Power to 0W");
             m_smaOutputData.enablePowerControle = true;
             m_smaOutputData.power = 0;
         }
-        else if (mdx == 300)
+        else if (mdx == 300 / (f * 4))
         {
             spdlog::info("Power to -100W");
             m_smaOutputData.enablePowerControle = true;
             m_smaOutputData.power = -100;
         }
-        else if (mdx == 400)
+        else if (mdx == 400 / (f * 4))
         {
             spdlog::info("Power to 0W");
             m_smaOutputData.enablePowerControle = true;
@@ -119,7 +124,7 @@ int SCI::BAT::Gateway::GatewayThread::ThreadMain()
         }
 
         // Wait one second
-        std::this_thread::sleep_for(1s);
+        std::this_thread::sleep_for(5s);
     }
 
     return 0;

@@ -130,7 +130,7 @@ namespace SCI::Modbus
                     throw std::runtime_error("Type mismatch!");
                 }
 
-                return *((T*)&BufferHelper()[m_byteOffset]);
+                return SwapEndian<T>(*((T*)&BufferHelper()[m_byteOffset]));
             }
             
             template<typename T>
@@ -146,7 +146,7 @@ namespace SCI::Modbus
                     throw std::runtime_error("Write access to input (read-only) data is not allowed!");
                 }
 
-                *((T*)&BufferHelper()[m_byteOffset]) = value;
+                *((T*)&BufferHelper()[m_byteOffset]) = SwapEndian<T>(value);
             }
 
             const uint8_t* BufferHelper() const 
@@ -156,6 +156,25 @@ namespace SCI::Modbus
             uint8_t* BufferHelper()
             {
                 return m_isInput ? m_pi.GetInputBuffer() : m_pi.GetOutputBuffer();
+            }
+
+            template<typename T>
+            static T SwapEndian(T u)
+            {
+                // Union for conversion
+                union
+                {
+                    T u;
+                    uint16_t u16[sizeof(T)];
+                } src, dst;
+                
+                // Byte swap
+                src.u = u;
+                for (size_t i = 0; i < sizeof(T) / 2; i++)
+                {
+                    dst.u16[i] = src.u16[sizeof(T) / 2 - 1 - i];
+                }
+                return dst.u;
             }
 
         private:
