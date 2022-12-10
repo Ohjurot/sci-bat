@@ -57,7 +57,7 @@ SCI::BAT::Webserver::HTTPUser SCI::BAT::Webserver::HTTPAuthentication::Session(c
 
     // 15 + 1 Minutes valid cookie (REFRESH)
     if(!user.sid.empty()) 
-        response.set_header("Set-Cookie", "SCI_BAT_AUTH=" + user.sid + "; Max-Age=960; Secure; SameSite=Strict");
+        response.set_header("Set-Cookie", "SCI_BAT_AUTH=" + user.sid + "; Max-Age=960; Secure; SameSite=Strict; Path=/");
 
     // Populate json
     data["USERNAME"] = user.name;

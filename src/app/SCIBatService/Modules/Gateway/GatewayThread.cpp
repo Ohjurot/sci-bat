@@ -1,27 +1,34 @@
 #include "GatewayThread.h"
 
-SCI::BAT::Gateway::GatewayThread::GatewayThread(const std::shared_ptr<spdlog::logger>& gatewayLogger /*= spdlog::default_logger()*/)  :
-    m_modbus(64, 64)
+SCI::BAT::Gateway::GatewayThread* SCI::BAT::Gateway::GatewayThread::s_gateway = nullptr;
+
+SCI::BAT::Gateway::GatewayThread::GatewayThread(Mailbox::MailboxThread& mailbox, const std::shared_ptr<spdlog::logger>& gatewayLogger /*= spdlog::default_logger()*/)  :
+    m_modbus(64, 64),
+    m_mailbox(mailbox)
 {
     SetLogger(gatewayLogger);
     m_modbus.SetLogger(gatewayLogger);
 
     m_smaOutputData.enablePowerControle = true;
+
+    // Activate static gateway
+    s_gateway = this;
 }
 
 int SCI::BAT::Gateway::GatewayThread::ThreadMain()
 {
     using namespace std::chrono_literals;
 
-    // TODO: Read configuration
+    // Read configuration
+    LoadConfig();
 
     // Setup SMA Mappings
     NetTools::IPV4Endpoint smaEndpoint;
-    const char* smaEndpointStr = "10.27.210.78:502";
+    std::string smaEndpointStr = fmt::format("{}:{}", m_smaIp, m_smaPort);
     SCI_ASSERT_FMT(smaEndpoint.Parse(smaEndpointStr), "Failed to parse \"{}\" as IPv4 endpoint!", smaEndpointStr);
 
-    GetLogger()->info("Creating IO-Map for SMA Inverter at {}", smaEndpoint.ToString());
-    m_modbus.SetupSlave("sma", smaEndpoint, 3)
+    GetLogger()->info("Creating IO-Map for SMA Inverter at \"{}\" (Node: {})", smaEndpoint.ToString(), m_smaSlaveNode);
+    m_modbus.SetupSlave("sma", smaEndpoint, m_smaSlaveNode)
         // Map inputs
         .Map(Modbus::Slave::RemoteMappingType::AnalogInput, 30201, 2, 0) // U32: ENUM - Status of the device
         .Map(Modbus::Slave::RemoteMappingType::AnalogInput, 30775, 2, 4) // U32: FIX0 - Power
@@ -66,22 +73,43 @@ int SCI::BAT::Gateway::GatewayThread::ThreadMain()
 
     // Main loop
     GetLogger()->info("Starting gateway main loop");
+    int dStatsCounter = 0;
     while (!StopRequested())
     {
         auto f = 4;
 
-        // DEBUG: Print
-        static int rpCnt = 0;
-        if (rpCnt++ == 10 / f)
+        // Debug stats print
+        if (dStatsCounter++ == 10)
         {
-            if (true || m_modbus.SlaveConnected("sma"))
+            if (m_modbus.SlaveConnected("sma"))
             {
 
-                GetLogger()->info("SMA Status: {}, Power: {}W, PowerSetpoint: {}W, Voltage: {}V, Freqency: {}Hz, BatteryCurrent: {}A, BatteryCharge: {}%, BatteryCapacity: {}%, BatteryTemperature: {}gC, BatteryVoltage: {}V, RemainingChargeTime: {}s, RemainingDischargeTime: {}s, BatteryStatus: {}, OperationStatus: {}, BatteryType: {}, SerialNumber: {:#08x}",
+                GetLogger()->debug("SMA Status: {}, Power: {}W, PowerSetpoint: {}W, Voltage: {}V, Freqency: {}Hz, BatteryCurrent: {}A, BatteryCharge: {}%, BatteryCapacity: {}%, BatteryTemperature: {}gC, BatteryVoltage: {}V, RemainingChargeTime: {}s, RemainingDischargeTime: {}s, BatteryStatus: {}, OperationStatus: {}, BatteryType: {}, SerialNumber: {:#08x}",
                     m_smaInputData.status, m_smaInputData.power, m_smaOutputData.power, m_smaInputData.voltage, m_smaInputData.freqenency, m_smaInputData.batteryCurrent, m_smaInputData.batteryCharge, m_smaInputData.batteryCapacity, m_smaInputData.batteryTemperature, m_smaInputData.batteryVoltage, 
                     m_smaInputData.timeUntilFullCharge, m_smaInputData.timeUntilFullDischarge, m_smaInputData.batteryStatus, m_smaInputData.operationStaus, m_smaInputData.batteryType, static_cast<unsigned>(m_smaInputData.serialNumber));
             }
-            rpCnt = 0;
+            dStatsCounter = 0;
+        }
+
+        // Config update
+        if (ConfigReloadRequested())
+        {
+            GetLogger()->info("Config reload requested.");
+            LoadConfig();
+
+            GetLogger()->info("Updating modbus slave connection information");
+            NetTools::IPV4Endpoint smaEndpoint;
+            std::string smaEndpointStr = fmt::format("{}:{}", m_smaIp, m_smaPort);
+            if (smaEndpoint.Parse(smaEndpointStr))
+            {
+                m_modbus.SetupSlave("sma").UpdateConnection(smaEndpoint, m_smaPort);
+            }
+            else
+            {
+                GetLogger()->error("Failed to update inverter modbus ip to \"{}\".", m_smaIp);
+            }
+
+            DoneConfigChange();
         }
 
         // Read & write modbus values
@@ -91,41 +119,51 @@ int SCI::BAT::Gateway::GatewayThread::ThreadMain()
         janitor.Release();
 
         // Update modbus IO
-        spdlog::trace("Initiating gateway periodic update");
-        m_modbus.IOUpdate(1.0f);
+        GetLogger()->debug("Initiating gateway periodic update");
+        m_modbus.IOUpdate(0.0001f * m_refRateInMs);
 
-        // TODO: Process data (Modbus <--> MQTT)
-        static int mdx = 0;
-        mdx++;
-        if (mdx == 100 / (f * 4))
+        // Read the modbus command
+        std::string mqttRequestPowerStr;
+        if (m_mailbox.GetMQTTMessage(std::filesystem::path("battery") / "setpoint", mqttRequestPowerStr))
         {
-            spdlog::info("Power to 100W");
-            m_smaOutputData.enablePowerControle = true;
-            m_smaOutputData.power = 100;
+            int32_t powerSetpoint = std::numeric_limits<int32_t>::max();
+            std::stringstream ss;
+            ss << mqttRequestPowerStr;
+            ss >> powerSetpoint;
+
+            if (powerSetpoint != std::numeric_limits<int32_t>::max() && !ss.fail())
+            {
+                GetLogger()->info("Power was set to {}W via MQTT", powerSetpoint);
+                m_smaOutputData.enablePowerControle = true;
+                m_smaOutputData.power = powerSetpoint;
+            }
+            else
+            {
+                GetLogger()->warn("Invalid MQTT input for Power Setpoint \"{}\"", mqttRequestPowerStr);
+            }
         }
-        else if (mdx == 200 / (f * 4))
+
+        // Write data to MQTT
+        if (true || m_modbus.SlaveConnected("sma")) // DEBUG
         {
-            spdlog::info("Power to 0W");
-            m_smaOutputData.enablePowerControle = true;
-            m_smaOutputData.power = 0;
-        }
-        else if (mdx == 300 / (f * 4))
-        {
-            spdlog::info("Power to -100W");
-            m_smaOutputData.enablePowerControle = true;
-            m_smaOutputData.power = -100;
-        }
-        else if (mdx == 400 / (f * 4))
-        {
-            spdlog::info("Power to 0W");
-            m_smaOutputData.enablePowerControle = true;
-            m_smaOutputData.power = 0;
-            mdx = 0;
+            PublishMQTTInfo(m_smaInputData, m_smaOutputData);
         }
 
         // Wait one second
-        std::this_thread::sleep_for(5s);
+        std::this_thread::sleep_for(1ms * m_refRateInMs);
     }
+
+    // Shutdown
+    GetLogger()->info("Shutdown requested! Asserting save modbus state");
+    m_smaOutputData.enablePowerControle = true;
+    m_smaOutputData.power = 0;
+    SMAWriteOutputData(m_modbus, m_smaOutputData);
+    m_modbus.IOUpdate(99999.0f); // Large number to force reconnect
+    std::this_thread::sleep_for(3s);
+    m_smaOutputData.enablePowerControle = false;
+    m_smaOutputData.power = 0;
+    SMAWriteOutputData(m_modbus, m_smaOutputData);
+    m_modbus.IOUpdate(99999.0f);
 
     return 0;
 }
@@ -135,8 +173,76 @@ void SCI::BAT::Gateway::GatewayThread::OnStop()
     // We don't need to catch the event
 }
 
+void SCI::BAT::Gateway::GatewayThread::PublishMQTTInfo(const SMAInData& id, const SMAOutData& od)
+{
+    // Battery capacity as normalized float
+    if (!m_mailbox.Publish(std::filesystem::path("battery") / "capacity", fmt::format("{}", id.batteryCapacity / 100.f)))
+        return;
+
+    // Battery charge as normalized float
+    if (!m_mailbox.Publish(std::filesystem::path("battery") / "charge", fmt::format("{}", id.batteryCharge / 100.f)))
+        return;
+
+    // Battery current as float
+    if (!m_mailbox.Publish(std::filesystem::path("battery") / "current", fmt::format("{}", id.batteryCurrent)))
+        return;
+
+    // Battery status as string
+    if (!m_mailbox.Publish(std::filesystem::path("battery") / "status", fmt::format("{}", id.batteryStatus)))
+        return;
+
+    // Battery temperature as float in °C
+    if (!m_mailbox.Publish(std::filesystem::path("battery") / "temperature", fmt::format("{}", id.batteryTemperature)))
+        return;
+
+    // Battery type as string
+    if (!m_mailbox.Publish(std::filesystem::path("battery") / "type", fmt::format("{}", id.batteryType)))
+        return;
+
+    // Battery voltage as float
+    if (!m_mailbox.Publish(std::filesystem::path("battery") / "voltage", fmt::format("{}", id.batteryVoltage)))
+        return;
+
+    // Grid voltage as float
+    if (!m_mailbox.Publish(std::filesystem::path("grid") / "voltage", fmt::format("{}", id.voltage)))
+        return;
+
+    // Grid frequency as float
+    if (!m_mailbox.Publish(std::filesystem::path("grid") / "frequency", fmt::format("{}", id.freqenency)))
+        return;
+
+    // Inverter operation status as string
+    if (!m_mailbox.Publish(std::filesystem::path("inverter") / "opstatus", fmt::format("{}", id.operationStaus)))
+        return;
+
+    // Inverter currently delivering / taking power
+    if (!m_mailbox.Publish(std::filesystem::path("inverter") / "power", fmt::format("{}", id.power)))
+        return;
+
+    // Inverter currently controling power
+    if (!m_mailbox.Publish(std::filesystem::path("inverter") / "powercontrole", fmt::format("{}", od.enablePowerControle ? "1" : "0")))
+        return;
+
+    // Inverter current setpoint
+    if (!m_mailbox.Publish(std::filesystem::path("inverter") / "setpoint", fmt::format("{}", od.power)))
+        return;
+
+    // Inverter status
+    if (!m_mailbox.Publish(std::filesystem::path("inverter") / "status", fmt::format("{}", id.status)))
+        return;
+
+    // Battery time until full charge
+    if (!m_mailbox.Publish(std::filesystem::path("battery") / "remaining-charging-time", fmt::format("{}", id.timeUntilFullCharge)))
+        return;
+
+    // Battery time until full discharge
+    if (!m_mailbox.Publish(std::filesystem::path("battery") / "remaining-discharging-time", fmt::format("{}", id.timeUntilFullDischarge)))
+        return;
+}
+
 void SCI::BAT::Gateway::GatewayThread::SMAReadInputData(Modbus::Master& modbus, SMAInData& smaIn)
 {
+    modbus.SetSlaveEndianness(Modbus::Endianness::Big);
     smaIn.status = (SMAStatus)modbus["Status"].GetDWordValue();
     smaIn.power = modbus["Power"].GetDWordValue();
     smaIn.voltage =  SMAConvertFromFix(modbus["Voltage"].GetDWordValue(), 2);
@@ -156,6 +262,7 @@ void SCI::BAT::Gateway::GatewayThread::SMAReadInputData(Modbus::Master& modbus, 
 
 void SCI::BAT::Gateway::GatewayThread::SMAWriteOutputData(Modbus::Master& modbus, SMAOutData& smaOut)
 {
+    modbus.SetSlaveEndianness(Modbus::Endianness::Big);
     if (smaOut.enablePowerControle)
     {
         modbus["SetPowerControlEnable"].SetDWordValue(802);
@@ -164,5 +271,36 @@ void SCI::BAT::Gateway::GatewayThread::SMAWriteOutputData(Modbus::Master& modbus
     else
     {
         modbus["SetPowerControlEnable"].SetDWordValue(803);
+    }
+}
+
+void SCI::BAT::Gateway::GatewayThread::LoadConfig()
+{
+    // Assert config node existence
+    GetLogger()->debug("Asserting default config.");
+    Config::AuthenticateConfig::InsertData(
+        "inverter",
+        (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::Admin, (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::Admin, (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::System,
+        {
+            { "address", "10.27.210.78" },
+            { "port", 502 },
+            { "node", 3 },
+            { "pollrate", 3000 },
+        }
+    );
+
+    // Now read current config
+    nlohmann::json config;
+    GetLogger()->debug("Reading config from db.");
+    if (Config::AuthenticateConfig::ReadData("inverter", (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::System, config))
+    {
+        m_smaIp = config["address"];
+        m_smaPort = config["port"];
+        m_smaSlaveNode = config["node"];
+        m_refRateInMs = config["pollrate"];
+    }
+    else
+    {
+        GetLogger()->error("Failed to read config.");
     }
 }

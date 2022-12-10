@@ -38,9 +38,14 @@ namespace SCI::BAT
             void Stop();
             void Wait(bool requestStop = false);
 
+            inline void ConfigReload()
+            {
+                m_confcReq.test_and_set(std::memory_order::acquire);
+            }
+
             inline bool IsFinished() const noexcept
             {
-                return m_finished.test(std::memory_order::relaxed);
+                return m_started ? m_finished.test(std::memory_order::relaxed) : true;
             }
             inline ExecutionResult GetExecutionResult() const noexcept
             {
@@ -55,9 +60,29 @@ namespace SCI::BAT
                 return m_threadReturnCode;
             }
 
+            inline bool ConfigReloadRequested()
+            {
+                return m_confcReq.test(std::memory_order::acquire);
+            }
+            inline bool ConfigReloadInitiated()
+            {
+                bool init = m_confcInit.test(std::memory_order::acquire);
+                m_confcInit.clear(std::memory_order::release);
+                return init;
+            }
+
         protected:
             virtual int ThreadMain() = 0;
             virtual void OnStop() {};
+
+            inline void RaisConfigChange()
+            {
+                m_confcInit.test_and_set(std::memory_order::acquire);
+            }
+            void DoneConfigChange()
+            {
+                m_confcReq.clear(std::memory_order::release);
+            }
 
             inline bool StopRequested()
             {
@@ -77,5 +102,8 @@ namespace SCI::BAT
             int m_threadReturnCode = -1;
 
             std::stop_token* m_stopToken = nullptr;
+
+            std::atomic_flag m_confcInit;
+            std::atomic_flag m_confcReq;
     };
 }

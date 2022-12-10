@@ -76,3 +76,19 @@ bool SCI::Modbus::MSConnection::Execute(const std::function<void(MSConnection&)>
 
     return false;
 }
+
+void SCI::Modbus::MSConnection::Update(const NetTools::IPV4Endpoint& endpoint, int device /*= -1*/)
+{
+    // Close current connection
+    bool shouldConnect = m_connected;
+    if (shouldConnect)
+        Disconnect();
+
+    // Update internals
+    m_ctxEndpoint = endpoint;
+    m_device = device;
+
+    // Restart connection
+    if (shouldConnect)
+        Connect();
+}

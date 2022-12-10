@@ -19,8 +19,20 @@
 #include <string>
 #include <string_view>
 
+#ifdef SCI_WINDOWS
+#define SCI_MODBUS_ENDIAN SCI::Modbus::Endianness::Little
+#else
+#define SCI_MODBUS_ENDIAN SCI::Modbus::Endianness::Big 
+#endif
+
 namespace SCI::Modbus
 {
+    enum class Endianness
+    {
+        Little,
+        Big,
+    };
+
     class Master : public Util::SPDLogable
     {
         public:
@@ -57,6 +69,11 @@ namespace SCI::Modbus
                 return At(name);
             }
 
+            inline void SetSlaveEndianness(Endianness ed)
+            {
+                m_swapEndian = ed != SCI_MODBUS_ENDIAN;
+            }
+
             bool IOUpdate(float deltaT);
             inline ProcessImage& GetProcessImage()
             {
@@ -76,5 +93,7 @@ namespace SCI::Modbus
             std::unordered_map<std::string, std::string> m_aliasMapping;
             std::unordered_map<std::string, Slave> m_slaves;
             ProcessImage m_processImage;
+
+            bool m_swapEndian = false;
     };
 }

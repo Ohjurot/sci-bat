@@ -28,8 +28,8 @@ namespace SCI::Modbus
             IOHandle() = delete;
             IOHandle(const IOHandle&) = default;
             IOHandle(IOHandle&&) noexcept = default;
-            IOHandle(ProcessImage& processImage, DataType type, bool isInput, size_t byteOffset, uint8_t bitOffset = 0) :
-                m_pi(processImage), m_type(type), m_isInput(isInput), m_byteOffset(byteOffset), m_bitOffset(bitOffset)
+            IOHandle(ProcessImage& processImage, DataType type, bool isInput, size_t byteOffset, uint8_t bitOffset = 0, bool swapEndian = false) :
+                m_pi(processImage), m_type(type), m_isInput(isInput), m_byteOffset(byteOffset), m_bitOffset(bitOffset), m_swapEndian(swapEndian)
             { }
 
             IOHandle& operator=(const IOHandle&) = default;
@@ -130,7 +130,7 @@ namespace SCI::Modbus
                     throw std::runtime_error("Type mismatch!");
                 }
 
-                return SwapEndian<T>(*((T*)&BufferHelper()[m_byteOffset]));
+                return m_swapEndian ? SwapEndian<T>(*((T*)&BufferHelper()[m_byteOffset])) : *((T*)&BufferHelper()[m_byteOffset]);
             }
             
             template<typename T>
@@ -146,7 +146,7 @@ namespace SCI::Modbus
                     throw std::runtime_error("Write access to input (read-only) data is not allowed!");
                 }
 
-                *((T*)&BufferHelper()[m_byteOffset]) = SwapEndian<T>(value);
+                *((T*)&BufferHelper()[m_byteOffset]) = m_swapEndian ? SwapEndian<T>(value) : value;
             }
 
             const uint8_t* BufferHelper() const 
@@ -179,6 +179,8 @@ namespace SCI::Modbus
 
         private:
             ProcessImage& m_pi;
+
+            bool m_swapEndian = false;
             
             DataType m_type = DataType::None;
             bool m_isInput = false;

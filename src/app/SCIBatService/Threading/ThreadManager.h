@@ -36,11 +36,19 @@ namespace SCI::BAT
             void Stop();
             void Wait();
 
+            // Update step
+            void Update();
+
             size_t IsRunning();
 
             inline size_t operator()()
             {
-                return IsRunning();
+                if (IsRunning())
+                {
+                    Update();
+                    return true;
+                }
+                return false;
             }
 
             inline ThreadManager& operator<<(Thread& thread)

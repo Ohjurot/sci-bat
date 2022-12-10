@@ -63,10 +63,10 @@ function reti_new_project(projectName, path)
 
     -- Windows / Linux
     filter { "system:Windows" }
-        defines {  string.upper(projectName) .. "_WINDOWS", "NOMINMAX" }
+        defines {  string.upper(projectName) .. "_WINDOWS", "SCI_WINDOWS", "NOMINMAX" }
     filter {}
     filter { "system:Linux" }
-        defines {  string.upper(projectName) .. "_LINUX" }
+        defines {  string.upper(projectName) .. "_LINUX", "SCI_LINUX" }
         links { "stdc++", "uuid" }
     filter {}
 

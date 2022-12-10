@@ -98,7 +98,7 @@ SCI::Modbus::IOHandle SCI::Modbus::Master::At(const std::string_view& name)
 
 SCI::Modbus::IOHandle SCI::Modbus::Master::At(IOType type, IOHandle::DataType dtype, size_t byteAddress, uint8_t bitAddress)
 {
-    return IOHandle(m_processImage, dtype, type == IOType::Input, byteAddress, bitAddress);
+    return IOHandle(m_processImage, dtype, type == IOType::Input, byteAddress, bitAddress, m_swapEndian);
 }
 
 bool SCI::Modbus::Master::ParseAddressString(const std::string_view& addressString, IOType& type, IOHandle::DataType& dtype, size_t& byteAddress, uint8_t& bitAddress)

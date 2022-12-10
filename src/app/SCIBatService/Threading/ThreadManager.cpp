@@ -73,3 +73,27 @@ void SCI::BAT::ThreadManager::Wait()
         }
     }
 }
+
+void SCI::BAT::ThreadManager::Update()
+{
+    // Check if release is request
+    bool doConfig = false;
+    for (auto* thread : m_threads)
+    {
+        if (thread->ConfigReloadInitiated())
+        {
+            ;
+            doConfig = true;
+            break;
+        }
+    }
+
+    // Set config flags on all threads
+    if (doConfig)
+    {
+        for (auto* thread : m_threads)
+        {
+            thread->ConfigReload();
+        }
+    }
+}

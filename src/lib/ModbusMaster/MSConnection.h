@@ -35,6 +35,9 @@ namespace SCI::Modbus
             MSConnection& operator=(const MSConnection&) = delete;
             MSConnection& operator=(MSConnection&& other) noexcept;
 
+            // Update connection details
+            void Update(const NetTools::IPV4Endpoint& endpoint, int device = -1);
+
             // Connection management
             bool Connect();
             void Disconnect();

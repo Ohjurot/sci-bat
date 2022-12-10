@@ -1,0 +1,14 @@
+[Unit]
+Description=sci-bat gateway
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=www-data
+ExecStart=/usr/bin/sci-bat-service
+
+[Install]
+WantedBy=multi-user.target

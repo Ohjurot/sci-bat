@@ -11,6 +11,7 @@
 #include <Threading/ThreadManager.h>
 
 #include <Modules/SCIBatWebserver.h>
+#include <Modules/Mailbox/MailboxThread.h>
 #include <Modules/Gateway/GatewayThread.h>
 #include <Modules/Webserver/HTTPAuthentication.h>
 
@@ -116,6 +117,10 @@ namespace SCI::BAT
         auto sodiumrc = sodium_init();
         SCI_ASSERT_FMT(sodiumrc == 0, "sodium_init failed with code {}", sodiumrc);
 
+        // Init mosquitto
+        auto mosquittorc = mosquitto_lib_init();
+        SCI_ASSERT_FMT(mosquittorc == MOSQ_ERR_SUCCESS, "mosquitto_lib_init failed with code {}", mosquittorc);
+
         // Init settings db (data.db)
         auto settingDbPath = confDirectory / "data.db";
         spdlog::info("Inisialising systems configuration database {}", settingDbPath.generic_string());
@@ -150,14 +155,18 @@ namespace SCI::BAT
         webserver.RegisterRoutes();
         webserver.ErrorFooter() = "&copy; Copyright 2022 Smart Chaos Integrations";
 
+        // Create mailbox module
+        spdlog::info("Configuring MQTT Mailbox");
+        SCI::BAT::Mailbox::MailboxThread mailbox(CreateLogger(args, "mailbox"));
+
         // Create gateway module
         spdlog::info("Loading Modbus <---> MQTT Gateway");
-        SCI::BAT::Gateway::GatewayThread gateway(CreateLogger(args, "gateway"));
+        SCI::BAT::Gateway::GatewayThread gateway(mailbox, CreateLogger(args, "gateway"));
 
         // Manage the threads
         spdlog::info("Loading ThreadManager");
         SCI::BAT::ThreadManager tmgr;
-        tmgr << webserver << gateway;
+        tmgr << webserver << mailbox << gateway;
 
         // Start the thread
         spdlog::info("Target start reached!");
@@ -180,7 +189,7 @@ namespace SCI::BAT
         spdlog::info("Target stop reached!");
 
         // Application termination routines
-
+        mosquitto_lib_cleanup();
 
         return 0;
     }

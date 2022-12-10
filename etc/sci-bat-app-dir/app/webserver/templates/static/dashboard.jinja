@@ -1,0 +1,82 @@
+{% extends "../skeleton/base.jinja" %}
+
+{% block content %}
+<h3 class="text-center">Dashboard</h3>
+<hr/>
+
+{# Loader (Will get invisible if data is ready) #}
+<div class="d-block" id="sci-bat-dash-placeholder">
+    <p class="placeholder-glow">
+      <span class="placeholder col-12"></span>
+      <span class="placeholder col-12"></span>
+      <span class="placeholder col-12"></span>
+      <span class="placeholder col-12"></span>
+      <span class="placeholder col-12"></span>
+    </p>
+</div>
+
+{# Dashbord content (Initialy invisible) #}
+<div class="d-none" id="sci-bat-dash-content">
+    {# Charging metadata #}
+    <div class="row">
+        <div class="col-md-4 col-sm-12"><p class="text-center" id="sci-bat-dash-d-top-bolt"><i class="fa-solid fa-6x fa-bolt" style="--fa-animation-duration: 1s;"></i></p></div>
+        <div class="col-md-8 col-sm-12">
+            <p class="text-center text-body">
+                <span class="fs-4 fw-semibold" id="sci-bat-dash-d-top-header">Charging</span>
+                <div class="progress" style="height: 2em;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" id="sci-bat-dash-d-top-bar" style="width: 50%;" role="progressbar">--%</div>
+                </div>
+                <p class="fw-light invisible" id="sci-bat-dash-d-top-ptime">Estimated time remaining: <span id="sci-bat-dash-d-top-time">--</span> minutes.</p>
+            </p>
+        </div>
+    </div>
+    <hr/>
+
+    {# Detailed metadata #}
+    <div class="row">
+        {# Stats of the battery #}
+        <div class="col-md-4 col-sm-12">
+            <p class="text-secondary text-center"><i class="fa-solid fa-4x fa-car-battery"></i><br/><span class="text-body fs-4">Battery</span></p>
+            <p class="text-primary text-center fs-5">
+                Status: <span id="sci-bat-dash-d-battery-status">n/a</span><br/>
+                Voltage: <span id="sci-bat-dash-d-battery-voltage">--</span>V<br/>
+                Current: <span id="sci-bat-dash-d-battery-current">--</span>A<br/>
+                Temperature: <span id="sci-bat-dash-d-battery-temperature">--</span>°C
+            </p>
+        </div>
+        {# Stats of the inverter #}
+        <div class="col-md-4 col-sm-12">
+            <p class="text-secondary text-center"><i class="fa-solid fa-4x fa-arrows-spin"></i><br/><span class="text-body fs-4">Inverter</span></p>
+            <p class="text-primary text-center fs-5">
+                Status: <span id="sci-bat-dash-d-inverter-status">n/a</span><br/>
+                Power: <span id="sci-bat-dash-d-inverter-power">--</span>W<br/>
+                Setpoint: <span id="sci-bat-dash-d-inverter-setpoint">--</span>W
+            </p>
+        </div>
+        {# Stats of the grid #}
+        <div class="col-md-4 col-sm-12">
+            <p class="text-secondary text-center"><i class="fa-solid fa-4x fa-plug-circle-bolt"></i><br/><span class="text-body fs-4">Grid</span></p>
+            <p class="text-primary text-center fs-5">
+                Voltage: <span id="sci-bat-dash-d-grid-voltage">--</span>V<br/>
+                Frequency: <span id="sci-bat-dash-d-grid-frequency">--</span>Hz
+            </p>
+        </div>
+    </div>
+</div>
+
+<hr/>
+
+{# Bottom footer (Update) #}
+<div class="row align-items-center">
+    <div class="col text-start fs-6 fw-lighter font-monospace">Last Update: <span id="sci-bat-dash-last-update">n/a</span></div>
+    <div class="col text-end"><button class="btn btn-sm btn-link" id="sci-bat-dash-reload">Reload</button></div>
+</div>
+
+{# JS Hints #}
+<a href="{{ HOST }}/api/status" class="invisible" id="sci-bat-dash-jsonlocation"></a>
+
+{% endblock %}
+
+{% block script %}
+<script src="{{ HOST }}/res/js/dashboard.js"></script>
+{% endblock %}

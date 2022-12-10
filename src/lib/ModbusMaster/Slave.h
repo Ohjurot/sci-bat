@@ -72,6 +72,8 @@ namespace SCI::Modbus
             Slave& operator=(const Slave&) = delete;
             Slave& operator=(Slave&& other) noexcept;
 
+            void UpdateConnection(const SCI::NetTools::IPV4Endpoint& endpoint, int deviceId = -1);
+
             Slave& Map(const Mapping& mapping);
             Slave& Map(Mapping&& mapping);
             inline Slave& Map(RemoteMappingType remoteType, int remoteAddress, uint16_t count, size_t localByteAddress, uint8_t localBitAddress = 0)

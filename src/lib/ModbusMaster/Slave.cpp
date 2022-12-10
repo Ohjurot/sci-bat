@@ -180,3 +180,8 @@ SCI::Modbus::Slave::IOUpdateResult SCI::Modbus::Slave::ExecuteIOUpdate(ProcessIm
     return IOUpdateResult::ConnectionError;
 }
 
+void SCI::Modbus::Slave::UpdateConnection(const SCI::NetTools::IPV4Endpoint& endpoint, int deviceId /*= -1*/)
+{
+    m_connection.Update(endpoint, deviceId);
+}
+

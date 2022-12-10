@@ -8,27 +8,6 @@
 #include <Modules/Webserver/WebserverThread.h>
 #include <Modules/Webserver/HTTPAuthentication.h>
 
-class MyController : public SCI::BAT::Webserver::HTTPController
-{ 
-    public:
-        MyController() = default;
-
-        void OnGet(const httplib::Request& request, httplib::Response& response) override
-        {
-            inja::json data;
-            data["TITLE"] = "Example page";
-            
-            auto user = SCI::BAT::Webserver::HTTPAuthentication::Session(request, response, data);
-
-            nlohmann::json uc;
-            ReadConfig("user." + user.name, user, uc);
-            data["raw_json"] = nlohmann::to_string(uc);
-
-            Section(data);
-            RenderView(request, response, "test", data);
-        }
-};
-
 namespace SCI::BAT
 {
     class SCIBatWebserver : public Webserver::WebserverThread

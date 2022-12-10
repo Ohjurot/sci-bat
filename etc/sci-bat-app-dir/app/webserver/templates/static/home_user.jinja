@@ -1,0 +1,15 @@
+{% extends "../skeleton/base.jinja" %}
+
+{% block content %}
+<h2 class="text-center">Welcome</h2>
+<p class="text-center">
+    <br/>
+    Some introduction text for the AUTHENTICATED user...
+    <br/><br/>
+</p>
+<hr>
+<p class="text-center">
+    <a href="{{ HOST }}/Dashboard" class="btn btn-primary">Dashboard</a>
+    <a href="{{ HOST }}/Settings" class="btn btn-secondary">Settings</a>
+</p>
+{% endblock %}
