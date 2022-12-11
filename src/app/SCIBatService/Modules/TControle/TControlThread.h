@@ -5,6 +5,8 @@
 #include <Modules/Mailbox/MailboxThread.h>
 #include <Modules/Webserver/HTTPAuthentication.h>
 
+#include <SCIUtil/Exception.h>
+
 #include <Vendor/serialib.h>
 #include <fmt/format.h>
 #include <SCIUtil/SPDLogable.h>
@@ -26,20 +28,35 @@ namespace SCI::BAT::TControle
                 HeatingPwr3 = 3,
             };
 
+            struct Status
+            {
+                OperationMode mode;
+                bool relais[4] = { false, false, false, false };
+            };
+
         public:
             TControlThread(Mailbox::MailboxThread& mailbox, const std::shared_ptr<spdlog::logger>& logger = spdlog::default_logger()) :
                 m_mailbox(mailbox)
             {
                 SetLogger(logger);
+                s_instance = this;
             }
 
             int ThreadMain() override;
-            
+
+            static inline Status GetStatus()
+            {
+                SCI_ASSERT(s_instance, "TControlThread not initialized properly!");
+                return { s_instance->m_mode, { s_instance->m_relaisStates[0], s_instance->m_relaisStates[1], s_instance->m_relaisStates[2], s_instance->m_relaisStates[3] } };
+            }
+
         private:
             bool SetRelais(unsigned int index, bool on);
             bool SerialSend(const void* data, unsigned int byts);
 
         private:
+            static TControlThread* s_instance;
+    
             serialib m_serial;
 
             std::string m_serialDevice = "/dev/ttyS0";
@@ -53,7 +70,7 @@ namespace SCI::BAT::TControle
             OperationMode m_mode = OperationMode::Off;
             std::chrono::system_clock::time_point m_fanOffTime = std::chrono::system_clock::now();
             bool m_modeApplyed = false;
-            bool m_relaisStates[4];
+            bool m_relaisStates[4] = { false, false, false, false };
 
             // Watchdog
             std::chrono::system_clock::time_point m_watchdogExpires = std::chrono::system_clock::now();

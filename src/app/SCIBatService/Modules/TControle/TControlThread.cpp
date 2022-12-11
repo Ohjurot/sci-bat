@@ -1,5 +1,7 @@
 #include "TControlThread.h"
 
+SCI::BAT::TControle::TControlThread* SCI::BAT::TControle::TControlThread::s_instance = nullptr;
+
 int SCI::BAT::TControle::TControlThread::ThreadMain()
 {
     using namespace std::chrono_literals;
@@ -54,7 +56,6 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
 
             if (msgValid)
             {
-
                 // Set watchdog
                 m_watchdogExpires = now + 15min;
             }

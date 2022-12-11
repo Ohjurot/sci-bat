@@ -10,6 +10,7 @@ void SCI::BAT::Webserver::Controllers::StatusController::OnGet(const httplib::Re
     {
         auto smaDataIn = Gateway::GatewayThread::GetInputData();
         auto smaDataOut = Gateway::GatewayThread::GetOuputData();
+        auto tcStatus = TControle::TControlThread::GetStatus();
         std::string outData = nlohmann::json(
             {
                 {
@@ -39,7 +40,20 @@ void SCI::BAT::Webserver::Controllers::StatusController::OnGet(const httplib::Re
                         {"powercontrole", smaDataOut.enablePowerControle},
                         {"setpoint", smaDataOut.power},
                     }
-                }                
+                },
+                {
+                    "relays", {
+                        {"relay1", tcStatus.relais[0]},
+                        {"relay2", tcStatus.relais[1]},
+                        {"relay3", tcStatus.relais[2]},
+                        {"relay4", tcStatus.relais[3]},
+                    }
+                },
+                {
+                    "tcontrol", {
+                        {"mode", fmt::format("{}", tcStatus.mode)},
+                    }
+                }
             }
         ).dump();
         response.set_content(outData, "application/json");

@@ -80,6 +80,22 @@ function SciBatDashUpdate(json)
             break;
     }
 
+    // Setup relais
+    if(json["relays"]["relay1"]) $("#sci-bat-dash-d-relay-r1i").removeClass("text-bg-dark").addClass("text-bg-success");
+    else $("#sci-bat-dash-d-relay-r1i").removeClass("text-bg-success").addClass("text-bg-dark");
+    if(json["relays"]["relay2"]) $("#sci-bat-dash-d-relay-r2i").removeClass("text-bg-dark").addClass("text-bg-success");
+    else $("#sci-bat-dash-d-relay-r2i").removeClass("text-bg-success").addClass("text-bg-dark");
+    if(json["relays"]["relay3"]) $("#sci-bat-dash-d-relay-r3i").removeClass("text-bg-dark").addClass("text-bg-success");
+    else $("#sci-bat-dash-d-relay-r3i").removeClass("text-bg-success").addClass("text-bg-dark");
+    if(json["relays"]["relay4"]) $("#sci-bat-dash-d-relay-r4i").removeClass("text-bg-dark").addClass("text-bg-success");
+    else $("#sci-bat-dash-d-relay-r4i").removeClass("text-bg-success").addClass("text-bg-dark");
+
+    // Cooloff delay
+    if((json["tcontrol"]["mode"] == "Off" || json["tcontrol"]["mode"] == "Cooling") && json["relays"]["relay2"]) $("#sci-bat-dash-d-tcontrol-cooloff").removeClass("invisible");
+    else $("#sci-bat-dash-d-tcontrol-cooloff").addClass("invisible");
+
+    // Status
+    $("#sci-bat-dash-d-tcontrol-status").html(json["tcontrol"]["mode"]);
 
     // Setup batter metadata
     $("#sci-bat-dash-d-battery-status").html(json["battery"]["status"]);
