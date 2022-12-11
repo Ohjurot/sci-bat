@@ -5,7 +5,7 @@
 #include <Modules/Mailbox/MailboxThread.h>
 #include <Modules/Webserver/HTTPAuthentication.h>
 
-#include <vendor/serialib.h>
+#include <Vendor/serialib.h>
 #include <SCIUtil/SPDLogable.h>
 
 namespace SCI::BAT::TControle
