@@ -26,6 +26,8 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
 
 bool SCI::BAT::TControle::TControlThread::SetRelais(unsigned int index, bool on)
 {
+    using namespace std::chrono_literals;
+
     GetLogger()->debug("Setting relais {} to {}", index, on);
     if (index < 4)
     {
@@ -33,6 +35,7 @@ bool SCI::BAT::TControle::TControlThread::SetRelais(unsigned int index, bool on)
         {
             if (SerialSend(m_bytesOn[index], m_bytesWordSize))
             {
+                std::this_thread::sleep_for(50ms);
                 return true;
             }
         }
@@ -40,6 +43,7 @@ bool SCI::BAT::TControle::TControlThread::SetRelais(unsigned int index, bool on)
         {
             if (SerialSend(m_bytesOff[index], m_bytesWordSize))
             {
+                std::this_thread::sleep_for(50ms);
                 return true;
             }
         }
