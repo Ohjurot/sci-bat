@@ -13,6 +13,7 @@
 #include <Modules/SCIBatWebserver.h>
 #include <Modules/Mailbox/MailboxThread.h>
 #include <Modules/Gateway/GatewayThread.h>
+#include <Modules/TControle/TControlThread.h>
 #include <Modules/Webserver/HTTPAuthentication.h>
 
 #include <SCIUtil/Exception.h>
@@ -180,10 +181,14 @@ namespace SCI::BAT
         spdlog::info("Loading Modbus <---> MQTT Gateway");
         SCI::BAT::Gateway::GatewayThread gateway(mailbox, CreateLogger(args, "gateway"));
 
+        // Create temperature control thread
+        spdlog::info("Loading TControl (Relays card)");
+        SCI::BAT::TControle::TControlThread tcontrol(mailbox, CreateLogger(args, "tcontrol"));
+
         // Manage the threads
         spdlog::info("Loading ThreadManager");
         SCI::BAT::ThreadManager tmgr;
-        tmgr << webserver << mailbox << gateway;
+        tmgr << webserver << mailbox << gateway << tcontrol;
 
         // Start the thread
         spdlog::info("Target start reached!");

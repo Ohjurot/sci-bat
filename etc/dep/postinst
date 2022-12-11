@@ -13,6 +13,12 @@ setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/sci-bat
 chmod -R 775 /etc/sci-bat/
 chmod -R 775 /usr/bin/sci-bat.d/
 
+# Make the etc user owned by www-data
+chown www-data:www-data -R /etc/sci-bat/
+
+# Allow www-data to dialout
+usermod -a -G dialout www-data
+
 # enable service
 systemctl enable sci-bat.service
 systemctl start sci-bat.service
