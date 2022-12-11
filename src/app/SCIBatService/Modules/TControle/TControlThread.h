@@ -38,7 +38,7 @@ namespace SCI::BAT::TControle
             Mailbox::MailboxThread& m_mailbox;
 
             // Constant data
-            const unsigned int m_bytesWordSize = 4;
+            const unsigned int m_bytesWordSize = 8;
             const char* const m_bytesOn[4] = {
                 "\x55\x56\x00\x00\x00\x01\x01\xAD",
                 "\x55\x56\x00\x00\x00\x02\x01\xAE",
