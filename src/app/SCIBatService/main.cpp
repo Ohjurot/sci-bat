@@ -123,22 +123,6 @@ namespace SCI::BAT
         auto mosquittorc = mosquitto_lib_init();
         SCI_ASSERT_FMT(mosquittorc == MOSQ_ERR_SUCCESS, "mosquitto_lib_init failed with code {}", mosquittorc);
 
-        // ... Serial Test ...
-        serialib slib;
-        auto sor = slib.openDevice("/dev/ttyS0", 9600, SERIAL_DATABITS_8, SERIAL_PARITY_NONE, SERIAL_STOPBITS_1);
-        if (sor == 1)
-        {
-            using namespace std::chrono_literals;
-
-            const char* onWord = "\x55\x56\x00\x00\x00\x01\x01\xAD";
-            const char* offWord = "\x55\x56\x00\x00\x00\x01\x02\xAE";
-            slib.writeBytes(onWord, 8);
-            std::this_thread::sleep_for(5s);
-            slib.writeBytes(offWord, 8);
-            slib.closeDevice();
-        }
-
-
         // Init settings db (data.db)
         auto settingDbPath = confDirectory / "data.db";
         spdlog::info("Inisialising systems configuration database {}", settingDbPath.generic_string());

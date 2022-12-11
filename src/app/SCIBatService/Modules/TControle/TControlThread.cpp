@@ -6,6 +6,8 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
 
     while (!StopRequested())
     {
+        GetLogger()->trace("Updating relais");
+
         SetRelais(0, true);
         SetRelais(1, true);
         SetRelais(2, true);
@@ -24,18 +26,27 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
 
 bool SCI::BAT::TControle::TControlThread::SetRelais(unsigned int index, bool on)
 {
+    GetLogger()->debug("Setting relais {} to {}", index, on);
     if (index < 4)
     {
         if (on)
         {
-            return SerialSend(m_bytesOn[index], m_bytesWordSize);
+            if (SerialSend(m_bytesOn[index], m_bytesWordSize))
+            {
+                return true;
+            }
         }
         else
         {
-            return SerialSend(m_bytesOff[index], m_bytesWordSize);
+            if (SerialSend(m_bytesOff[index], m_bytesWordSize))
+            {
+                return true;
+            }
         }
     }
 
+    // Error 
+    GetLogger()->error("Failed setting relais {} to {}", index, on);
     return false;
 }
 
