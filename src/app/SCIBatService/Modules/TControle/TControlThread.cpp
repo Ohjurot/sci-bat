@@ -21,7 +21,6 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
                 if (m_mode == OperationMode::HeatingPwr1 || m_mode == OperationMode::HeatingPwr2 || m_mode == OperationMode::HeatingPwr3)
                 {
                     GetLogger()->info("Applying fan cooloff time");
-                    SetRelais(1, true);
                     m_fanOffTime = now + 1ms * m_fanCooloffTime;
                 }
 
@@ -89,16 +88,19 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
                         break;
                     case OperationMode::HeatingPwr1:
                         SetRelais(0, false);
+                        SetRelais(1, true);
                         SetRelais(2, true);
                         SetRelais(3, false);
                         break;
                     case OperationMode::HeatingPwr2:
                         SetRelais(0, false);
+                        SetRelais(1, true);
                         SetRelais(2, false);
                         SetRelais(3, true);
                         break;
                     case OperationMode::HeatingPwr3:
                         SetRelais(0, false);
+                        SetRelais(1, true);
                         SetRelais(2, true);
                         SetRelais(3, true);
                         break;
