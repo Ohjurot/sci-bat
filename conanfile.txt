@@ -9,9 +9,6 @@
     stduuid/1.2.2
     libsodium/cci.20220430
 
-    # Serial (Relais)
-    serial/1.2.1
-
     # Config database
     unqlite/1.1.9
 

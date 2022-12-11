@@ -1,20 +1,18 @@
 #!/bin/bash
 
 # make files executable
-chmod +x /usr/bin/sci-bat-example-webserver
-chmod +x /usr/bin/sci-bat-example-modbus
-chmod +x /usr/bin/sci-bat-example-mqtt
+chmod +x /usr/bin/sci-bat
 
 # generate a temporary ssl certificate
-openssl req -x509 -newkey rsa:2048 -keyout /etc/sci-bat-example-webserver/key.pem -out /etc/sci-bat-example-webserver/cert.pem -sha256 -days 365 -nodes -subj /CN=localhost
+openssl req -x509 -newkey rsa:2048 -keyout /etc/sci-bat/key.pem -out /etc/sci-bat/cert.pem -sha256 -days 365 -nodes -subj /CN=localhost
 
 # Allow port access
-setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/sci-bat-example-webserver
+setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/sci-bat
 
 # Allow all users to read from the configuration and application data
-chmod -R 775 /etc/sci-bat-example-webserver/
-chmod -R 775 /usr/bin/sci-bat-example-webserver.d/
+chmod -R 775 /etc/sci-bat/
+chmod -R 775 /usr/bin/sci-bat.d/
 
 # enable service
-systemctl enable sci-bat-example-webserver.service
-systemctl start sci-bat-example-webserver.service
+systemctl enable sci-bat.service
+systemctl start sci-bat.service

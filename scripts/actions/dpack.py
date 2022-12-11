@@ -57,18 +57,18 @@ if __name__ == "__main__":
         # Copy all binary files
         os.mkdir(f"{packageDir}/usr")
         os.mkdir(f"{packageDir}/usr/bin")
-        shutil.copyfile("./build/x86_64-release/bin/sci-bat-service", f"{packageDir}/usr/bin/sci-bat-service")
+        shutil.copyfile("./build/x86_64-release/bin/sci-bat-service", f"{packageDir}/usr/bin/sci-bat")
 
         # Copy webserver data
-        os.mkdir(f"{packageDir}/usr/bin/sci-bat-service.d/")
-        os.mkdir(f"{packageDir}/usr/bin/sci-bat-service.d/webserver")
-        shutil.copytree("./etc/sci-bat-app-dir/app/webserver/www-data", f"{packageDir}/usr/bin/sci-bat-service.d/webserver/www-data")
-        shutil.copytree("./etc/sci-bat-app-dir/app/webserver/templates", f"{packageDir}/usr/bin/sci-bat-service.d/webserver/templates")
+        os.mkdir(f"{packageDir}/usr/bin/sci-bat.d/")
+        os.mkdir(f"{packageDir}/usr/bin/sci-bat.d/webserver")
+        shutil.copytree("./etc/sci-bat-app-dir/app/webserver/www-data", f"{packageDir}/usr/bin/sci-bat.d/webserver/www-data")
+        shutil.copytree("./etc/sci-bat-app-dir/app/webserver/templates", f"{packageDir}/usr/bin/sci-bat.d/webserver/templates")
 
         # Create config dirs
         os.mkdir(f"{packageDir}/etc")
-        os.mkdir(f"{packageDir}/etc/sci-bat-service")
-        shutil.copyfile("./etc/sci-bat-app-dir/conf/webserver-conf.xml", f"{packageDir}/etc/sci-bat-service/webserver-conf.xml")
+        os.mkdir(f"{packageDir}/etc/sci-bat")
+        shutil.copyfile("./etc/sci-bat-app-dir/conf/webserver-conf-linux.xml", f"{packageDir}/etc/sci-bat/webserver-conf.xml")
 
         #  Service 
         os.mkdir(f"{packageDir}/etc/systemd")
