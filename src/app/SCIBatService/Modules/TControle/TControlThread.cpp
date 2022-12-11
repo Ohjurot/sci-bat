@@ -6,67 +6,69 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
 
     while (!StopRequested())
     {
-        // Watchdog (value sequential write required)
+        // Get timestamp
         auto now = std::chrono::system_clock::now();
-        if (m_watchdogExpires < now)
+
+        // Check for new MQTT message
+        std::string msg;
+        if (m_mailbox.GetMQTTMessage(std::filesystem::path("tcontrol") / "mode", msg))
+        {
+            // Set active mode
+            bool msgValid = true;
+            if (msg == "off" || msg == "0")
+            {
+                // Set fan off time
+                if (m_mode == OperationMode::HeatingPwr1 || m_mode == OperationMode::HeatingPwr2 || m_mode == OperationMode::HeatingPwr3)
+                {
+                    GetLogger()->info("Applying fan cooloff time");
+                    m_fanOffTime = now + 1ms * m_fanCooloffTime;
+                }
+
+                m_modeApplyed = m_mode == OperationMode::Off;
+                m_mode = OperationMode::Off;
+            }
+            else if (msg == "cooling" || msg == "-1")
+            {
+                m_modeApplyed = m_mode == OperationMode::Cooling;
+                m_mode = OperationMode::Cooling;
+            }
+            else if (msg == "heating" || msg == "h1" || msg == "1")
+            {
+                m_modeApplyed = m_mode == OperationMode::HeatingPwr1;
+                m_mode = OperationMode::HeatingPwr1;
+            }
+            else if (msg == "h2" || msg == "2")
+            {
+                m_modeApplyed = m_mode == OperationMode::HeatingPwr2;
+                m_mode = OperationMode::HeatingPwr2;
+            }
+            else if (msg == "h3" || msg == "3")
+            {
+                m_modeApplyed = m_mode == OperationMode::HeatingPwr3;
+                m_mode = OperationMode::HeatingPwr3;
+            }
+            else
+            {
+                msgValid = false;
+            }
+
+            if (msgValid)
+            {
+
+                // Set watchdog
+                m_watchdogExpires = now + 15min;
+            }
+            else
+            {
+                GetLogger()->warn("Can't interpret MQTT value \"{}\"", msg);
+            }
+        }
+
+        // Watchdog (value sequential write required)
+        if (now < m_watchdogExpires)
         {
             // Reset watchdog tripped state
             m_watchdogTriped = false;
-
-            // Check for new MQTT message
-            std::string msg;
-            if(m_mailbox.GetMQTTMessage(std::filesystem::path("tcl") / "mode", msg))
-            {
-                // Set active mode
-                bool msgValid = true;
-                if (msg == "off" || msg == "0")
-                {
-                    // Set fan off time
-                    if (m_mode == OperationMode::HeatingPwr1 || m_mode == OperationMode::HeatingPwr2 || m_mode == OperationMode::HeatingPwr3)
-                    {
-                        GetLogger()->info("Applying fan cooloff time");
-                        m_fanOffTime = now + 1ms * m_fanCooloffTime;
-                    }
-
-                    m_modeApplyed = m_mode == OperationMode::Off;
-                    m_mode = OperationMode::Off;
-                }
-                else if (msg == "cooling" || msg == "-1")
-                {
-                    m_modeApplyed = m_mode == OperationMode::Cooling;
-                    m_mode = OperationMode::Cooling;
-                }
-                else if (msg == "heating" || msg == "h1" || msg == "1")
-                {
-                    m_modeApplyed = m_mode == OperationMode::HeatingPwr1;
-                    m_mode = OperationMode::HeatingPwr1;
-                }
-                else if (msg == "h2" || msg == "2")
-                {
-                    m_modeApplyed = m_mode == OperationMode::HeatingPwr2;
-                    m_mode = OperationMode::HeatingPwr2;
-                }
-                else if (msg == "h3" || msg == "3")
-                {
-                    m_modeApplyed = m_mode == OperationMode::HeatingPwr3;
-                    m_mode = OperationMode::HeatingPwr3;
-                }
-                else
-                {
-                    msgValid = false;
-                }
-
-                if (msgValid)
-                {
-
-                    // Set watchdog
-                    m_watchdogExpires = now + 15min;
-                }
-                else
-                {
-                    GetLogger()->warn("Can't interpret MQTT value \"{}\"", msg);
-                }
-            }
 
             // Update relays
             if (!m_modeApplyed)
@@ -126,7 +128,7 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
         }
 
         // Report current state as MQTT messages
-        m_mailbox.Publish(std::filesystem::path("tcontrole") / "mode", fmt::format("{}", m_mode));
+        m_mailbox.Publish(std::filesystem::path("tcontrol") / "mode", fmt::format("{}", m_mode));
         for (size_t i = 0; i < 4; i++)
         {
             std::stringstream topic, value;
