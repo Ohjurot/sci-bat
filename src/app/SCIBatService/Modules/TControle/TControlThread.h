@@ -6,12 +6,26 @@
 #include <Modules/Webserver/HTTPAuthentication.h>
 
 #include <Vendor/serialib.h>
+#include <fmt/format.h>
 #include <SCIUtil/SPDLogable.h>
+
+#include <string>
+#include <chrono>
 
 namespace SCI::BAT::TControle
 {
     class TControlThread : public Thread, public Util::SPDLogable
     {
+        public:
+            enum class OperationMode
+            {
+                Off = 0,
+                Cooling = -1,
+                HeatingPwr1 = 1,
+                HeatingPwr2 = 2,
+                HeatingPwr3 = 3,
+            };
+
         public:
             TControlThread(Mailbox::MailboxThread& mailbox, const std::shared_ptr<spdlog::logger>& logger = spdlog::default_logger()) :
                 m_mailbox(mailbox)
@@ -33,6 +47,17 @@ namespace SCI::BAT::TControle
             SerialDataBits m_serialBits = SERIAL_DATABITS_8;
             SerialParity m_serialParity = SERIAL_PARITY_NONE;
             SerialStopBits m_serialStopBits = SERIAL_STOPBITS_1;
+            unsigned int m_fanCooloffTime = 5000;
+
+            // Operation
+            OperationMode m_mode = OperationMode::Off;
+            std::chrono::system_clock::time_point m_fanOffTime = std::chrono::system_clock::now();
+            bool m_modeApplyed = false;
+            bool m_relaisStates[4];
+
+            // Watchdog
+            std::chrono::system_clock::time_point m_watchdogExpires = std::chrono::system_clock::now();
+            bool m_watchdogTriped = false;
 
             // Ref to mailbox
             Mailbox::MailboxThread& m_mailbox;
@@ -53,3 +78,31 @@ namespace SCI::BAT::TControle
             };
     };
 }
+
+template <> struct fmt::formatter<SCI::BAT::TControle::TControlThread::OperationMode>
+{
+    constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const SCI::BAT::TControle::TControlThread::OperationMode& lhs, FormatContext& ctx) const -> decltype(ctx.out())
+    {
+        switch (lhs)
+        {
+            case SCI::BAT::TControle::TControlThread::OperationMode::Off:
+                return fmt::format_to(ctx.out(), "Off");
+            case SCI::BAT::TControle::TControlThread::OperationMode::Cooling:
+                return fmt::format_to(ctx.out(), "Cooling");
+            case SCI::BAT::TControle::TControlThread::OperationMode::HeatingPwr1:
+                return fmt::format_to(ctx.out(), "HeatingPwr1");
+            case SCI::BAT::TControle::TControlThread::OperationMode::HeatingPwr2:
+                return fmt::format_to(ctx.out(), "HeatingPwr2");
+            case SCI::BAT::TControle::TControlThread::OperationMode::HeatingPwr3:
+                return fmt::format_to(ctx.out(), "HeatingPwr3");
+            default:
+                throw std::runtime_error("Unexpected value");
+        }
+    }
+};
