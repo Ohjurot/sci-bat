@@ -127,7 +127,7 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
 
         // Report current state as MQTT messages
         m_mailbox.Publish(std::filesystem::path("tcontrole") / "mode", fmt::format("{}", m_mode));
-        for (size_t i = 0; i < _countof(m_relaisStates); i++)
+        for (size_t i = 0; i < 4; i++)
         {
             std::stringstream topic, value;
             topic << "relays/relay" << (i + 1);
