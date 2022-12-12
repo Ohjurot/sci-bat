@@ -242,7 +242,7 @@ void SCI::BAT::Gateway::GatewayThread::PublishMQTTInfo(const SMAInData& id, cons
 
 void SCI::BAT::Gateway::GatewayThread::SMAReadInputData(Modbus::Master& modbus, SMAInData& smaIn)
 {
-    modbus.SetSlaveEndianness(Modbus::Endianness::Big);
+    modbus.SetSwapEndianness(true);
     smaIn.status = (SMAStatus)modbus["Status"].GetDWordValue();
     smaIn.power = modbus["Power"].GetDWordValue();
     smaIn.voltage =  SMAConvertFromFix(modbus["Voltage"].GetDWordValue(), 2);
@@ -262,7 +262,7 @@ void SCI::BAT::Gateway::GatewayThread::SMAReadInputData(Modbus::Master& modbus, 
 
 void SCI::BAT::Gateway::GatewayThread::SMAWriteOutputData(Modbus::Master& modbus, SMAOutData& smaOut)
 {
-    modbus.SetSlaveEndianness(Modbus::Endianness::Big);
+    modbus.SetSwapEndianness(true);
     if (smaOut.enablePowerControle)
     {
         modbus["SetPowerControlEnable"].SetDWordValue(802);

@@ -39,6 +39,12 @@ int SCI::BAT::Mailbox::MailboxThread::ThreadMain()
             DoneConfigChange();
         }
 
+        // Try connection 
+        if (!m_isConnected)
+        {
+            MQTTConnect();
+        }
+
         janitor.Release();
 
         // Give the CPU headroom

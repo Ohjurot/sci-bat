@@ -73,6 +73,10 @@ namespace SCI::Modbus
             {
                 m_swapEndian = ed != SCI_MODBUS_ENDIAN;
             }
+            inline void SetSwapEndianness(bool swap)
+            {
+                m_swapEndian = swap;
+            }
 
             bool IOUpdate(float deltaT);
             inline ProcessImage& GetProcessImage()

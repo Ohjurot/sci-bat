@@ -15,30 +15,30 @@ void SCI::BAT::Webserver::Controllers::StatusController::OnGet(const httplib::Re
             {
                 {
                     "battery", {
-                        {"capacity", smaDataIn.batteryCapacity / 100.0f},
-                        {"charge", smaDataIn.batteryCharge/ 100.0f},
-                        {"current", smaDataIn.batteryCurrent},
+                        {"capacity", fmt::format("{}", smaDataIn.batteryCapacity / 100.0f)},
+                        {"charge", fmt::format("{}", smaDataIn.batteryCharge / 100.0f)},
+                        {"current", fmt::format("{}", smaDataIn.batteryCurrent)},
                         {"status", fmt::format("{}", smaDataIn.batteryStatus)},
-                        {"temperature", smaDataIn.batteryTemperature},
+                        {"temperature", fmt::format("{}", smaDataIn.batteryTemperature)},
                         {"type", fmt::format("{}", smaDataIn.batteryType)},
-                        {"voltage", smaDataIn.batteryVoltage},
-                        {"remaining-charging-time", smaDataIn.timeUntilFullCharge},
-                        {"remaining-discharging-time", smaDataIn.timeUntilFullDischarge},
+                        {"voltage", fmt::format("{}", smaDataIn.batteryVoltage)},
+                        {"remaining-charging-time", fmt::format("{}", smaDataIn.timeUntilFullCharge)},
+                        {"remaining-discharging-time", fmt::format("{}", smaDataIn.timeUntilFullDischarge)},
                     }
                 },
                 {
                     "grid", {
-                        {"voltage", smaDataIn.voltage},
-                        {"freqency", smaDataIn.freqenency},
+                        {"voltage", fmt::format("{}", smaDataIn.voltage)},
+                        {"freqency", fmt::format("{}", smaDataIn.freqenency)},
                     }
                 },
                 {
                     "inverter", {
                         {"opstatus", fmt::format("{}", smaDataIn.operationStaus)},
-                        {"power", smaDataIn.power},
+                        {"power", fmt::format("{}", smaDataIn.power)},
                         {"status", fmt::format("{}", smaDataIn.status)},
-                        {"powercontrole", smaDataOut.enablePowerControle},
-                        {"setpoint", smaDataOut.power},
+                        {"powercontrole", fmt::format("{}", smaDataOut.enablePowerControle)},
+                        {"setpoint", fmt::format("{}", smaDataOut.power)},
                     }
                 },
                 {

@@ -43,7 +43,7 @@ function SciBatDashUpdate(json)
     // console.log(json);
 
     // Setup header
-    batteryCapacityPercent = Math.trunc(Math.ceil(json["battery"]["capacity"] * 100.0));
+    batteryCapacityPercent = Math.trunc(Math.ceil(json["battery"]["charge"] * 100.0));
     setpoint = json["inverter"]["setpoint"];
     mode = 0;
     if(setpoint > 0)
@@ -63,20 +63,20 @@ function SciBatDashUpdate(json)
             $("#sci-bat-dash-d-top-bolt").removeClass("text-success").removeClass("text-primary").removeClass("text-warning").removeClass("fa-beat-fade")
                 .addClass("text-success").addClass("fa-beat-fade");
             $("#sci-bat-dash-d-top-time").html(json["battery"]["remaining-discharging-time"]);
-            $("#sci-bat-dash-d-top-ptime").removeClass("invisible").addClass("visible");
+            $("#sci-bat-dash-d-top-bar").addClass("progress-bar-animated");
             break;
         case 0:
             $("#sci-bat-dash-d-top-header").html("Iydle");
             $("#sci-bat-dash-d-top-bolt").removeClass("text-success").removeClass("text-primary").removeClass("text-warning").removeClass("fa-beat-fade")
                 .addClass("text-primary");
-            $("#sci-bat-dash-d-top-ptime").removeClass("visible").addClass("invisible");
+            $("#sci-bat-dash-d-top-bar").removeClass("progress-bar-animated");
             break;
         case 1:
             $("#sci-bat-dash-d-top-header").html("Charging");
             $("#sci-bat-dash-d-top-bolt").removeClass("text-success").removeClass("text-primary").removeClass("text-warning").removeClass("fa-beat-fade")
                 .addClass("text-warning").addClass("fa-beat-fade");
             $("#sci-bat-dash-d-top-time").html(json["battery"]["remaining-charging-time"]);
-            $("#sci-bat-dash-d-top-ptime").removeClass("invisible").addClass("visible");
+            $("#sci-bat-dash-d-top-bar").addClass("progress-bar-animated");
             break;
     }
 
