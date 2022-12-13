@@ -12,7 +12,7 @@ $(document).ready(function() {
 
     // Run first tick and setup interval
     SciBatDashTick();
-    setInterval('SciBatDashTick()', 5000);
+    setInterval('SciBatDashTick()', 2500);
 });
 
 // Function/Event: Tick (Called every 5 seconds)
