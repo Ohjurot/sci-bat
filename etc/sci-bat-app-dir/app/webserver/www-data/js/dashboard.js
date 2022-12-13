@@ -15,7 +15,7 @@ $(document).ready(function() {
     setInterval('SciBatDashTick()', 2500);
 });
 
-// Function/Event: Tick (Called every 5 seconds)
+// Function/Event: Tick (Called every 2,5 seconds)
 function SciBatDashTick()
 {
     jsonPath = $("#sci-bat-dash-jsonlocation").attr("href");
