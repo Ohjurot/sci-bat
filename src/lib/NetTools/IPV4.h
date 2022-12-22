@@ -1,8 +1,8 @@
-/*
- *      Utility class for IPV4 Addresses and Endpoints (Address + Port)
- *
- *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
- */
+ /*!
+  * @file IPV4.h
+  * @brief Utility class for IPV4 Addresses and Endpoints (Address + Port).
+  * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+  */
 #pragma once
 
 #include <fmt/format.h>
@@ -15,33 +15,70 @@
 
 namespace SCI::NetTools
 {
-    // Port Type
+    /*!
+     * @brief Typedef for TCP/UDP ports.
+    */
     using Port = uint16_t;
 
-    // IPV4 Address 
+    /*!
+     * @brief IPv4 Address in multiple formats.
+    */
     struct IPV4Address
     {
         union
         {
+            /*! Raw 32-Bit data. */
             uint32_t _data;
+            /*! Data as 4x8-Bit encoded in array. */
             uint8_t ip[4];
             struct
             {
-                uint8_t ip0, ip1, ip2, ip3;
+                /*! First 8-Bit of address.  */
+                uint8_t ip0;
+                /*! Second 8-Bit of address.  */
+                uint8_t ip1;
+                /*! Third 8-Bit of address.  */
+                uint8_t ip2;
+                /*! Fourth 8-Bit of address.  */
+                uint8_t ip3;
             };
         };
 
+        /*!
+         * @brief Converts an IPv4 address to string.
+         * @return String representation of address object.
+        */
         std::string ToString() const;
+
+        /*!
+         * @brief Parses a string into this object.
+         * @param text Input string.
+         * @return True if parsing succeeded.
+        */
         bool Parse(const std::string_view& text);
     };
 
-    // Endpoint
+    /*!
+     * @brief IPv4 endpoint. Combination of IPv4 Address and port.
+    */
     struct IPV4Endpoint
     {
+        /*! IPv4 address. */
         IPV4Address address;
+        /*! TCP/UDP port. */
         Port port;
 
+        /*!
+         * @brief Converts an IPv4 endpoint to string.
+         * @return 
+        */
         std::string ToString() const;
+
+        /*!
+         * @brief Parses a string into this object.
+         * @param text Input string.
+         * @return True if parsing succeeded.
+        */
         bool Parse(const std::string_view& text);
     };
 }
@@ -50,7 +87,9 @@ namespace SCI::NetTools
 std::ostream& operator<<(std::ostream& out, const SCI::NetTools::IPV4Address& addr);
 std::ostream& operator<<(std::ostream& out, const SCI::NetTools::IPV4Endpoint& ep);
 
-// Scanning
+/*!
+ * @brief Input scanner for IPv4 address.
+*/
 template <>
 struct scn::scanner<SCI::NetTools::IPV4Address> : scn::empty_parser
 {
@@ -60,6 +99,9 @@ struct scn::scanner<SCI::NetTools::IPV4Address> : scn::empty_parser
         return scn::scan_usertype(ctx, "{}.{}.{}.{}", addr.ip0, addr.ip1, addr.ip2, addr.ip3);
     }
 };
+/*!
+ * @brief Input scanner for IPv4 endpoint.
+*/
 template <>
 struct scn::scanner<SCI::NetTools::IPV4Endpoint> : scn::empty_parser
 {
