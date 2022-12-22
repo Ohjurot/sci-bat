@@ -20,3 +20,6 @@
 # Build output & package
 /build
 /package
+
+# Doxygen
+/doc
