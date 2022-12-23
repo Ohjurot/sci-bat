@@ -1,10 +1,8 @@
-/*
- * 
- * 
- * 
- * 
+/*!
+ * @file main.cpp
+ * @brief Service main functions.
+ * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
  */
-
 
 #include <Config/UqlJson.h>
 #include <Config/AuthenticatedConfig.h>
@@ -32,7 +30,10 @@
 
 namespace SCI::BAT
 {
-
+    /*!
+     * @brief Sets up the meta information for program arguments.
+     * @param args ArgumentParser that shall be configured.
+    */
     void SetupArguments(argparse::ArgumentParser& args)
     {
         // Resolve default directory
@@ -78,6 +79,12 @@ namespace SCI::BAT
             ;
     }
 
+    /*!
+     * @brief Creates an SPDLog-Logger.
+     * @param args ArgumentParser that contains configured logger information.
+     * @param name Name of the logger.
+     * @return SPDLog logger pointer.
+    */
     auto CreateLogger(const argparse::ArgumentParser& args, const char* name)
     {
         // Create logger
@@ -97,6 +104,12 @@ namespace SCI::BAT
         return logger;
     }
 
+    /*!
+     * @brief Helper for creating a user in the database.
+     * @param usernamen Username of the user to be created. If the user already exists this function will do nothing.
+     * @param authlevel Permision level of the user.
+     * @param enabled Enable state of the user. If true the user can login.
+    */
     void CreateUser(const std::string& usernamen, int authlevel, bool enabled = true)
     {
         Config::AuthenticateConfig::InsertData("user." + usernamen, (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::Unauthenticated, (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::SuperAdmin, (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::System,
@@ -109,6 +122,11 @@ namespace SCI::BAT
         );
     }
 
+    /*!
+     * @brief Exception save main function.
+     * @param args Arguments passed to the application.
+     * @return Application return code.
+    */
     int GuardedMain(const argparse::ArgumentParser& args)
     {
         // Extract arguments
@@ -201,6 +219,12 @@ namespace SCI::BAT
     }
 }
 
+/*!
+ * @brief C++ Main entry point.
+ * @param argc Number of cmd arguments.
+ * @param argv Array of cmd string arguments.
+ * @return Application return code.
+*/
 int main(int argc, char** argv)
 {
     // Setup command line arguments
