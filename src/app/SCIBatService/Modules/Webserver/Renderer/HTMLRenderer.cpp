@@ -11,11 +11,11 @@ std::string SCI::BAT::Webserver::HTMLRenderer::RenderTemplate(const std::filesys
     inja::Environment env;
 
     // Find in cache
-    if (m_maxCacheAge && m_cache.Has(view))
+    if (m_maxCacheAge && false /*m_cache.Has(view) */)
     {
         GetLogger()->debug("Using view \"{}\" from cache", view.generic_string());
-        const auto& tpl = m_cache.Get(view);
-        return env.render(tpl, data);
+        // const auto& tpl = m_cache.Get(view);
+        // return env.render(tpl, data);
     }
     else
     {
@@ -28,7 +28,7 @@ std::string SCI::BAT::Webserver::HTMLRenderer::RenderTemplate(const std::filesys
         auto tpl = env.parse_template(viewPath.generic_string());
 
         // Store in cache
-        if (m_maxCacheAge) m_cache.Put(view, tpl, m_maxCacheAge);
+        // if (m_maxCacheAge) m_cache.Put(view, tpl, m_maxCacheAge);
         return env.render(tpl, data);
     }
 }

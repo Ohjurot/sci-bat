@@ -1,3 +1,8 @@
+/*!
+ * @file Exception.h
+ * @brief Implementation ontop of std::exception.
+ * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <fmt/format.h>
@@ -13,18 +18,27 @@
 
 namespace SCI::Util
 {
+    /*!
+     * @brief Custom (formated) exception.
+    */
     class Exception : public std::exception
     {
         public:
             Exception() = delete;
+            /*!
+             * @brief Create a plain text based exception.
+             * @param text Exception message.
+            */
             Exception(const std::string_view& text) :
                 m_text(text)
             {}
-            template<typename Arg>
-            Exception(const std::string_view& f, Arg arg)
-            {
-                m_text = ::fmt::vformat(f, fmt::make_format_args(std::forward<Arg>(arg)));
-            }
+
+            /*!
+             * @brief Create a text exception using a format string and argument(s).
+             * @tparam ...Args Type of arguments. Should be deduced automatically.
+             * @param f Format string.
+             * @param ...args Argument value(s).
+            */
             template<typename... Args>
             Exception(const std::string_view& f, Args... args)
             {
@@ -37,6 +51,10 @@ namespace SCI::Util
             Exception& operator=(const Exception&) = default;
             Exception& operator=(Exception&&) noexcept = default;
 
+            /*!
+             * @brief Retrive the message of the exception.
+             * @return Exception message as plain c string. 
+            */
             char const* what() const noexcept override
             {
                 return m_text.c_str();

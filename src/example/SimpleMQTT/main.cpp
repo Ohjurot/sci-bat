@@ -155,7 +155,7 @@ int main()
 
     // Big loop
     int counter = 0;
-    while (!kbInterupt.InterupRecived())
+    while (!kbInterupt.InterrupRecived())
     {
         // Send a message
         if (counter++ == 50)

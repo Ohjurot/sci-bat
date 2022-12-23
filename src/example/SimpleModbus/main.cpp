@@ -44,7 +44,7 @@ int main(int argc, char** argv)
     // Simple modbus loop
     int duration = 0;
     bool xset = false;
-    while (!kbInterrupt.InterupRecived())
+    while (!kbInterrupt.InterrupRecived())
     {
         // Update modbus
         modbus.IOUpdate(0.1f);

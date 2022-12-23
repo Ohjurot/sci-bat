@@ -1,8 +1,8 @@
-/*
- *      Simple and fast spin lock (Atomic)
- *
- *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
- */
+ /*!
+  * @file SpinLock.h
+  * @brief Simple and fast spin lock (Atomic).
+  * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+  */
 #pragma once
 
 #include <SCIUtil/Concurrent/ILock.h>
@@ -11,6 +11,9 @@
 
 namespace SCI::Util
 {
+    /*!
+     * @brief Implements a fast (atomic) spin lock.
+    */
     class SpinLock : public ILock
     {
         public:

@@ -184,7 +184,7 @@ namespace SCI::BAT
         kbInterrupt.Register();
         while (tmgr())
         {
-            if (kbInterrupt.InterupRecived())
+            if (kbInterrupt.InterrupRecived())
             {
                 spdlog::info("Stop request received! Terminating modules");
                 tmgr.Stop();

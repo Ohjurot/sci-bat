@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Modules/Webserver/Renderer/TemplateCache.h>
-
 #include <SCIUtil/Exception.h>
 #include <SCIUtil/SPDLogable.h>
 
@@ -28,7 +26,7 @@ namespace SCI::BAT::Webserver
             std::string RenderHTML(const std::string_view& html, const inja::json& data = inja::json());
 
         private:
-            TemplateCache m_cache;
+            // TemplateCache m_cache; <-- no cache
             size_t m_maxCacheAge = 0;
 
             std::filesystem::path m_rootDirectory;

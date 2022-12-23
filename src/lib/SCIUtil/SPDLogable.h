@@ -1,8 +1,9 @@
-/*
- *      Base class for all classes that should support logging with SPDLog
- * 
- *      Author: Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
- */
+ /*!
+  * @file SPDLogable.h
+  * @brief Base class for all classes that should support logging with SPDLog.
+  * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+  */
+#pragma
 #pragma once
 
 #include <spdlog/spdlog.h>
@@ -10,7 +11,11 @@
 
 namespace SCI::Util
 {
-    // Is doing logging with spdlog
+    /*!
+     * @brief Base class that provides logging capability.
+     * 
+     * This class will allow the getting and setting of a SPDLog logger. It provides a way to have object dependent logging.
+    */
     class SPDLogable
     {
         public:
@@ -21,11 +26,19 @@ namespace SCI::Util
             SPDLogable& operator=(const SPDLogable&) = default;
             SPDLogable& operator=(SPDLogable&&) = default;
 
+            /*!
+             * @brief Sets the objects logger to the logger supplied by this call.
+             * @param logger Logger to be used on this object.
+            */
             inline void SetLogger(const std::shared_ptr<spdlog::logger>& logger)
             {
                 m_logger = logger;
             }
 
+            /*!
+             * @brief Returns the logger that is currently beeing used by this object.
+             * @return Pointer to spdlog logger.
+            */
             inline std::shared_ptr<spdlog::logger> GetLogger() const
             {
                 return m_logger;
