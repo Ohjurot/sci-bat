@@ -1,7 +1,5 @@
 #include "StatusController.h"
 
-
-
 void SCI::BAT::Webserver::Controllers::StatusController::OnGet(const httplib::Request& request, httplib::Response& response)
 {
     nlohmann::json data;

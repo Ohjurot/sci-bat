@@ -15,7 +15,7 @@ namespace SCI::BAT::Webserver
     {
         public:
             HTMLRenderer() = delete;
-            HTMLRenderer(const std::filesystem::path& rootDir, size_t maxCacheAge = 60 * 60 * 24);
+            HTMLRenderer(const std::filesystem::path& rootDir);
             HTMLRenderer(const HTMLRenderer&) = delete; 
             HTMLRenderer(HTMLRenderer&&) noexcept = default; 
 
@@ -26,9 +26,6 @@ namespace SCI::BAT::Webserver
             std::string RenderHTML(const std::string_view& html, const inja::json& data = inja::json());
 
         private:
-            // TemplateCache m_cache; <-- no cache
-            size_t m_maxCacheAge = 0;
-
             std::filesystem::path m_rootDirectory;
     };
 }

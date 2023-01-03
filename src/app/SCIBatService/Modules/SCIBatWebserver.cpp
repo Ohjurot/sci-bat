@@ -5,6 +5,7 @@
 #include <Modules/Webserver/Controllers/Static/AuthController.h>
 #include <Modules/Webserver/Controllers/Static/DashboardController.h>
 #include <Modules/Webserver/Controllers/Api/StatusController.h>
+#include <Modules/Webserver/Controllers/Api/SettingsController.h>
 
 void SCI::BAT::SCIBatWebserver::RegisterControllers()
 {
@@ -13,4 +14,5 @@ void SCI::BAT::SCIBatWebserver::RegisterControllers()
     RegisterController<Webserver::Controllers::AuthController>("/auth");
     RegisterController<Webserver::Controllers::DashboardController>("/Dashboard");
     RegisterController<Webserver::Controllers::StatusController>("/api/status");
+    RegisterController<Webserver::Controllers::SettingsController>("/api/setting/(\\w+)");
 }

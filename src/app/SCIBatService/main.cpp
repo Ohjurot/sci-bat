@@ -57,15 +57,6 @@ namespace SCI::BAT
             .required()
             ;
 
-        // Max cache age
-        args.add_argument<std::string>("-mc", "--max-cache-age")
-            .help("Maximum age of template cache in seconds")
-            .scan<'i', int>()
-            .default_value<int>(60 * 60 * 12)
-            .required()
-            ;
-            
-
         // Log levels
         args.add_argument("-d", "--debug")
             .help("Enables debug outputs (medium logs)")
@@ -168,9 +159,8 @@ namespace SCI::BAT
         SCI_ASSERT(wscServerPort > 0, "Negative port specified!");
         SCI_ASSERT(!wscSSLCert.empty(), "No path to SSL Certificate provided!");
         SCI_ASSERT(!wscSSLCert.empty(), "No path to SSL Certificate Key provided!");
-        int maxCacheAge = std::max(0, args.get<int>("-mc"));
-        spdlog::info(R"(SSL-Server configuration: "{}:{}" (Cert: "{}", Key: "{}"). Maximum cache age {}s)", wscServerHost, wscServerPort, (confDirectory / wscSSLCert).generic_string(), (confDirectory / wscSSLKey).generic_string(), maxCacheAge);
-        SCI::BAT::SCIBatWebserver webserver(appDirectory / "webserver", wscServerHost, wscServerPort, confDirectory / wscSSLCert, confDirectory / wscSSLKey, maxCacheAge, 
+        spdlog::info(R"(SSL-Server configuration: "{}:{}" (Cert: "{}", Key: "{}").)", wscServerHost, wscServerPort, (confDirectory / wscSSLCert).generic_string(), (confDirectory / wscSSLKey).generic_string());
+        SCI::BAT::SCIBatWebserver webserver(appDirectory / "webserver", wscServerHost, wscServerPort, confDirectory / wscSSLCert, confDirectory / wscSSLKey, 
             CreateLogger(args, "webserver"), CreateLogger(args, "webapp"));
         webserver.RegisterRoutes();
         webserver.ErrorFooter() = "&copy; Copyright 2022 Smart Chaos Integrations";

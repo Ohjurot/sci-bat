@@ -26,7 +26,7 @@ namespace SCI::BAT::Webserver
     {
         public:
             WebserverThread() = delete;
-            WebserverThread(const std::filesystem::path& serverRootDir, const std::string_view& host, int port, const std::filesystem::path& certPath, const std::filesystem::path& keyPath, size_t maxCacheAge = 60 * 60 * 24, const std::shared_ptr<spdlog::logger>& logger = spdlog::default_logger(), const std::shared_ptr<spdlog::logger>& webappLogger = spdlog::default_logger());
+            WebserverThread(const std::filesystem::path& serverRootDir, const std::string_view& host, int port, const std::filesystem::path& certPath, const std::filesystem::path& keyPath, const std::shared_ptr<spdlog::logger>& logger = spdlog::default_logger(), const std::shared_ptr<spdlog::logger>& webappLogger = spdlog::default_logger());
             WebserverThread(const WebserverThread&) = delete;
             WebserverThread(WebserverThread&&) noexcept = delete;
 

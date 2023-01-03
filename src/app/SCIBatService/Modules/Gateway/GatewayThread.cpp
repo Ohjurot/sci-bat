@@ -281,7 +281,7 @@ void SCI::BAT::Gateway::GatewayThread::LoadConfig()
     // Assert config node existence
     GetLogger()->debug("Asserting default config.");
     Config::AuthenticateConfig::InsertData(
-        "inverter",
+        "gateway",
         (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::Admin, (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::Admin, (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::System,
         {
             { "address", "10.27.210.78" },
@@ -294,7 +294,7 @@ void SCI::BAT::Gateway::GatewayThread::LoadConfig()
     // Now read current config
     nlohmann::json config;
     GetLogger()->debug("Reading config from db.");
-    if (Config::AuthenticateConfig::ReadData("inverter", (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::System, config))
+    if (Config::AuthenticateConfig::ReadData("gateway", (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::System, config))
     {
         m_smaIp = config["address"];
         m_smaPort = config["port"];

@@ -32,6 +32,12 @@ namespace SCI::BAT::Gateway
                 return s_gateway->m_smaOutputData;
             }
 
+            static inline void ReloadAllModules()
+            {
+                s_gateway->GetLogger()->info("Initiating module reloading.");
+                s_gateway->RaisConfigChange();
+            }
+
         protected:
             int ThreadMain() override;
             void OnStop() override;

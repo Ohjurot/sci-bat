@@ -1,11 +1,11 @@
 #include "WebserverThread.h"
 
-SCI::BAT::Webserver::WebserverThread::WebserverThread(const std::filesystem::path& serverRootDir, const std::string_view& host, int port, const std::filesystem::path& certPath, const std::filesystem::path& keyPath, size_t maxCacheAge, const std::shared_ptr<spdlog::logger>& logger, const std::shared_ptr<spdlog::logger>& webappLogger) :
+SCI::BAT::Webserver::WebserverThread::WebserverThread(const std::filesystem::path& serverRootDir, const std::string_view& host, int port, const std::filesystem::path& certPath, const std::filesystem::path& keyPath, const std::shared_ptr<spdlog::logger>& logger, const std::shared_ptr<spdlog::logger>& webappLogger) :
     m_rootDirectory(serverRootDir),
     m_serverHost(host),
     m_serverPort(port),
     m_server(certPath.generic_string().c_str(), keyPath.generic_string().c_str()),
-    m_renderer(serverRootDir / "templates", maxCacheAge),
+    m_renderer(serverRootDir / "templates"),
     m_webappLogger(webappLogger)
 {
     SetLogger(logger);
