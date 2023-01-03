@@ -33,10 +33,23 @@ function SciBatSettings_A_LoadJSON(path, callback)
     xmlhttp.send(null);
 }
 
-// Save json data
+// Save setting
 function SciBatSettings_A_Save(setting, data, callback)
 {
-    jsonPath = $("#sci-bat-host").attr("href") + "/api/setting/" + setting;
+    jsonPath = "/api/setting/" + setting;
+    SciBatSettings_A_SaveJSON(jsonPath, data, callback);
+}
+
+// Save json data
+function SciBatSettings_A_SaveJSON(path, data, callback)
+{
+    SciBatSettings_A_SavePlain(path, JSON.stringify(data), callback);
+}
+
+// Save plane data
+function SciBatSettings_A_SavePlain(path, plainData, callback)
+{
+    jsonPath = $("#sci-bat-host").attr("href") + path;
 
     // Invoke request
     xmlhttp = new XMLHttpRequest();
@@ -55,7 +68,8 @@ function SciBatSettings_A_Save(setting, data, callback)
     xmlhttp.onerror = (e) => 
     {
         console.error(xmlhttp.statusText);
+        callback(false);
     };
-    xmlhttp.send(JSON.stringify(data));
+    xmlhttp.send(plainData);
 }
 

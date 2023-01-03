@@ -1,0 +1,177 @@
+{% extends "../../skeleton/base.jinja" %}
+
+{% block content %}
+<h2 class="text-center">Configure TControle</h2>
+
+<form>
+    <p class="fw-semibold">Select the account to modifiy:</p>
+    {# Selection of new element #}
+    <div class="mb-3 row">
+        <label for="sci-bat-conf-accounts-select" class="col-sm-2 col-form-label">
+            User Account 
+            <span id="sci-bat-conf-accounts-st-enabled" class="badge rounded-pill text-bg-success" style="display: none;">Enabled</span>
+            <span id="sci-bat-conf-accounts-st-disabled" class="badge rounded-pill text-bg-danger" style="display: none;">Disabled</span>
+        </label>
+        <div class="col-sm-10">
+            <select id="sci-bat-conf-accounts-select" class="form-select" aria-label="Default select example">
+                <option value="" selected></option>
+                <option value="viewer" selected>Viewer</option>
+                <option value="operator" selected>Operator</option>
+                <option value="admin" selected>Admin</option>
+                <option value="superadmin" selected>Superadmin</option>
+            </select>
+        </div>
+    </div>
+</form>
+
+{# Loading indicator #}
+<div id="sci-bat-conf-accounts-loader" class="text-center" style="display: none">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+{# Superadmin warning #}
+<div class="alert alert-warning" id="sci-bat-conf-accounts-sawarn" style="display: none;" role="alert">
+    <b>Warning:</b> You can't disable the superadmin's account!
+</div>
+
+{# Card: Enable Account #}
+<div class="card mb-2" id="sci-bat-conf-account-card-enable" style="display: none;">
+    <div class="card-body">
+        <h5 class="card-title">Enable account</h5>
+        <p class="card-text">
+            This action will set a password for the currently selected account and enables it.
+            <form>
+                <div class="mb-3">
+                    <label for="sci-bat-account-action-enable-pw" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="sci-bat-account-action-enable-pw" aria-describedby="sci-bat-account-action-enable-pw-help">
+                    <div id="sci-bat-account-action-enable-pw-help" class="form-text">
+                        Password requirements:
+                        <ol>
+                            <li>Length between 8 and 32 characters.</li>
+                            <li>Minimum of one lower or uppercase charakter.</li>
+                            <li>Minimum of one numerical character.</li>
+                            <li>Minimum of one of the following characters <span class="badge text-bg-primary">,.:-_#+~&lt;&gt;!§$%&(){}=?@</span></li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="sci-bat-account-action-enable-rpw" class="form-label">Retype Password</label>
+                    <input type="password" class="form-control" id="sci-bat-account-action-enable-rpw">
+                </div>
+            </form>
+        </p>
+        <button id="sci-bat-conf-account-action-enable" class="btn btn-outline-success">Enable account</button>
+    </div>
+</div>
+
+{# Card: Change password #}
+<div class="card mb-2" id="sci-bat-conf-account-card-chpw" style="display: none;">
+    <div class="card-body">
+        <h5 class="card-title">Change password</h5>
+        <p class="card-text">
+            This action will reset the password of an account to the password defined below.
+            <form>
+                <div class="mb-3">
+                    <label for="sci-bat-account-action-chpw-pw" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="sci-bat-account-action-chpw-pw" aria-describedby="sci-bat-account-action-chpw-pw-help">
+                    <div id="sci-bat-account-action-chpw-pw-help" class="form-text">
+                        Password requirements:
+                        <ol>
+                            <li>Length between 8 and 32 characters.</li>
+                            <li>Minimum of one lower or uppercase charakter.</li>
+                            <li>Minimum of one numerical character.</li>
+                            <li>Minimum of one of the following characters <span class="badge text-bg-primary">,.:-_#+~&lt;&gt;!§$%&(){}=?@</span></li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="sci-bat-account-action-chpw-rpw" class="form-label">Retype Password</label>
+                    <input type="password" class="form-control" id="sci-bat-account-action-chpw-rpw">
+                </div>
+            </form>
+        </p>
+        <button id="sci-bat-conf-account-action-chpw" class="btn btn-secondary">Change password</button>
+    </div>
+</div>
+
+{# Card: Disable Account #}
+<div class="card mb-2" id="sci-bat-conf-account-card-disable" style="display: none;">
+    <div class="card-body">
+        <h5 class="card-title">Disable account</h5>
+        <p class="card-text">This action will disable the account so that nobody can use it to login. This will also remove the currently set password!</p>
+        <button id="sci-bat-conf-account-action-disable" class="btn btn-outline-danger">Disable account</button>
+    </div>
+</div>
+
+<hr/>
+{# Viewer #}
+<div class="alert alert-info" id="sci-bat-conf-accounts-actype-viewer" style="display: none;" role="alert">
+    <p class="alert-heading fs-4">Permissions of the <b>Viewer</b> account:</p>
+    <ul>
+        <li>Login into the systeme using a password.</li>
+        <li>View the dashboard.</li>
+    </ul>
+</div>
+{# Operator #}
+<div class="alert alert-info" id="sci-bat-conf-accounts-actype-operator" style="display: none;" role="alert">
+    <p class="alert-heading fs-4">Permissions of the <b>Operator</b> account:</p>
+    <ul>
+        <li>Login into the systeme using a password.</li>
+        <li>View the dashboard.</li>
+        <li>Access the system status and logs.</li>
+        <li>Restart the service.</li>
+    </ul>
+</div>
+{# Admin #}
+<div class="alert alert-info" id="sci-bat-conf-accounts-actype-admin" style="display: none;" role="alert">
+    <p class="alert-heading fs-4">Permissions of the <b>Admin</b> account:</p>
+    <ul>
+        <li>Login into the systeme using a password.</li>
+        <li>View the dashboard.</li>
+        <li>Access the system status and logs.</li>
+        <li>Restart the service.</li>
+        <li>Manage module settings (Mailbox, Gateway, TControle).</li>
+    </ul>
+</div>
+{# Superadmin #}
+<div class="alert alert-info" id="sci-bat-conf-accounts-actype-superadmin" style="display: none;" role="alert">
+    <p class="alert-heading fs-4">Permissions of the <b>Superadmin</b> account:</p>
+    <ul>
+        <li>Login into the systeme using a password.</li>
+        <li>View the dashboard.</li>
+        <li>Access the system status and logs.</li>
+        <li>Restart the service.</li>
+        <li>Manage module settings (Mailbox, Gateway, TControle).</li>
+        <li>Manage user accounts and passwords.</li>
+    </ul>
+</div>
+{# NONE #}
+<div class="alert alert-info" id="sci-bat-conf-accounts-actype-" style="display: none;" role="alert">
+    Please select an account from the list above to view more information about it.
+</div>
+
+{# Feedback toast OK #}
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+    <div id="sci-bat-conf-accounts-fb-toast-ok" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">Sucessfully saved changes</div>
+        </div>
+    </div>
+</div>
+{# Feedback toast error #}
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+    <div id="sci-bat-conf-accounts-fb-toast-err" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+        <div class="d-flex">
+            <div class="toast-body">Failed saving changes</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{ HOST }}/res/js/settings-a.js"></script>
+<script src="{{ HOST }}/res/js/settings-accounts.js"></script>
+{% endblock %}

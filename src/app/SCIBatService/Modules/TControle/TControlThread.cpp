@@ -30,9 +30,20 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
         // Reload config
         if (ConfigReloadRequested())
         {
-            GetLogger()->info("Config change requested! Reloading config.");
+            GetLogger()->info("Config change requested!");
+
+            // Save state
+            GetLogger()->info("Going info save state...");
+            m_watchdogExpires = now;
+            m_watchdogTriped = false;
+            SetRelais(0, false);
+            SetRelais(1, false);
+            SetRelais(2, false);
+            SetRelais(3, false);
+
+            // Reload config
+            GetLogger()->info("Reloading config.");
             LoadConfig();
-            DoneConfigChange();
 
             // List devices
             serialDevices = ListSerialDevices();
@@ -45,6 +56,10 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
 
             // Report
             GetLogger()->info("Using serial device \"{}\". Currently detected: {}", m_serialDevice, std::find(serialDevices.begin(), serialDevices.end(), m_serialDevice) == serialDevices.end() ? "NO" : "YES");
+
+            // Finished
+            GetLogger()->info("Finished config reload.");
+            DoneConfigChange();
         }
 
         // Check for new MQTT message

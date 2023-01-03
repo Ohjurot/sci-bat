@@ -4,6 +4,7 @@
 <h2 class="text-center">Settings</h2>
 
 {# System status #}
+{% if AUTH_LEVEL >= 1 %}
 <p></p>
 <div class="card text-center">
     <div class="card-header">
@@ -12,8 +13,10 @@
         <a href="{{ HOST }}/Settings/Status" class="btn btn-info"><i class="fa-solid fa-wrench"></i> Configure</a>
     </div>
 </div>
+{% endif %}
 
 {# Gateway #}
+{% if AUTH_LEVEL >= 2 %}
 <p></p>
 <div class="card text-center">
     <div class="card-header">
@@ -22,8 +25,10 @@
         <a href="{{ HOST }}/Settings/Gateway" class="btn btn-info"><i class="fa-solid fa-wrench"></i> Configure</a>
     </div>
 </div>
+{% endif %}
 
 {# Mailbox #}
+{% if AUTH_LEVEL >= 2 %}
 <p></p>
 <div class="card text-center">
     <div class="card-header">
@@ -32,8 +37,10 @@
         <a href="{{ HOST }}/Settings/Mailbox" class="btn btn-info"><i class="fa-solid fa-wrench"></i> Configure</a>
     </div>
 </div>
+{% endif %}
 
 {# TControle #}
+{% if AUTH_LEVEL >= 2 %}
 <p></p>
 <div class="card text-center">
     <div class="card-header">
@@ -42,8 +49,10 @@
         <a href="{{ HOST }}/Settings/TControle" class="btn btn-info"><i class="fa-solid fa-wrench"></i> Configure</a>
     </div>
 </div>
+{% endif %}
 
 {# User acccounts #}
+{% if AUTH_LEVEL >= 10 %}
 <p></p>
 <div class="card text-center">
     <div class="card-header">
@@ -52,10 +61,5 @@
         <a href="{{ HOST }}/Settings/Accounts" class="btn btn-info"><i class="fa-solid fa-wrench"></i> Configure</a>
     </div>
 </div>
-
-<hr>
-<p class="text-center">
-    <a href="{{ HOST }}/Dashboard" class="btn btn-primary">Dashboard</a>
-    <a href="{{ HOST }}/Settings" class="btn btn-secondary">Settings</a>
-</p>
+{% endif %}
 {% endblock %}

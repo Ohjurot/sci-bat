@@ -10,6 +10,8 @@
 <hr>
 <p class="text-center">
     <a href="{{ HOST }}/Dashboard" class="btn btn-primary">Dashboard</a>
+    {% if AUTH_LEVEL >= 1 %}
     <a href="{{ HOST }}/Settings" class="btn btn-secondary">Settings</a>
+    {% endif %}
 </p>
 {% endblock %}
