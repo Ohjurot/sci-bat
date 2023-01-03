@@ -1,0 +1,61 @@
+{% extends "../../skeleton/base.jinja" %}
+
+{% block content %}
+<h2 class="text-center">Settings</h2>
+
+{# System status #}
+<p></p>
+<div class="card text-center">
+    <div class="card-header">
+        <h5 class="card-title">System status</h5>
+        <p class="card-text">Allows you to access the current system status, view the logs and restart the service.</p>
+        <a href="{{ HOST }}/Settings/Status" class="btn btn-info"><i class="fa-solid fa-wrench"></i> Configure</a>
+    </div>
+</div>
+
+{# Gateway #}
+<p></p>
+<div class="card text-center">
+    <div class="card-header">
+        <h5 class="card-title">Gateway (MQTT &lt;--&gt; modbus gateway)</h5>
+        <p class="card-text">Allows you to configure the connection to the inverter.</p>
+        <a href="{{ HOST }}/Settings/Gateway" class="btn btn-info"><i class="fa-solid fa-wrench"></i> Configure</a>
+    </div>
+</div>
+
+{# Mailbox #}
+<p></p>
+<div class="card text-center">
+    <div class="card-header">
+        <h5 class="card-title">Mailbox (MQTT Message Mailbox)</h5>
+        <p class="card-text">Allows you to configure the connection to the MQTT-Broker and the base MQTT-Topic.</p>
+        <a href="{{ HOST }}/Settings/Mailbox" class="btn btn-info"><i class="fa-solid fa-wrench"></i> Configure</a>
+    </div>
+</div>
+
+{# TControle #}
+<p></p>
+<div class="card text-center">
+    <div class="card-header">
+        <h5 class="card-title">TControle (Temperature controller)</h5>
+        <p class="card-text">Allows you to configure the serial interface used for the temperature controller.</p>
+        <a href="{{ HOST }}/Settings/TControle" class="btn btn-info"><i class="fa-solid fa-wrench"></i> Configure</a>
+    </div>
+</div>
+
+{# User acccounts #}
+<p></p>
+<div class="card text-center">
+    <div class="card-header">
+        <h5 class="card-title">User accounts</h5>
+        <p class="card-text">Allows you to configure the user accounts for the webpage.</p>
+        <a href="{{ HOST }}/Settings/Accounts" class="btn btn-info"><i class="fa-solid fa-wrench"></i> Configure</a>
+    </div>
+</div>
+
+<hr>
+<p class="text-center">
+    <a href="{{ HOST }}/Dashboard" class="btn btn-primary">Dashboard</a>
+    <a href="{{ HOST }}/Settings" class="btn btn-secondary">Settings</a>
+</p>
+{% endblock %}

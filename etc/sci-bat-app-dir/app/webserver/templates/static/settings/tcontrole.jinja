@@ -1,0 +1,67 @@
+{% extends "../../skeleton/base.jinja" %}
+
+{% block content %}
+<h2 class="text-center">Configure TControle</h2>
+
+<form>
+    <p class="fw-semibold">Relais card serial interface:</p>
+    {# Current element #}
+    <div class="mb-3 row">
+        <label for="sci-bat-conf-tcontrole-current" class="col-sm-2 col-form-label">Current Selection</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" id="sci-bat-conf-tcontrole-current" value="n/a" required>
+        </div>
+    </div>
+    {# Selection of new element #}
+    <div class="mb-3 row">
+        <label for="sci-bat-conf-tcontrole-select" class="col-sm-2 col-form-label">Serial Interface</label>
+        <div class="col-sm-10">
+            <select id="sci-bat-conf-tcontrole-select" class="form-select" aria-label="Default select example">
+                <option value="" selected>Keep current selection</option>
+            </select>
+        </div>
+    </div>
+</form>
+
+<form>
+    <p class="fw-semibold">Fan behaviour:</p>
+    {# Port #}
+    <div class="mb-3 row">
+        <label for="sci-bat-conf-tcontrole-cooloff" class="col-sm-2 col-form-label">Cooloff delay</label>
+        <div class="col-sm-10">
+            <input type="number" min="0" max="600000" placeholder="2000" class="form-control" id="sci-bat-conf-tcontrole-cooloff" required>
+        </div>
+    </div>
+</form>
+
+{# Feedback toast OK #}
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+    <div id="sci-bat-conf-tcontrole-fb-toast-ok" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">Sucessfully saved changes</div>
+        </div>
+    </div>
+</div>
+{# Feedback toast error #}
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+    <div id="sci-bat-conf-tcontrole-fb-toast-err" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+        <div class="d-flex">
+            <div class="toast-body">Failed saving changes</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+{# Save button #}
+<hr>
+<p class="text-center">
+    <button class="btn btn-success" id="sci-bat-conf-tcontrole-save" disabled>Save Changes</button>
+    <a href="{{ HOST }}/Settings" class="btn btn-danger">Discard Changes</a>
+</p>
+{% endblock %}
+
+{% block script %}
+<script src="{{ HOST }}/res/js/settings-a.js"></script>
+<script src="{{ HOST }}/res/js/settings-tcontrole.js"></script>
+{% endblock %}
+

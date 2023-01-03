@@ -18,15 +18,8 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
     if(serialDevices.size() == 0)
         throw std::runtime_error("No serial devices present! TControle will NOT work!");
 
-    // Default to first serial device if current one is not present
-    if (std::find(serialDevices.begin(), serialDevices.end(), m_serialDevice) == serialDevices.end())
-    {
-        GetLogger()->error("Can't find serial device \"{}\" defaulting to \"{}\"", m_serialDevice, serialDevices[0]);
-        m_serialDevice = serialDevices[0];
-    }
-
     // Report
-    GetLogger()->info("Using serial device \"{}\"", m_serialDevice);
+    GetLogger()->info("Using serial device \"{}\". Currently detected: {}", m_serialDevice, std::find(serialDevices.begin(), serialDevices.end(), m_serialDevice) == serialDevices.end() ? "NO" : "YES");
 
     // Loop
     while (!StopRequested())
@@ -49,14 +42,9 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
             // Validate serial devices
             if (serialDevices.size() == 0)
                 throw std::runtime_error("No serial devices present! TControle will terminate!");
-            if (std::find(serialDevices.begin(), serialDevices.end(), m_serialDevice) == serialDevices.end())
-            {
-                GetLogger()->error("Can't find serial device \"{}\" defaulting to \"{}\"", m_serialDevice, serialDevices[0]);
-                m_serialDevice = serialDevices[0];
-            }
 
             // Report
-            GetLogger()->info("Using serial device \"{}\"", m_serialDevice);
+            GetLogger()->info("Using serial device \"{}\". Currently detected: {}", m_serialDevice, std::find(serialDevices.begin(), serialDevices.end(), m_serialDevice) == serialDevices.end() ? "NO" : "YES");
         }
 
         // Check for new MQTT message
@@ -79,6 +67,13 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
             }
             else if (msg == "cooling" || msg == "-1")
             {
+                // Set fan off time
+                if (m_mode == OperationMode::HeatingPwr1 || m_mode == OperationMode::HeatingPwr2 || m_mode == OperationMode::HeatingPwr3)
+                {
+                    GetLogger()->info("Applying fan cooloff time");
+                    m_fanOffTime = now + 1ms * m_fanCooloffTime;
+                }
+
                 m_modeApplyed = m_mode == OperationMode::Cooling;
                 m_mode = OperationMode::Cooling;
             }

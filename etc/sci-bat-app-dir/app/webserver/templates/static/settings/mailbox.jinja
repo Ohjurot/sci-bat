@@ -1,0 +1,74 @@
+{% extends "../../skeleton/base.jinja" %}
+
+{% block content %}
+<h2 class="text-center">Configure Mailbox</h2>
+
+<form>
+    <p class="fw-semibold">MQTT Broker connection details:</p>
+    {# Address #}
+    <div class="mb-3 row">
+        <label for="sci-bat-conf-mailbox-addr" class="col-sm-2 col-form-label">Address</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="sci-bat-conf-mailbox-addr" required>
+        </div>
+    </div>
+    {# Port #}
+    <div class="mb-3 row">
+        <label for="sci-bat-conf-mailbox-port" class="col-sm-2 col-form-label">Port</label>
+        <div class="col-sm-10">
+            <input type="number" min="0" max="65536" placeholder="502" class="form-control" id="sci-bat-conf-mailbox-port" required>
+        </div>
+    </div>
+    {# Username #}
+    <div class="mb-3 row">
+        <label for="sci-bat-conf-mailbox-username" class="col-sm-2 col-form-label">Username</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="sci-bat-conf-mailbox-username" required>
+        </div>
+    </div>
+    {# Password #}
+    <div class="mb-3 row">
+        <label for="sci-bat-conf-mailbox-password" class="col-sm-2 col-form-label">Password</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="sci-bat-conf-mailbox-password" required>
+        </div>
+    </div>
+    {# Base-Topic #}
+    <div class="mb-3 row">
+        <label for="sci-bat-conf-mailbox-btopic" class="col-sm-2 col-form-label">Base-Topic</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" placeholder="sci-bat" id="sci-bat-conf-mailbox-btopic" required>
+        </div>
+    </div>
+</form>
+
+{# Feedback toast OK #}
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+    <div id="sci-bat-conf-gateway-fb-toast-ok" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">Sucessfully saved changes</div>
+        </div>
+    </div>
+</div>
+{# Feedback toast error #}
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+    <div id="sci-bat-conf-gateway-fb-toast-err" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+        <div class="d-flex">
+            <div class="toast-body">Failed saving changes</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<hr>
+<p class="text-center">
+    <button class="btn btn-success" id="sci-bat-conf-mailbox-save" disabled>Save Changes</button>
+    <a href="{{ HOST }}/Settings" class="btn btn-danger">Discard Changes</a>
+</p>
+{% endblock %}
+
+{% block script %}
+<script src="{{ HOST }}/res/js/settings-a.js"></script>
+<script src="{{ HOST }}/res/js/settings-mailbox.js"></script>
+{% endblock %}
+

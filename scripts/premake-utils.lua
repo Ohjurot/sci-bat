@@ -58,6 +58,9 @@ function reti_new_project(projectName, path)
         "%{prj.location}/**.md", "%{prj.location}/**.txt",
     }
 
+    -- Flags
+    flags { "MultiProcessorCompile" }
+
     -- Always on defines
     defines { "CPPHTTPLIB_OPENSSL_SUPPORT" }
 

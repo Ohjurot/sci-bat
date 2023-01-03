@@ -4,7 +4,7 @@ SCI::Modbus::MSConnection::MSConnection(const NetTools::IPV4Endpoint& endpoint, 
     m_ctxEndpoint(endpoint), m_device(device)
 {
     m_ctx = modbus_new_tcp(m_ctxEndpoint.address.ToString().c_str(), m_ctxEndpoint.port);
-    if (m_ctx && device >= 0) modbus_set_slave(m_ctx, device);
+    if (m_ctx && device > 0) modbus_set_slave(m_ctx, device);
 }
 
 SCI::Modbus::MSConnection::MSConnection(MSConnection&& other) noexcept

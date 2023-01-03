@@ -46,6 +46,8 @@ namespace SCI::BAT::Mailbox
             std::unordered_map<std::string, std::string> m_mqttInbox;
 
             std::string m_brokerAddress = "localhost";
+            std::string m_brokerUsername = "";
+            std::string m_brokerPassword = "";
             int m_brokerPort = 1883;
             std::filesystem::path m_baseTopic = "sci-bat";
             bool m_isConnected = false;

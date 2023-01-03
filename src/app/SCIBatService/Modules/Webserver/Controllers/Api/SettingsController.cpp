@@ -35,6 +35,7 @@ void SCI::BAT::Webserver::Controllers::SettingsController::OnPost(const httplib:
         else
         {
             GetLogger()->warn("Audit: User \"{}\" failed writing to config node \"{}\".", user.name, setting.str());
+            response.status = 401;
         }
     }
     else

@@ -104,6 +104,19 @@ bool SCI::BAT::Mailbox::MailboxThread::MQTTConnect()
         return true;
 
     GetLogger()->info("Connecting to \"{}:{}\" MQTT Broker.", m_brokerAddress, m_brokerPort);
+    
+    // Authentication
+    if (!m_brokerUsername.empty())
+    {
+        GetLogger()->info("Connecting with user \"{}\" using password: ", m_brokerUsername, m_brokerPassword.empty() ? "NO" : "YES");
+        username_pw_set(m_brokerUsername.c_str(), m_brokerPassword.empty() ? nullptr : m_brokerPassword.c_str());
+    }
+    else
+    {
+        username_pw_set(nullptr, nullptr);
+    }
+
+    // Connect
     if (connect_async(m_brokerAddress.c_str(), m_brokerPort) == MOSQ_ERR_SUCCESS)
     {
         GetLogger()->info("Successfully connected to MQTT broker.");
@@ -191,6 +204,8 @@ void SCI::BAT::Mailbox::MailboxThread::LoadConfig()
                 "broker",
                 {
                     { "address", "localhost" },
+                    { "username", "" },
+                    { "password", "" },
                     { "port", 1883 }
                 }
             },
@@ -204,6 +219,8 @@ void SCI::BAT::Mailbox::MailboxThread::LoadConfig()
     if (Config::AuthenticateConfig::ReadData("mailbox", (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::System, config))
     {
         m_brokerAddress = config["broker"]["address"];
+        m_brokerUsername = config["broker"]["username"];
+        m_brokerPassword = config["broker"]["password"];
         m_brokerPort = config["broker"]["port"];
         m_baseTopic = config["basetopic"].get<std::string>();
     }
