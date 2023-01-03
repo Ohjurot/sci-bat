@@ -87,7 +87,7 @@ namespace SCI::BAT
 
             /*!
              * @brief Shift operator for registering thread the iostream way.
-             * @param thread Thread to be registerd.
+             * @param thread Thread to be registered.
              * @return Reference to this for chaining.
             */
             inline ThreadManager& operator<<(Thread& thread)

@@ -13,6 +13,8 @@ SCI::BAT::Gateway::GatewayThread::GatewayThread(Mailbox::MailboxThread& mailbox,
 
     // Activate static gateway
     s_gateway = this;
+
+    LoadConfig();
 }
 
 int SCI::BAT::Gateway::GatewayThread::ThreadMain()

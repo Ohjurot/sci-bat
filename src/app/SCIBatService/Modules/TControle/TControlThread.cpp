@@ -6,10 +6,58 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
 {
     using namespace std::chrono_literals;
 
+    // Load from config
+    LoadConfig();
+
+    // Get a list of serial devices and print them
+    auto serialDevices = ListSerialDevices();
+    for (const auto& device : serialDevices)
+        GetLogger()->debug("Found serial device \"{}\".", device);
+
+    // Abort when no serial is available
+    if(serialDevices.size() == 0)
+        throw std::runtime_error("No serial devices present! TControle will NOT work!");
+
+    // Default to first serial device if current one is not present
+    if (std::find(serialDevices.begin(), serialDevices.end(), m_serialDevice) == serialDevices.end())
+    {
+        GetLogger()->error("Can't find serial device \"{}\" defaulting to \"{}\"", m_serialDevice, serialDevices[0]);
+        m_serialDevice = serialDevices[0];
+    }
+
+    // Report
+    GetLogger()->info("Using serial device \"{}\"", m_serialDevice);
+
+    // Loop
     while (!StopRequested())
     {
         // Get timestamp
         auto now = std::chrono::system_clock::now();
+
+        // Reload config
+        if (ConfigReloadRequested())
+        {
+            GetLogger()->info("Config change requested! Reloading config.");
+            LoadConfig();
+            DoneConfigChange();
+
+            // List devices
+            serialDevices = ListSerialDevices();
+            for (const auto& device : serialDevices)
+                GetLogger()->debug("Found serial device \"{}\".", device);
+
+            // Validate serial devices
+            if (serialDevices.size() == 0)
+                throw std::runtime_error("No serial devices present! TControle will terminate!");
+            if (std::find(serialDevices.begin(), serialDevices.end(), m_serialDevice) == serialDevices.end())
+            {
+                GetLogger()->error("Can't find serial device \"{}\" defaulting to \"{}\"", m_serialDevice, serialDevices[0]);
+                m_serialDevice = serialDevices[0];
+            }
+
+            // Report
+            GetLogger()->info("Using serial device \"{}\"", m_serialDevice);
+        }
 
         // Check for new MQTT message
         std::string msg;
@@ -154,6 +202,38 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
     return true;
 }
 
+void SCI::BAT::TControle::TControlThread::LoadConfig()
+{
+    // Assert config node existence
+    GetLogger()->debug("Asserting default config.");
+    Config::AuthenticateConfig::InsertData(
+        "tcontrole",
+        (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::Admin, (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::Admin, (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::System,
+        {
+            {
+                "serial",
+                {
+                    { "device", "/dev/ttyS0" },
+                }
+            },
+            { "cooloff-time", 5000 }
+        }
+    );
+
+    // Now read current config
+    nlohmann::json config;
+    GetLogger()->debug("Reading config from db.");
+    if (Config::AuthenticateConfig::ReadData("tcontrole", (int)SCI::BAT::Webserver::HTTPUser::PermissionLevel::System, config))
+    {
+        m_serialDevice = config["serial"]["device"];
+        m_fanCooloffTime = config["cooloff-time"];
+    }
+    else
+    {
+        GetLogger()->error("Failed to read config.");
+    }
+}
+
 bool SCI::BAT::TControle::TControlThread::SetRelais(unsigned int index, bool on)
 {
     using namespace std::chrono_literals;
@@ -196,4 +276,51 @@ bool SCI::BAT::TControle::TControlThread::SerialSend(const void* data, unsigned 
     }
 
     return false;
+}
+
+std::vector<std::string> SCI::BAT::TControle::TControlThread::ListSerialDevices()
+{
+    std::vector<std::string> serialPorts;
+#if defined(SCI_WINDOWS)
+    HKEY serialRootKey = 0;
+    if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_READ, &serialRootKey) != ERROR_SUCCESS)
+        throw std::runtime_error("Failed to open registry key!");
+
+    int index = 0;
+    while (true)
+    {
+        char nameBuffer[1024], valueBuffer[1024];
+        DWORD nameLen = 1024, valueLen = 1024;
+        DWORD valueType;
+        auto res = RegEnumValueA(serialRootKey, index++, nameBuffer, &nameLen, nullptr, &valueType, (BYTE*)valueBuffer, &valueLen);
+        if (res == ERROR_NO_MORE_ITEMS)
+            break;
+        if (res != ERROR_SUCCESS)
+            break;
+
+        if(valueType == REG_SZ)
+            serialPorts.push_back(valueBuffer);
+    }
+    RegCloseKey(serialRootKey);
+
+    std::filesystem::path p;
+#elif defined(SCI_LINUX)
+    std::filesystem::path serialRoot("/sys/class/tty");
+    for (auto const& dir_entry : std::filesystem::directory_iterator(serialRoot))
+    {
+        if (dir_entry.is_directory())
+        {
+            auto serialPath = dir_entry.path();
+            if (std::filesystem::exists(serialPath / "device"))
+            {
+                auto serialName = serialPath.filename();
+                auto devicePath = std::filesystem::path("/dev") / serialName;
+                serialPorts.push_back(devicePath.string());
+            }
+        }
+    }
+#else
+    static_assert(false, "Not implemented!");
+#endif
+    return serialPorts;
 }

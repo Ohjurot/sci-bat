@@ -13,6 +13,8 @@
 
 #include <string>
 #include <chrono>
+#include <vector>
+#include <filesystem>
 
 namespace SCI::BAT::TControle
 {
@@ -40,6 +42,7 @@ namespace SCI::BAT::TControle
             {
                 SetLogger(logger);
                 s_instance = this;
+                LoadConfig();
             }
 
             int ThreadMain() override;
@@ -50,7 +53,11 @@ namespace SCI::BAT::TControle
                 return { s_instance->m_mode, { s_instance->m_relaisStates[0], s_instance->m_relaisStates[1], s_instance->m_relaisStates[2], s_instance->m_relaisStates[3] } };
             }
 
+            static std::vector<std::string> ListSerialDevices();
+
         private:
+            void LoadConfig();
+
             bool SetRelais(unsigned int index, bool on);
             bool SerialSend(const void* data, unsigned int byts);
 
@@ -59,12 +66,15 @@ namespace SCI::BAT::TControle
     
             serialib m_serial;
 
+            // User configurable serial
             std::string m_serialDevice = "/dev/ttyS0";
+            unsigned int m_fanCooloffTime = 5000;
+
+            // Serial interface configuration
             unsigned int m_serialBaude = 9600;
             SerialDataBits m_serialBits = SERIAL_DATABITS_8;
             SerialParity m_serialParity = SERIAL_PARITY_NONE;
             SerialStopBits m_serialStopBits = SERIAL_STOPBITS_1;
-            unsigned int m_fanCooloffTime = 5000;
 
             // Operation
             OperationMode m_mode = OperationMode::Off;
@@ -79,7 +89,7 @@ namespace SCI::BAT::TControle
             // Ref to mailbox
             Mailbox::MailboxThread& m_mailbox;
 
-            // Constant data
+            // Constant data (controlling the relais)
             const unsigned int m_bytesWordSize = 8;
             const char* const m_bytesOn[4] = {
                 "\x55\x56\x00\x00\x00\x01\x01\xAD",
