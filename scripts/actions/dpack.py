@@ -43,7 +43,7 @@ if __name__ == "__main__":
         controlFile.write(f"Depends: openssl\n")
         controlFile.write(f"Maintainer: Ludwig Fuechsl\n")
         controlFile.write(f"Description: Modbus n MQTT gateway for SBC inverter\n")
-        controlFile.write(f"Installed-Size: 10240\n")
+        controlFile.write(f"Installed-Size: {9.7 * 1024 * 1024}\n")
         controlFile.close()
 
         # Copy scripts

@@ -8,7 +8,7 @@ Type=simple
 Restart=always
 RestartSec=5
 User=www-data
-ExecStart=/usr/bin/sci-bat -c /etc/sci-bat/ -a /usr/bin/sci-bat.d/ -mc 0
+ExecStart=/usr/bin/sci-bat -c /etc/sci-bat/ -a /usr/bin/sci-bat.d/
 
 [Install]
 WantedBy=multi-user.target
