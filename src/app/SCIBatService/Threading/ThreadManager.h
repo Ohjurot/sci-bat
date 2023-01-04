@@ -64,6 +64,12 @@ namespace SCI::BAT
             void Update();
 
             /*!
+             * @brief Checks if one or multiple threads requested a global system stop.
+             * @return True if a request was raised.
+            */
+            bool HasSystemStopRequest() const;
+
+            /*!
              * @brief Checks how many threads are currently running.
              * @return Number of threads running.
             */

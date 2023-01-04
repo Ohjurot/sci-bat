@@ -48,6 +48,7 @@ void SCI::BAT::Thread::RootThreadMain(std::stop_token stop)
     try
     {
         m_stopToken = &stop;
+        m_tid = std::this_thread::get_id();
         m_threadReturnCode = ThreadMain();
         m_result = ExecutionResult::StoppedNormaly;
     }

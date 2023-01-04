@@ -192,7 +192,7 @@ namespace SCI::BAT
         kbInterrupt.Register();
         while (tmgr())
         {
-            if (kbInterrupt.InterrupRecived())
+            if (kbInterrupt.InterrupRecived() || tmgr.HasSystemStopRequest())
             {
                 spdlog::info("Stop request received! Terminating modules");
                 tmgr.Stop();

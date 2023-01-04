@@ -1,5 +1,7 @@
 #include "MailboxThread.h"
 
+SCI::BAT::Mailbox::MailboxThread* SCI::BAT::Mailbox::MailboxThread::s_mailbox = nullptr;
+ 
 int SCI::BAT::Mailbox::MailboxThread::ThreadMain()
 {
     using namespace std::chrono_literals;
@@ -81,6 +83,7 @@ bool SCI::BAT::Mailbox::MailboxThread::Publish(const std::filesystem::path& subT
                 if (result == MOSQ_ERR_SUCCESS)
                 {
                     GetLogger()->trace("MQTT Message send successfully!");
+                    m_mqttUpdated = true;
                     return true;
                 }
             }
@@ -91,10 +94,12 @@ bool SCI::BAT::Mailbox::MailboxThread::Publish(const std::filesystem::path& subT
         else
         {
             GetLogger()->trace("MQTT Message send successfully!");
+            m_mqttUpdated = true;
             return true;
         }
     }
 
+    m_mqttUpdated = false;
     return false;
 }
 

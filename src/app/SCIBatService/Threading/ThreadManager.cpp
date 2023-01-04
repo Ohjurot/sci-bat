@@ -97,3 +97,16 @@ void SCI::BAT::ThreadManager::Update()
         }
     }
 }
+
+bool SCI::BAT::ThreadManager::HasSystemStopRequest() const
+{
+    for (const auto* thread : m_threads)
+    {
+        if (thread->SystemStopRequested())
+        {
+            return true;
+        }
+    }
+
+    return false;
+}

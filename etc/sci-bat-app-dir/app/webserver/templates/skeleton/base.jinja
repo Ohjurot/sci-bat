@@ -81,14 +81,17 @@
 
     {# FOOTER #}
     <div class="alert alert-primary m-3" role="alert">
-      &copy; Copyright 2022 Munich university of applied sciences <br/>
-      &copy; Copyright 2022 Smart Chaos Integration
+      &copy; Copyright 2022-2023 Munich university of applied sciences <br/>
+      &copy; Copyright 2022-2023 Smart Chaos Integration
     </div>
 
     {# 3RD PARTY #}
     <div class="ms-3">
       <a class="text-decoration-none link-secondary" href="{{ HOST }}/FOSS">FOSS</a>
     </div>
+
+    {% block body %}
+    {% endblock %}
 
     {# SCRIPTS #}
     <script src="{{ HOST }}/res/js/jquery-3.6.1.min.js"></script>

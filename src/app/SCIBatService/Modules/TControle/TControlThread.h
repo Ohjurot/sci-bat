@@ -52,6 +52,26 @@ namespace SCI::BAT::TControle
                 SCI_ASSERT(s_instance, "TControlThread not initialized properly!");
                 return { s_instance->m_mode, { s_instance->m_relaisStates[0], s_instance->m_relaisStates[1], s_instance->m_relaisStates[2], s_instance->m_relaisStates[3] } };
             }
+            static inline auto GetStaticTID()
+            {
+                return s_instance->GetTID();
+            }
+            static inline auto IsStaticFinished()
+            {
+                return s_instance->IsFinished();
+            }
+            static inline auto GetSerialDevice()
+            {
+                return s_instance->m_serialDevice;
+            }
+            static inline auto GetDeviceAvailable()
+            {
+                return s_instance->m_deviceAvailable;
+            }
+            static inline auto GetLastCommandOk()
+            {
+                return s_instance->m_lastCommandOk;
+            }
 
             static std::vector<std::string> ListSerialDevices();
 
@@ -67,8 +87,12 @@ namespace SCI::BAT::TControle
             serialib m_serial;
 
             // User configurable serial
-            std::string m_serialDevice = "/dev/ttyS0";
+            std::string m_serialDevice = "/dev/tty";
             unsigned int m_fanCooloffTime = 5000;
+
+            // Device available
+            bool m_deviceAvailable = false;
+            bool m_lastCommandOk = false;
 
             // Serial interface configuration
             unsigned int m_serialBaude = 9600;

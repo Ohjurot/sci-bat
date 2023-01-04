@@ -1,0 +1,164 @@
+{% extends "../../skeleton/base.jinja" %}
+
+{% block content %}
+<h2 class="text-center">System Status</h2>
+
+{# Loader #}
+<div id="sci-bat-conf-status-loader">
+    <p class="placeholder-glow">
+        <span class="placeholder col-12"></span>
+        <span class="placeholder col-12"></span>
+        <span class="placeholder col-12"></span>
+        <span class="placeholder col-12"></span>
+        <span class="placeholder col-12"></span>
+    </p>
+</div>
+
+{# Main container #}
+<div id="sci-bat-conf-status-main" style="display: block;">
+    {# Gateway #}
+    <div class="card mb-2">
+        <div class="card-body">
+            <h5 class="card-title">
+                Gateway (TID: <span id="sci-bat-conf-status-gateway-tid">n/a</span>) 
+                <span id="sci-bat-conf-status-gateway-ts-running" class="badge text-bg-success" style="display: none;">Running</span>
+                <span id="sci-bat-conf-status-gateway-ts-terminated" class="badge text-bg-danger" style="display: none;">Terminated</span>
+            </h5>
+            <p class="card-text">
+                {# Modbus connection #}
+                <div class="row">
+                    <div class="col-md-4">Modbus connection</div>
+                    <div id="sci-bat-conf-status-gateway-connection" class="col-md-8">n/a</div>
+                </div>
+                {# Slave connected #}
+                <div class="row">
+                    <div class="col-md-4">Inverter connected</div>
+                    <div id="sci-bat-conf-status-gateway-connected" class="col-md-8">n/a</div>
+                </div>
+                {# Slave updated #}
+                <div class="row">
+                    <div class="col-md-4">Inverted updated</div>
+                    <div id="sci-bat-conf-status-gateway-updated" class="col-md-8">n/a</div>
+                </div>
+            </p>
+        </div>
+    </div>
+
+    {# Mailbox #}
+    <div class="card mb-2">
+        <div class="card-body">
+            <h5 class="card-title">
+                Mailbox (TID: <span id="sci-bat-conf-status-mailbox-tid">n/a</span>) 
+                <span id="sci-bat-conf-status-mailbox-ts-running" class="badge text-bg-success" style="display: none;">Running</span>
+                <span id="sci-bat-conf-status-mailbox-ts-terminated" class="badge text-bg-danger" style="display: none;">Terminated</span>
+            </h5>
+            <p class="card-text">
+                {# Modbus connection #}
+                <div class="row">
+                    <div class="col-md-4">MQTT connection</div>
+                    <div id="sci-bat-conf-status-mailbox-connection" class="col-md-8">n/a</div>
+                </div>
+                {# Modbus connection #}
+                <div class="row">
+                    <div class="col-md-4">Connected</div>
+                    <div id="sci-bat-conf-status-mailbox-connected" class="col-md-8">n/a</div>
+                </div>
+            </p>
+        </div>
+    </div>
+
+    {# TControl #}
+    <div class="card mb-2">
+        <div class="card-body">
+            <h5 class="card-title">
+                TControl (TID: <span id="sci-bat-conf-status-tcontrol-tid">n/a</span>) 
+                <span id="sci-bat-conf-status-tcontrol-ts-running" class="badge text-bg-success" style="display: none;">Running</span>
+                <span id="sci-bat-conf-status-tcontrol-ts-terminated" class="badge text-bg-danger" style="display: none;">Terminated</span>
+            </h5>
+            <p class="card-text">
+                {# Active serial device #}
+                <div class="row">
+                    <div class="col-md-4">Serial device</div>
+                    <div id="sci-bat-conf-status-tcontrol-device" class="col-md-8">n/a</div>
+                </div>
+                {# Serial device availible #}
+                <div class="row">
+                    <div class="col-md-4">Serial device available</div>
+                    <div id="sci-bat-conf-status-tcontrol-available" class="col-md-8">n/a</div>
+                </div>
+                {# Active serial device #}
+                <div class="row">
+                    <div class="col-md-4">Command transmition successfull</div>
+                    <div id="sci-bat-conf-status-tcontrol-command" class="col-md-8">n/a</div>
+                </div>
+            </p>
+        </div>
+    </div>
+
+    {# Admin note #}
+    {% if AUTH_LEVEL >= 2 %}
+    <div class="alert alert-warning">
+        <b>Warning for Admins:</b> Restarting the service will only work if the linux service is configured properly (automatic restart). If the service will not
+        restart automatically login via SSH and execute the following commands:
+        <ul>
+            <li>sudo systemctl start sci-bat</li>
+            <li>sudo systemctl enable sci-bat</li>
+        </ul>
+        This will restart the service and enables automatic services startup.
+    </div>
+    {% endif %}
+
+    {# Restart button #}
+    <button class="btn btn-danger" id="sci-bat-conf-status-restart-modal-open" data-bs-toggle="modal" data-bs-target="#sci-bat-conf-status-restart-modal">Restart service</button>
+</div>
+
+{# Feedback toast OK #}
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+    <div id="sci-bat-conf-status-fb-toast-ok" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">Service restart successfull. Expecting page becoming unresposible!</div>
+        </div>
+    </div>
+</div>
+{# Feedback toast error #}
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+    <div id="sci-bat-conf-status-fb-toast-err" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+        <div class="d-flex">
+            <div class="toast-body">Service restart failed</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block body %}
+{# Restart dialog #}
+<div class="modal fade" id="sci-bat-conf-status-restart-modal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Confirm service restart</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <b>Warning:</b> Confirming the action with &quot;Restart now&quot; will stop all services and atempt a service restart.
+                Normally the service should be up again within a few seconds. Please make sure you have proper access to the linux machine 
+                in case anything goes wrong.<br/><br/>
+                During service restart the webpage will not be available. The connection to the MQTT broker and to the inverter will be 
+                closed and reopened as soon as the services starts again!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="sci-bat-conf-status-restart">Restart now</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{ HOST }}/res/js/settings-a.js"></script>
+<script src="{{ HOST }}/res/js/settings-status.js"></script>
+{% endblock %}
+

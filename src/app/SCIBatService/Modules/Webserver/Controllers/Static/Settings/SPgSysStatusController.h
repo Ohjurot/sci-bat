@@ -5,7 +5,7 @@
 
 namespace SCI::BAT::Webserver::Controllers
 {
-    class SPgTControleController : public HTTPController
+    class SPgSysStatusController : public HTTPController
     {
         public:
             void OnGet(const httplib::Request& request, httplib::Response& response) override;

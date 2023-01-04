@@ -21,6 +21,8 @@ namespace SCI::BAT::Mailbox
         public:
             inline MailboxThread(const std::shared_ptr<spdlog::logger>& logger = spdlog::default_logger())
             {
+                s_mailbox = this;
+
                 SetLogger(logger);
                 LoadConfig();
             }
@@ -33,6 +35,25 @@ namespace SCI::BAT::Mailbox
 
             void on_message(const struct mosquitto_message*) override;
 
+            static inline auto GetStaticTID()
+            {
+                return s_mailbox->GetTID();
+            }
+            static inline auto IsStaticFinished()
+            {
+                return s_mailbox->IsFinished();
+            }
+            static inline auto GetConnectionString()
+            {
+                return s_mailbox->m_brokerUsername.empty() ? 
+                    fmt::format("tcp://{}:{}", s_mailbox->m_brokerAddress, s_mailbox->m_brokerPort) :
+                    fmt::format("tcp://{}@{}:{} (Using password: {})", s_mailbox->m_brokerUsername, s_mailbox->m_brokerAddress, s_mailbox->m_brokerPort, s_mailbox->m_brokerPassword.empty() ? "NO" : "YES");
+            }
+            static inline auto GetConnected()
+            {
+                return s_mailbox->m_mqttUpdated;
+            }
+
         private:
             void LoadConfig();
 
@@ -40,8 +61,12 @@ namespace SCI::BAT::Mailbox
             void MQTTDisconnect();
 
         private:
+            static MailboxThread* s_mailbox;
+
             Util::SpinLock m_lock;
             Util::SpinLock m_mosqLock;
+
+            bool m_mqttUpdated = false;
 
             std::unordered_map<std::string, std::string> m_mqttInbox;
 

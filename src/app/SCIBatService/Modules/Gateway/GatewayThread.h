@@ -31,11 +31,36 @@ namespace SCI::BAT::Gateway
                 Util::LockGuard janitor(s_gateway->m_dataLock);
                 return s_gateway->m_smaOutputData;
             }
+            static inline auto GetStaticTID()
+            {
+                return s_gateway->GetTID();
+            }
+            static inline auto IsStaticFinished()
+            {
+                return s_gateway->IsFinished();
+            }
 
             static inline void ReloadAllModules()
             {
                 s_gateway->GetLogger()->info("Initiating module reloading.");
                 s_gateway->RaisConfigChange();
+            }
+
+            static inline auto GetConnectionString()
+            {
+                return fmt::format("{}:{} (NodeId: {})", s_gateway->m_smaIp, s_gateway->m_smaPort, s_gateway->m_smaSlaveNode);
+            }
+            static inline auto GetSMAConnected()
+            {
+                return s_gateway->m_smaConnected;
+            }
+            static inline auto GetSMAUpdateOk()
+            {
+                return s_gateway->m_smaUpdateOk;
+            }
+            static inline void RequestSystemStop()
+            {
+                s_gateway->RaisSystemStopRequest();
             }
 
         protected:
@@ -61,6 +86,9 @@ namespace SCI::BAT::Gateway
             int m_smaSlaveNode = 3;
             int m_smaPort = 502;
             int m_refRateInMs = 3000;
+
+            bool m_smaUpdateOk = false;
+            bool m_smaConnected = false;
 
             Modbus::Master m_modbus;
             Mailbox::MailboxThread& m_mailbox;

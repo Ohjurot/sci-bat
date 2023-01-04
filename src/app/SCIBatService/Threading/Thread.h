@@ -119,6 +119,26 @@ namespace SCI::BAT
                 return init;
             }
 
+            /*!
+             * @brief Accesses the threads id. 
+             * 
+             * Only valid when the thread was at least started!
+             * @return ID of the thread. 
+            */
+            inline std::jthread::id GetTID() const
+            {
+                return m_tid;
+            }
+
+            /*!
+             * @brief Check weather a system stop request has be raised by this thread.
+             * @return True if this threat requested a full system stop.
+            */
+            inline bool SystemStopRequested() const
+            {
+                return m_sysStopReq.test(std::memory_order::acquire);
+            }
+
         protected:
             virtual int ThreadMain() = 0;
             virtual void OnStop() {};
@@ -147,6 +167,14 @@ namespace SCI::BAT
                 return m_stopToken ? m_stopToken->stop_requested() : true;
             }
 
+            /*!
+             * @brief Initiates a global system stop request.
+            */
+            inline void RaisSystemStopRequest()
+            {
+                m_sysStopReq.test_and_set(std::memory_order::acquire);
+            }
+
         private:
             void RootThreadMain(std::stop_token stop);
 
@@ -154,6 +182,7 @@ namespace SCI::BAT
             bool m_started = false;
             std::atomic_flag m_finished;
             std::jthread m_threadHandle;
+            std::jthread::id m_tid;
 
             ExecutionResult m_result = ExecutionResult::Undefined;
             std::string m_exceptionText;
@@ -163,5 +192,6 @@ namespace SCI::BAT
 
             std::atomic_flag m_confcInit;
             std::atomic_flag m_confcReq;
+            std::atomic_flag m_sysStopReq;
     };
 }

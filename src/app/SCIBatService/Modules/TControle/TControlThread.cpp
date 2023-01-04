@@ -15,11 +15,12 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
         GetLogger()->debug("Found serial device \"{}\".", device);
 
     // Abort when no serial is available
+    m_deviceAvailable = std::find(serialDevices.begin(), serialDevices.end(), m_serialDevice) != serialDevices.end();
     if(serialDevices.size() == 0)
         throw std::runtime_error("No serial devices present! TControle will NOT work!");
 
     // Report
-    GetLogger()->info("Using serial device \"{}\". Currently detected: {}", m_serialDevice, std::find(serialDevices.begin(), serialDevices.end(), m_serialDevice) == serialDevices.end() ? "NO" : "YES");
+    GetLogger()->info("Using serial device \"{}\". Currently detected: {}", m_serialDevice, m_deviceAvailable ? "YES" : "NO");
 
     // Loop
     while (!StopRequested())
@@ -55,7 +56,8 @@ int SCI::BAT::TControle::TControlThread::ThreadMain()
                 throw std::runtime_error("No serial devices present! TControle will terminate!");
 
             // Report
-            GetLogger()->info("Using serial device \"{}\". Currently detected: {}", m_serialDevice, std::find(serialDevices.begin(), serialDevices.end(), m_serialDevice) == serialDevices.end() ? "NO" : "YES");
+            m_deviceAvailable = std::find(serialDevices.begin(), serialDevices.end(), m_serialDevice) != serialDevices.end();
+            GetLogger()->info("Using serial device \"{}\". Currently detected: {}", m_serialDevice, m_deviceAvailable ? "YES" : "NO");
 
             // Finished
             GetLogger()->info("Finished config reload.");
@@ -223,7 +225,7 @@ void SCI::BAT::TControle::TControlThread::LoadConfig()
             {
                 "serial",
                 {
-                    { "device", "/dev/ttyS0" },
+                    { "device", "/dev/tty" },
                 }
             },
             { "cooloff-time", 5000 }
@@ -278,14 +280,16 @@ bool SCI::BAT::TControle::TControlThread::SetRelais(unsigned int index, bool on)
 
 bool SCI::BAT::TControle::TControlThread::SerialSend(const void* data, unsigned int byts)
 {
+    bool ok = false; 
     if (m_serial.openDevice(m_serialDevice.c_str(), m_serialBaude, m_serialBits, m_serialParity, m_serialStopBits) == 1)
     {
-        bool ok = m_serial.writeBytes(data, byts) == 1;
+        ok = m_serial.writeBytes(data, byts) == 1;
         m_serial.closeDevice();
-        return ok;
     }
-
-    return false;
+    std::atomic_thread_fence(std::memory_order::acquire); // Flush all previous write before accessing stored value... no more sync needed
+    
+    m_lastCommandOk = ok;
+    return ok;
 }
 
 std::vector<std::string> SCI::BAT::TControle::TControlThread::ListSerialDevices()

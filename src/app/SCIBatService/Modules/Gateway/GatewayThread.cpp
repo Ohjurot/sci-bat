@@ -122,7 +122,9 @@ int SCI::BAT::Gateway::GatewayThread::ThreadMain()
 
         // Update modbus IO
         GetLogger()->debug("Initiating gateway periodic update");
-        m_modbus.IOUpdate(0.0001f * m_refRateInMs);
+        m_smaConnected = m_modbus.SlaveConnected("sma");
+        auto updateOk = m_modbus.IOUpdate(0.0001f * m_refRateInMs);
+        m_smaUpdateOk = m_smaConnected ? updateOk : false;
 
         // Read the modbus command
         std::string mqttRequestPowerStr;
@@ -146,10 +148,7 @@ int SCI::BAT::Gateway::GatewayThread::ThreadMain()
         }
 
         // Write data to MQTT
-        if (true || m_modbus.SlaveConnected("sma")) // DEBUG
-        {
-            PublishMQTTInfo(m_smaInputData, m_smaOutputData);
-        }
+        PublishMQTTInfo(m_smaInputData, m_smaOutputData);
 
         // Wait one second
         std::this_thread::sleep_for(1ms * m_refRateInMs);
