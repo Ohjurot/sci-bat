@@ -16,8 +16,5 @@ namespace SCI::BAT::Webserver::Controllers
         public:
             // Shows status as json data
             void OnGet(const httplib::Request& request, httplib::Response& response) override;
-
-        private:
-            int ConvertTID(const std::jthread::id& id);
     };
 }

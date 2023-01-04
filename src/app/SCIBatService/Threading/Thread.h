@@ -125,7 +125,7 @@ namespace SCI::BAT
              * Only valid when the thread was at least started!
              * @return ID of the thread. 
             */
-            inline std::jthread::id GetTID() const
+            inline int GetTID() const
             {
                 return m_tid;
             }
@@ -182,7 +182,7 @@ namespace SCI::BAT
             bool m_started = false;
             std::atomic_flag m_finished;
             std::jthread m_threadHandle;
-            std::jthread::id m_tid;
+            int m_tid = -1;
 
             ExecutionResult m_result = ExecutionResult::Undefined;
             std::string m_exceptionText;

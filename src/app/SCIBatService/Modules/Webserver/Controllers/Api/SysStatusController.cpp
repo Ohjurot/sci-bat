@@ -28,15 +28,15 @@ void SCI::BAT::Webserver::Controllers::SysStatusController::OnGet(const httplib:
         nlohmann::json sysStatusJson = {
             { "threads", {
                 { "gateway", {
-                    { "tid", ConvertTID(tidGateway) },
+                    { "tid", tidGateway },
                     { "running", runningGateway},
                 }},
                 { "mailbox", {
-                    { "tid", ConvertTID(tidMailbox) },
+                    { "tid", tidMailbox },
                     { "running", runningMailbox},
                 }},
                 { "tcontrol", {
-                    { "tid", ConvertTID(tidTControle) },
+                    { "tid", tidTControle },
                     { "running", runningTControle},
                 }},
             }},
@@ -65,13 +65,4 @@ void SCI::BAT::Webserver::Controllers::SysStatusController::OnGet(const httplib:
     {
         response.status = 401;
     }
-}
-
-int SCI::BAT::Webserver::Controllers::SysStatusController::ConvertTID(const std::jthread::id& id)
-{
-    int rc;
-    std::stringstream ss;
-    ss << id;
-    ss >> rc;
-    return rc;
 }

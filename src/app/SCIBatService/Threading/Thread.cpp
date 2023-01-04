@@ -1,5 +1,12 @@
 #include "Thread.h"
 
+#if defined(SCI_WINDOWS)
+#define NOMINMAX
+#include <Windows.h>
+#elif defined(SCI_LINUX)
+#include <unistd.h>
+#endif
+
 SCI::BAT::Thread::~Thread()
 {
     Stop();
@@ -48,7 +55,11 @@ void SCI::BAT::Thread::RootThreadMain(std::stop_token stop)
     try
     {
         m_stopToken = &stop;
-        m_tid = std::this_thread::get_id();
+        #if defined(SCI_WINDOWS)
+        m_tid = GetCurrentThreadId();
+        #elif defined(SCI_LINUX)
+        m_tid = gettid();
+        #endif
         m_threadReturnCode = ThreadMain();
         m_result = ExecutionResult::StoppedNormaly;
     }
