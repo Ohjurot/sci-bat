@@ -1,3 +1,8 @@
+/*!
+ * @file UsermodController.h
+ * @brief Controller for modifying users
+ * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <Modules/Webserver/HTTPController.h>
@@ -9,12 +14,13 @@
 
 namespace SCI::BAT::Webserver::Controllers
 {
+    /*!
+     * @brief Controller for modifying users
+    */
     class UsermodController : public HTTPController
     {
         public:
-            // Checks a user
             void OnGet(const httplib::Request& request, httplib::Response& response) override;
-            // Modifies a user
             void OnPost(const httplib::Request& request, httplib::Response& response) override;
     };
 }

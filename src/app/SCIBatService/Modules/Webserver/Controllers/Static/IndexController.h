@@ -1,3 +1,8 @@
+/*!
+ * @file IndexController.h
+ * @brief Controller for showing the index page
+ * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <Modules/Webserver/HTTPController.h>
@@ -5,6 +10,9 @@
 
 namespace SCI::BAT::Webserver::Controllers
 {
+    /*!
+     * @brief Controller for showing the index page
+    */
     class IndexController : public HTTPController
     {
         public:

@@ -1,3 +1,8 @@
+/*!
+ * @file SysStatusController.h
+ * @brief Controller for showing the system status
+ * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <Modules/Webserver/HTTPController.h>
@@ -11,10 +16,12 @@
 
 namespace SCI::BAT::Webserver::Controllers
 {
+    /*!
+     * @brief Controller for showing the system status
+    */
     class SysStatusController : public HTTPController
     {
         public:
-            // Shows status as json data
             void OnGet(const httplib::Request& request, httplib::Response& response) override;
     };
 }

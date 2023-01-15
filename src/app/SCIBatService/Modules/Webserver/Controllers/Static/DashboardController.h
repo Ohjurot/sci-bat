@@ -1,3 +1,8 @@
+/*!
+ * @file DashboardController.h
+ * @brief Controller for showing the dashboard
+ * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <Modules/Webserver/HTTPController.h>
@@ -5,6 +10,9 @@
 
 namespace SCI::BAT::Webserver::Controllers
 {
+    /*!
+     * @brief Controller for showing the dashboard
+    */
     class DashboardController : public HTTPController
     {
         public:

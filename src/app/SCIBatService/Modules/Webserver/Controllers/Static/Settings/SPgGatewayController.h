@@ -1,3 +1,8 @@
+/*!
+ * @file SPgGatewayController.h
+ * @brief Controller for showing the gateway settings
+ * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <Modules/Webserver/HTTPController.h>
@@ -5,6 +10,9 @@
 
 namespace SCI::BAT::Webserver::Controllers
 {
+    /*!
+     * @brief Controller for showing the gateway settings
+    */
     class SPgGatewayController : public HTTPController
     {
         public:

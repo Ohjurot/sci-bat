@@ -1,3 +1,8 @@
+/*!
+ * @file SMAData.h
+ * @brief Structures for SMA information
+ * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <fmt/format.h>
@@ -6,68 +11,125 @@
 
 namespace SCI::BAT::Gateway
 {
+    /*!
+     * @brief Status of the sma inverter
+    */
     enum class SMAStatus
     {
+        /*! Status is undefined */
         Undefined = 0,
+        /*! Inverter is in error state */
         Error = 35, 
+        /*! Inverter is off */
         Off = 303, 
+        /*! Inverter is on */
         Ok = 307,
+        /*! Inverter has pending warnings */
         Warning = 455,
     };
 
+    /*!
+     * @brief Status of the battery
+    */
     enum class SMABatteryStatus
     {
+        /*! Battery status is undefined */
         Undefined = 0,
+        /*! Battery is in the own consumption area */
         OwnConsumptionArea = 2614, 
+        /*! Battery is in the state of charge conservation area */
         StateOfChargeConservationArea = 2615,
+        /*! Battery is in the backup power area */
         BackupPowerArea = 2616, 
+        /*! Battery is in the deep discharge protection area */
         DeepDischargeProtectionArea = 2617,
+        /*! Battery is deep discharged */
         DeepDischargeArea = 2618,
     };
 
+    /*!
+     * @brief Status of the operation
+    */
     enum class SMAOperationStatus
     {
+        /*! The operation status is undefined */
         Undefined = 0,
+        /*! Operation is stoped */
         Stop = 381,
+        /*! Operation is stated */
         Start = 1467,
     };
 
+    /*!
+     * @brief Type of the battery
+    */
     enum class SMABatteryType
     {
+        /*! Battery type is undefined */
         Undefined = 0,
+        /*! Battery type is valve regulated lead acid */
         ValveRegulatedLeadAcid = 1782,
+        /*! Battery type is flooded lead acid */
         FloodedLeadAcid = 1783,
+        /*! Battery type is LithiumIon */
         LithiumIon = 1785,
     };
 
+    /*!
+     * @brief SMA Input control data
+    */
     struct SMAInData
     {
+        /*! Current inverter status */
         SMAStatus status = SMAStatus::Undefined;
+        /*! Currently delivered power */
         int32_t power = 0;
+        /*! Grid voltage */
         float voltage = .0f;
+        /*! Grid infrequency */
         float freqenency = .0f;
+        /*! Battery current */
         float batteryCurrent = .0f;
+        /*! Battery charge */
         int8_t batteryCharge = 0;
+        /*! Battery capacity */
         int8_t batteryCapacity = 0;
+        /*! Battery temperature */
         float batteryTemperature = .0f;
+        /*! Battery voltage */
         float batteryVoltage = .0f;
+        /*! Time until full charge */
         uint32_t timeUntilFullCharge = -1;
+        /*! Time until full discharge */
         uint32_t timeUntilFullDischarge = -1;
+        /*! Current battery status */
         SMABatteryStatus batteryStatus = SMABatteryStatus::Undefined;
+        /*! Current operation status */
         SMAOperationStatus operationStaus = SMAOperationStatus::Undefined;
+        /*! Battery type */
         SMABatteryType batteryType = SMABatteryType::Undefined;
+        /*! Serial number of inverter */
         uint32_t serialNumber = -1;
     };
 
+    /*!
+     * @brief SMA Output control data
+    */
     struct SMAOutData
     {
+        /*! Indicated that power should be controlled */
         bool enablePowerControle = false;
+        /*! Desired power */
         int32_t power = 0;
     };
 
+    /*!
+     * @brief Converts from 32-Bit fix point to floating point
+     * @param value Input 32-Bit values
+     * @param fixBits Number of fix bits
+     * @return IEEE floating point representation
+    */
     float SMAConvertFromFix(int32_t value, int fixBits);
-
-    
 }
 
 template <> struct fmt::formatter<SCI::BAT::Gateway::SMAStatus>

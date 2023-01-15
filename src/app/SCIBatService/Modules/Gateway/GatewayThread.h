@@ -1,3 +1,8 @@
+/*!
+ * @file GatewayThread.h
+ * @brief Provides MQTT functionality
+ * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <Threading/Thread.h>
@@ -14,6 +19,9 @@
 
 namespace SCI::BAT::Gateway
 {
+    /*!
+     * @brief Provided the MQTT <--> modbus gateway functionality
+    */
     class GatewayThread : public Thread, public Util::SPDLogable
     {
         public:

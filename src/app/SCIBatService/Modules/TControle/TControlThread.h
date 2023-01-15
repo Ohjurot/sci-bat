@@ -1,3 +1,8 @@
+/*!
+ * @file TControlThread.h
+ * @brief Builds the temperature contol ontop of a thread
+ * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <Threading/Thread.h>
@@ -18,25 +23,46 @@
 
 namespace SCI::BAT::TControle
 {
+    /*!
+     * @brief Thread implementing temperature control
+    */
     class TControlThread : public Thread, public Util::SPDLogable
     {
         public:
+            /*!
+             * @brief Current operation mode
+            */
             enum class OperationMode
             {
+                /*! No operation / off */
                 Off = 0,
+                /*! Cooling */
                 Cooling = -1,
+                /*! Heating pwr1 (Fan + 1W) */
                 HeatingPwr1 = 1,
+                /*! Heating pwr1 (Fan + 2W) */
                 HeatingPwr2 = 2,
+                /*! Heating pwr1 (Fan + 1W + 2W) */
                 HeatingPwr3 = 3,
             };
 
+            /*!
+             * @brief Current status
+            */
             struct Status
             {
+                /*! Current operation mode */
                 OperationMode mode;
+                /*! Status of the relais */
                 bool relais[4] = { false, false, false, false };
             };
 
         public:
+            /*!
+             * @brief Creates a new parametrized temperature controleer
+             * @param mailbox Reference to MQTT mailbox for receiving commands
+             * @param logger Logger to be used by thread
+            */
             TControlThread(Mailbox::MailboxThread& mailbox, const std::shared_ptr<spdlog::logger>& logger = spdlog::default_logger()) :
                 m_mailbox(mailbox)
             {
@@ -47,32 +73,60 @@ namespace SCI::BAT::TControle
 
             int ThreadMain() override;
 
+            /*!
+             * @brief Retrive the status of the static instance
+             * @return Current status 
+            */
             static inline Status GetStatus()
             {
                 SCI_ASSERT(s_instance, "TControlThread not initialized properly!");
                 return { s_instance->m_mode, { s_instance->m_relaisStates[0], s_instance->m_relaisStates[1], s_instance->m_relaisStates[2], s_instance->m_relaisStates[3] } };
             }
+            /*!
+             * @brief Retrive the thread id of the static instance
+             * @return Thread id
+            */
             static inline auto GetStaticTID()
             {
                 return s_instance->GetTID();
             }
+            /*!
+             * @brief Retrive the finsihed state of the static instance
+             * @return true if finished
+            */
             static inline auto IsStaticFinished()
             {
                 return s_instance->IsFinished();
             }
+            /*!
+             * @brief Retrive the current serial device of the static instance
+             * @return Name of the current serial device
+            */
             static inline auto GetSerialDevice()
             {
                 return s_instance->m_serialDevice;
             }
+            /*!
+             * @brief Retrive if the serial device availability state of the static instance
+             * @return True if available
+            */
             static inline auto GetDeviceAvailable()
             {
                 return s_instance->m_deviceAvailable;
             }
+            /*!
+             * @brief Retrive if the last command on the serial device was ok on the static instance
+             * @return True if last command was ok
+            */
             static inline auto GetLastCommandOk()
             {
                 return s_instance->m_lastCommandOk;
             }
 
+            /*!
+             * @brief Lists all serial device usable on the system
+             * @return Vector of devices
+            */
             static std::vector<std::string> ListSerialDevices();
 
         private:

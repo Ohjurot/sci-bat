@@ -1,3 +1,8 @@
+/*!
+ * @file SettingsController.h
+ * @brief Controller for reading and writing settings
+ * @author Ludwig Fuechsl <ludwig.fuechsl@hm.edu>
+ */
 #pragma once
 
 #include <Modules/Webserver/HTTPController.h>
@@ -10,12 +15,13 @@
 
 namespace SCI::BAT::Webserver::Controllers
 {
+    /*!
+     * @brief Controller for reading and writing settings
+    */
     class SettingsController : public HTTPController
     {
         public:
-            // Show current settings
             void OnGet(const httplib::Request& request, httplib::Response& response) override;
-            // Update settings
             void OnPost(const httplib::Request& request, httplib::Response& response) override;
     };
 }
