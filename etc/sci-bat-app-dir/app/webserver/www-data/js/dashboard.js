@@ -66,7 +66,7 @@ function SciBatDashUpdate(json)
             $("#sci-bat-dash-d-top-bar").addClass("progress-bar-animated");
             break;
         case 0:
-            $("#sci-bat-dash-d-top-header").html("Iydle");
+            $("#sci-bat-dash-d-top-header").html("Idle");
             $("#sci-bat-dash-d-top-bolt").removeClass("text-success").removeClass("text-primary").removeClass("text-warning").removeClass("fa-beat-fade")
                 .addClass("text-primary");
             $("#sci-bat-dash-d-top-bar").removeClass("progress-bar-animated");
